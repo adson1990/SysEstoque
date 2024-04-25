@@ -1,5 +1,0 @@
-package com.adsonlucas.SysEstoque.repositories;
-
-public interface UserRepository {
-
-}
