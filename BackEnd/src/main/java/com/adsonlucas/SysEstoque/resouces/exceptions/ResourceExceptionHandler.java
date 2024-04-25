@@ -1,0 +1,48 @@
+package com.adsonlucas.SysEstoque.resouces.exceptions;
+
+import java.time.Instant;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
+import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+@ControllerAdvice
+public class ResourceExceptionHandler {
+	
+	@ExceptionHandler(EntidadeNotFoundException.class)
+	public ResponseEntity<StandardError> entityNotFound(EntidadeNotFoundException e,
+														HttpServletRequest request){
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		
+		StandardError error = new StandardError();
+		error.setTimeStamp(Instant.now());
+		error.setError("Objeto não encontrado com o ID informado.");
+		error.setMsg(e.getMessage());
+		error.setStatus(status.value());
+		error.setPath(request.getRequestURI());
+		
+		return ResponseEntity.status(status).body(error);
+	}
+	
+	@ExceptionHandler(DataBaseException.class)
+	public ResponseEntity<StandardError> dataInconsistencyException(DataBaseException e,
+																	HttpServletRequest request){
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		
+		StandardError error = new StandardError();
+		error.setTimeStamp(Instant.now());
+		error.setError("Dads inconsistentes no DB");
+		error.setMsg(e.getMessage());
+		error.setPath(request.getRequestURI());
+		error.setStatus(status.value());
+		
+		return ResponseEntity.status(status).body(error);
+	}
+
+}

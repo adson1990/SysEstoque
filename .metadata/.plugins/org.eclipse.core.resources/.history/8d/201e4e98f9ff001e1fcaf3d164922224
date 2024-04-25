@@ -1,0 +1,5 @@
+package com.adsonlucas.SysEstoque.entitiesDTO;
+
+public class UserDTO {
+
+}

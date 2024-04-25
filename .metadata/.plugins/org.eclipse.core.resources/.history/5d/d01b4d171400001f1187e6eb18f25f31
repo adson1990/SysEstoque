@@ -1,0 +1,5 @@
+package com.adsonlucas.SysEstoque.resources;
+
+public class UserResource {
+
+}

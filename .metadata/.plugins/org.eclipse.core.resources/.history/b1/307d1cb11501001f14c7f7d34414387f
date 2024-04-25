@@ -1,0 +1,39 @@
+package com.adsonlucas.SysEstoque.services;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.adsonlucas.SysEstoque.entities.User;
+import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
+import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
+import com.adsonlucas.SysEstoque.repositories.UserRepository;
+
+
+
+@Service
+public class UserService {
+
+	@Autowired
+	private UserRepository userRepository;
+	
+	//BUSCA
+	@Transactional(readOnly =true)
+	public Page<UserDTO> findAllPages(PageRequest pageRequest){
+		Page<User> userList = userRepository.findAll(pageRequest);
+		
+		return userList.map(x -> new UserDTO(x));
+	}
+	
+	@Transactional(readOnly = true)
+	public UserDTO findById(Long id) {
+		Optional<User> optional = userRepository.findById(id);
+		User userEntity = optional.orElseThrow(() -> new EntidadeNotFoundException("Usuário não encontrado."));
+		
+		return new UserDTO(userEntity);
+	}
+}

@@ -1,0 +1,18 @@
+package com.adsonlucas.SysEstoque.entitiesDTO;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+
+public class UserDTO implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
+	private Long ID;
+	private String nome;
+	private String sobrenome;
+	private String senha;
+	private String email;
+	private Integer idade;
+	private String foto;
+	private LocalDate dt_nascimento;
+}
