@@ -54,14 +54,6 @@ public class ClientService {
 		return new ClientDTO(entity);
 	}
 	
-	private void copyDTOToEntity(ClientDTO dto, Client entity) {
-		
-		//Client client = new Client(dto);
-		entity = new Client(dto);
-		
-		
-	}
-	
 	//UPDATES
 	//Atualiza cliente
 	@Transactional
@@ -89,6 +81,14 @@ public class ClientService {
 		}catch(DataIntegrityViolationException d) {
 			throw new DataBaseException("Violação de integridade do DB");
 		}
+	}
+	
+	//Métodos customizados
+	private void copyDTOToEntity(ClientDTO dto, Client entity) {
+		
+		//Client client = new Client(dto);
+		entity = new Client(dto);
+
 	}
 
 }

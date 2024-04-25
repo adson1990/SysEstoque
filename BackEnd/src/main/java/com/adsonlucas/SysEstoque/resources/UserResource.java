@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,9 +64,16 @@ public class UserResource {
 	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<UserDTO> updUser(@PathVariable Long ID, @RequestBody UserDTO dto){
-		UserDTO user = service.updateUser(ID, dto);
+		UserDTO user = service.updUser(ID, dto);
 		
 		return ResponseEntity.ok().body(user);
+	}
+	
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Void> deleteUser(@PathVariable Long ID) {
+		service.delUser(ID);
+		
+		return ResponseEntity.noContent().build();
 	}
 
 }
