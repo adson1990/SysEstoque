@@ -1,9 +1,10 @@
 package com.adsonlucas.SysEstoque.entities;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 
@@ -12,6 +13,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -29,6 +33,13 @@ public class Client implements Serializable{
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private LocalDate birthDate;
 	private Integer children;
+	
+	@ManyToMany
+	@JoinTable(name = "tb_client_category",
+			   joinColumns = @JoinColumn(name = "client_id"),
+			   inverseJoinColumns = @JoinColumn(name = "categoryClient_id")
+			   )
+	Set<CategoryClient> categories = new HashSet<>();
 	
 	public Client() {
 	}
@@ -91,6 +102,10 @@ public class Client implements Serializable{
 
 	public void setChildren(Integer children) {
 		this.children = children;
+	}
+	
+	public Set<CategoryClient> getCategories(){
+		return categories;
 	}
 
 	@Override

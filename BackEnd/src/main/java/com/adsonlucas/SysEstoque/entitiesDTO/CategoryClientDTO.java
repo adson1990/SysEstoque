@@ -3,18 +3,26 @@ package com.adsonlucas.SysEstoque.entitiesDTO;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class CategoryDTO implements Serializable{
+import com.adsonlucas.SysEstoque.entities.CategoryClient;
+
+public class CategoryClientDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private Long ID;
-	private String descrption;
+	private String description;
 	
-	public CategoryDTO() {}
+	public CategoryClientDTO() {}
 
-	public CategoryDTO(Long iD, String descrption) {
+	public CategoryClientDTO(Long iD, String descrption) {
 		super();
 		ID = iD;
-		this.descrption = descrption;
+		this.description = descrption;
+	}
+	
+	public CategoryClientDTO(CategoryClient cat) {
+		super();
+		ID = cat.getID();
+		this.description = cat.getDescription();
 	}
 
 	public Long getID() {
@@ -22,11 +30,11 @@ public class CategoryDTO implements Serializable{
 	}
 
 	public String getDescrption() {
-		return descrption;
+		return description;
 	}
 
 	public void setDescrption(String descrption) {
-		this.descrption = descrption;
+		this.description = descrption;
 	}
 
 	@Override
@@ -42,7 +50,7 @@ public class CategoryDTO implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CategoryDTO other = (CategoryDTO) obj;
+		CategoryClientDTO other = (CategoryClientDTO) obj;
 		return Objects.equals(ID, other.ID);
 	}
 	

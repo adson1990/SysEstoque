@@ -1,9 +1,12 @@
 package com.adsonlucas.SysEstoque.entitiesDTO;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import com.adsonlucas.SysEstoque.entities.CategoryClient;
 import com.adsonlucas.SysEstoque.entities.Client;
 
 public class ClientDTO implements Serializable{
@@ -15,6 +18,8 @@ public class ClientDTO implements Serializable{
 	private Double income;
 	private LocalDate birthDate;
 	private Integer children;
+	
+	private List<CategoryClientDTO> categories = new ArrayList<>();
 	
 	public ClientDTO() {
 	}
@@ -36,6 +41,11 @@ public class ClientDTO implements Serializable{
 		this.income = client.getIncome();
 		this.birthDate = client.getBirthDate();
 		this.children = client.getChildren();
+	}
+	
+	public ClientDTO(Client entity, Set<CategoryClient> categories) {
+		this(entity);
+		categories.forEach(cat -> this.categories.add(new CategoryClientDTO(cat)));
 	}
 
 	public Long getID() {
@@ -85,5 +95,13 @@ public class ClientDTO implements Serializable{
 	public void setChildren(Integer children) {
 		this.children = children;
 	}	
+	
+	public List<CategoryClientDTO> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<CategoryClientDTO> categories) {
+		this.categories = categories;
+	}
 
 }

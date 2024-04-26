@@ -3,6 +3,8 @@ package com.adsonlucas.SysEstoque.entities;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,12 @@ public class CategoryClient implements Serializable {
 		super();
 		this.ID = ID;
 		this.description = desc;
+	}
+	
+	public CategoryClient(CategoryClientDTO dto) {
+		super();
+		ID = dto.getID();
+		this.description = dto.getDescrption();
 	}
 
 	public Long getID() {
