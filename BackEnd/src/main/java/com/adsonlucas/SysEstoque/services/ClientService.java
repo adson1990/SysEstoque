@@ -71,15 +71,20 @@ public class ClientService {
 	
 	//DELETES
 	//Apaga Cliente
-	@Transactional
 	public void delClient(Long ID) {
-		try {
-			clientRepository.deleteById(ID);
-		}catch(EmptyResultDataAccessException e) {
-			throw new EntidadeNotFoundException("Cliente não encontrado com o ID." + e.getMessage());
-			
-		}catch(DataIntegrityViolationException d) {
-			throw new DataBaseException("Violação de integridade do DB");
+		Optional<Client> clientOPT = clientRepository.findById(ID);
+
+		if (clientOPT.isPresent()) {
+			try {
+				clientRepository.deleteById(ID);
+			//} catch (EmptyResultDataAccessException e) {
+			//	throw new EntidadeNotFoundException("Cliente não encontrado com o ID." + e.getMessage());
+
+			} catch (DataIntegrityViolationException d) {
+				throw new DataBaseException("Violação de integridade do DB");
+			}
+		}else {
+			throw new EntidadeNotFoundException("Cliente não encontrado com o ID: " + ID);
 		}
 	}
 	
