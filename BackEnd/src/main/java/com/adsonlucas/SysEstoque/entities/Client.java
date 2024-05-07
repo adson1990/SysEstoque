@@ -1,6 +1,7 @@
 package com.adsonlucas.SysEstoque.entities;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
@@ -31,7 +32,7 @@ public class Client implements Serializable{
 	private Double income;
 	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
-	private LocalDate birthDate;
+	private Instant birthDate;
 	private Integer children;
 	
 	@ManyToMany
@@ -44,7 +45,7 @@ public class Client implements Serializable{
 	public Client() {
 	}
 
-	public Client(String name, String cPF, Double income, LocalDate birthDate, Integer children) {
+	public Client(String name, String cPF, Double income, Instant birthDate, Integer children) {
 		super();
 		this.name = name;
 		this.CPF = cPF;
@@ -88,11 +89,11 @@ public class Client implements Serializable{
 		this.income = income;
 	}
 
-	public LocalDate getBirthDate() {
+	public Instant getBirthDate() {
 		return birthDate;
 	}
 
-	public void setBirthDate(LocalDate birthDate) {
+	public void setBirthDate(Instant birthDate) {
 		this.birthDate = birthDate;
 	}
 

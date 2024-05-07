@@ -1,6 +1,7 @@
 package com.adsonlucas.SysEstoque.entitiesDTO;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class ClientDTO implements Serializable{
 	private String name;
 	private String CPF;
 	private Double income;
-	private LocalDate birthDate;
+	private Instant birthDate;
 	private Integer children;
 	
 	private List<CategoryClientDTO> categories = new ArrayList<>();
@@ -24,7 +25,7 @@ public class ClientDTO implements Serializable{
 	public ClientDTO() {
 	}
 
-	public ClientDTO(String name, String cPF, Double income, LocalDate birthDate, Integer children) {
+	public ClientDTO(String name, String cPF, Double income, Instant birthDate, Integer children) {
 		super();
 		this.name = name;
 		this.CPF = cPF;
@@ -80,11 +81,11 @@ public class ClientDTO implements Serializable{
 		this.income = income;
 	}
 
-	public LocalDate getBirthDate() {
+	public Instant getBirthDate() {
 		return birthDate;
 	}
 
-	public void setBirthDate(LocalDate birthDate) {
+	public void setBirthDate(Instant birthDate) {
 		this.birthDate = birthDate;
 	}
 
