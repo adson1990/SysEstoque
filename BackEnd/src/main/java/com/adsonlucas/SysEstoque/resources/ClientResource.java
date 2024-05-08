@@ -3,6 +3,7 @@ package com.adsonlucas.SysEstoque.resources;
 import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -20,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
+import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
 import com.adsonlucas.SysEstoque.services.ClientService;
 
@@ -78,9 +79,11 @@ public class ClientResource {
 	public ResponseEntity<String> deleteClient(@PathVariable Long ID) {
 		try {
 			  clientService.delClient(ID);
-			  return ResponseEntity.ok("");
+			  return ResponseEntity.ok("CLiente com o ID " + ID +" deletado com sucesso!");
 		}catch(EntidadeNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+		}catch (DataIntegrityViolationException d) {
+			throw new DataBaseException("Violação de integridade do DB");
 		}
 		
 		//return ResponseEntity.noContent().build();
