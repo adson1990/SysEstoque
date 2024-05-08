@@ -23,24 +23,18 @@ public class CategoryClient implements Serializable {
 
 	public CategoryClient() {}
 	
-	public CategoryClient(Long ID, String desc) {
+	public CategoryClient(String desc) {
 		super();
-		this.ID = ID;
 		this.description = desc;
 	}
 	
 	public CategoryClient(CategoryClientDTO dto) {
 		super();
-		ID = dto.getID();
 		this.description = dto.getDescrption();
 	}
 
 	public Long getID() {
 		return ID;
-	}
-
-	public void setID(Long iD) {
-		ID = iD;
 	}
 
 	public String getDescription() {
