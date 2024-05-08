@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class ClientService {
 	public Page<ClientDTO> findAllPages(PageRequest pageRequest){
 		Page<Client> pageList = clientRepository.findAll(pageRequest);
 		
-		return pageList.map(x -> new ClientDTO(x));
+		return pageList.map(x -> new ClientDTO(x, x.getCategories()));
 	}
 	
 	// Client By ID
@@ -40,7 +39,7 @@ public class ClientService {
 		Optional<Client> clientById = clientRepository.findById(id);
 		Client clientEntity = clientById.orElseThrow(() -> new EntidadeNotFoundException("Cliente não encontrado pelo ID informado."));
 		
-		return new ClientDTO(clientEntity);
+		return new ClientDTO(clientEntity, clientEntity.getCategories());
 	}
 	
 	//INSERTS
@@ -77,21 +76,17 @@ public class ClientService {
 		if (clientOPT.isPresent()) {
 			try {
 				clientRepository.deleteById(ID);
-			//} catch (EmptyResultDataAccessException e) {
-			//	throw new EntidadeNotFoundException("Cliente não encontrado com o ID." + e.getMessage());
-
-			} catch (DataIntegrityViolationException d) {
+			} catch (DataIntegrityViolationException e) {
 				throw new DataBaseException("Violação de integridade do DB");
 			}
 		}else {
 			throw new EntidadeNotFoundException("Cliente não encontrado com o ID: " + ID);
-		}
+		} 
 	}
 	
 	//Métodos customizados
 	private void copyDTOToEntity(ClientDTO dto, Client entity) {
 		
-		//Client client = new Client(dto);
 		entity = new Client(dto);
 
 	}
