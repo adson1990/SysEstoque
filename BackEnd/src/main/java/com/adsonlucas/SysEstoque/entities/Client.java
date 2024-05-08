@@ -2,12 +2,14 @@ package com.adsonlucas.SysEstoque.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.antlr.v4.runtime.misc.NotNull;
+
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
+import com.adsonlucas.SysEstoque.entities.CategoryClient;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,7 +40,7 @@ public class Client implements Serializable{
 	@ManyToMany
 	@JoinTable(name = "tb_client_category",
 			   joinColumns = @JoinColumn(name = "client_id"),
-			   inverseJoinColumns = @JoinColumn(name = "categoryClient_id")
+			   inverseJoinColumns = @JoinColumn(name = "categoryclient_id")
 			   )
 	Set<CategoryClient> categories = new HashSet<>();
 	
@@ -103,9 +105,9 @@ public class Client implements Serializable{
 
 	public void setChildren(Integer children) {
 		this.children = children;
-	}
-	
-	public Set<CategoryClient> getCategories(){
+	}	
+
+	public Set<CategoryClient> getCategories() {
 		return categories;
 	}
 
