@@ -37,7 +37,7 @@ public class ResourceExceptionHandler {
 		
 		StandardError error = new StandardError();
 		error.setTimeStamp(Instant.now());
-		error.setError("Dads inconsistentes no DB");
+		error.setError("Dados consistidos e com relacionamento no DB");
 		error.setMsg(e.getMessage());
 		error.setPath(request.getRequestURI());
 		error.setStatus(status.value());
