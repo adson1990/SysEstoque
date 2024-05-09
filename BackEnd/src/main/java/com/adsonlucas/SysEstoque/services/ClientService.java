@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -75,12 +76,14 @@ public class ClientService {
 
 		if (clientOPT.isPresent()) {
 			try {
+				//this.findById(ID);
 				clientRepository.deleteById(ID);
-			} catch (DataIntegrityViolationException e) {
-				throw new DataBaseException("Violação de integridade do DB");
+			} catch(DataIntegrityViolationException d) {
+				throw new DataBaseException("Violação de integridade do DB.");
 			}
-		}else {
+		}else { 
 			throw new EntidadeNotFoundException("Cliente não encontrado com o ID: " + ID);
+		
 		} 
 	}
 	

@@ -57,7 +57,7 @@ public class ClientRepositoryTest {
 	}
 	
 	@Test
-	public void deleteResultaErroQuandoIdNaoExistir() {
+	public void deleteNaoRetornaErroQuandoIdNaoExistir() {
 		
 		 Assertions.assertDoesNotThrow(() -> {
 			repoTest.deleteById(idNaoExistente);
