@@ -63,6 +63,11 @@ public class Client implements Serializable{
 		this.children = clientDTO.getChildren();
 	}
 	
+	public Client(ClientDTO cliente, Set<CategoryClient> listCategory) {
+		this(cliente);
+		listCategory.forEach(cat -> this.categories.add(new CategoryClient(cat.getDescription())));
+	}
+	
 	public Long getID() {
 		return ID;
 	}
