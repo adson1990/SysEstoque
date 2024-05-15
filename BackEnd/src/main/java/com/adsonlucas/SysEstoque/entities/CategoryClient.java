@@ -1,7 +1,9 @@
 package com.adsonlucas.SysEstoque.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
 
@@ -9,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,6 +23,9 @@ public class CategoryClient implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long ID;
 	private String description;
+	
+	@ManyToMany(mappedBy = "categories")
+	private Set<Client> clients = new HashSet<>();
 
 	public CategoryClient() {}
 	
@@ -43,6 +49,10 @@ public class CategoryClient implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Set<Client> getClients() {
+		return clients;
 	}
 
 	@Override
