@@ -3,7 +3,9 @@ package com.adsonlucas.SysEstoque.entities;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 
@@ -12,6 +14,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -40,7 +45,12 @@ public class User implements Serializable {
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant updateAt;
 	
-	// implementação posterior da categoria do usuário
+	@ManyToMany
+	@JoinTable(name = "tb_user_role",
+			   joinColumns = @JoinColumn(name = "user_id"),
+			   inverseJoinColumns = @JoinColumn(name = "role_id")
+			   )
+	Set<Roles> roles = new HashSet<>();
 	
 	//CONSTRUTORES	
 	public User() {}
@@ -146,6 +156,14 @@ public class User implements Serializable {
 	@PreUpdate
 	public void preUpdate() {
 		updateAt = Instant.now(); // antes de atualizar no banco receberá o horário atual
+	}
+
+	public Set<Roles> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Roles> roles) {
+		this.roles = roles;
 	}
 
 	@Override

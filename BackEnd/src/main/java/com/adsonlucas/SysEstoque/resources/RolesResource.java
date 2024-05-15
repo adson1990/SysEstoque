@@ -23,8 +23,8 @@ import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.services.RolesService;
 
 @RestController
-@RequestMapping(value = "/users")
-public class UserResource {
+@RequestMapping(value = "/roles")
+public class RolesResource {
 	
 	@Autowired
 	private RolesService service;
@@ -53,19 +53,19 @@ public class UserResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<RolesDTO> insertRoles(@RequestBody RolesDTO user){
-		user = service.instRoles(user);
+	public ResponseEntity<RolesDTO> insertRoles(@RequestBody RolesDTO role){
+		role = service.instRoles(role);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(user.getID()).toUri();
+				.buildAndExpand(role.getID()).toUri();
 		
-		return ResponseEntity.created(uri).body(user);
+		return ResponseEntity.created(uri).body(role);
 	}
 	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<RolesDTO> updRoles(@PathVariable Long ID, @RequestBody RolesDTO dto){
-		RolesDTO user = service.updRoles(ID, dto);
+		RolesDTO role = service.updRoles(ID, dto);
 		
-		return ResponseEntity.ok().body(user);
+		return ResponseEntity.ok().body(role);
 	}
 	
 	@DeleteMapping(value = "/{id}")

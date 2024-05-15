@@ -2,11 +2,11 @@ package com.adsonlucas.SysEstoque.entitiesDTO;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
-
-
-
 
 public class UserDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -19,6 +19,7 @@ public class UserDTO implements Serializable{
 	private Integer idade;
 	private String foto;
 	private LocalDate dt_nascimento;
+	Set<Roles> roles = new HashSet<>();
 	
 	
 	public UserDTO() {}

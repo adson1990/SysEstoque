@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -66,13 +67,19 @@ public class UserService {
 	
 	@Transactional
 	public void delUser(Long ID) {
-		try {
-			userRepository.deleteById(ID);
-		}catch (EmptyResultDataAccessException e1) {
-			throw new EntidadeNotFoundException("Usuário não encontrado com o ID, impossível deletar." + e1.getMessage());
-		}catch (DataIntegrityViolationException e2) {
-			throw new DataBaseException("Violação de banco de dados encontrada." + e2.getMessage());
-		}
+		Optional<User> clientOPT = userRepository.findById(ID);
+
+		if (clientOPT.isPresent()) {
+			try {
+				//this.findById(ID);
+				userRepository.deleteById(ID);
+			} catch(DataIntegrityViolationException d) {
+				throw new DataBaseException("Violação de integridade do DB.");
+			}
+		}else { 
+			throw new EntidadeNotFoundException("Usuário não encontrado com o ID: " + ID);
+		
+		} 
 	}
 	
 	private void copyDTOToEntity(UserDTO dto, User entity) {		
