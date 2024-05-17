@@ -15,7 +15,7 @@ import com.adsonlucas.SysEstoque.entities.CategoryClient;
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
-import com.adsonlucas.SysEstoque.repositories.CategoryRepository;
+import com.adsonlucas.SysEstoque.repositories.CategoryClientRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -23,7 +23,7 @@ import jakarta.persistence.EntityNotFoundException;
 public class CategoryClientService {
 	
 	@Autowired
-	private CategoryRepository repository;
+	private CategoryClientRepository repository;
 	
 	@Transactional(readOnly = true)
 	public Page<CategoryClientDTO> findAllPaged(Pageable pageable) {
@@ -35,7 +35,7 @@ public class CategoryClientService {
 	@Transactional(readOnly = true)
 	public CategoryClientDTO findByID(Long ID) {
 		Optional<CategoryClient> opt = repository.findById(ID);
-		CategoryClient categoryEntity = opt.orElseThrow(() -> new EntidadeNotFoundException("Categoria não encontrada no BD."));
+		CategoryClient categoryEntity = opt.orElseThrow(() -> new EntidadeNotFoundException("Categoria de cliente não encontrada no BD."));
 		
 		return new CategoryClientDTO(categoryEntity);
 	}
@@ -58,7 +58,7 @@ public class CategoryClientService {
 		
 			return new CategoryClientDTO(client);
 		}catch(EntityNotFoundException e) {
-			throw new EntidadeNotFoundException("Categoria não atualizada, ID não encontrado.");
+			throw new EntidadeNotFoundException("Categoria de cliente não atualizada, ID não encontrado.");
 		}
 	}
 	
@@ -67,10 +67,10 @@ public class CategoryClientService {
 		try {
 			repository.deleteById(ID);
 		}catch(EmptyResultDataAccessException e) {
-			throw new EntidadeNotFoundException("Categoria não encontrada com o ID." + e.getMessage());
+			throw new EntidadeNotFoundException("Categoria de cliente não encontrada com o ID." + e.getMessage());
 			
 		}catch(DataIntegrityViolationException d) {
-			throw new DataBaseException("Violação de integridade do DB");
+			throw new DataBaseException("Violação de integridade do DB ao deletar cliente.");
 		}
 	}
 

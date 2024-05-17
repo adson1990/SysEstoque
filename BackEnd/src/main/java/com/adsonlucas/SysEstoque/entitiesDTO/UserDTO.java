@@ -8,16 +8,25 @@ import java.util.Set;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+
 public class UserDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private Long ID;
+	private Long ID;	
+	@NotBlank(message = "Campo obrigatório")
 	private String nome;
 	private String sobrenome;
 	private String senha;
-	private String email;
+	@Email(message = "Entrar com e-mail válido")
+	private String email;	
+	@Positive
 	private Integer idade;
 	private String foto;
+	@PastOrPresent(message = "Não pode ser data maior que a atual")
 	private LocalDate dt_nascimento;
 	Set<Roles> roles = new HashSet<>();
 	

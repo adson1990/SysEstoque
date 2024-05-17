@@ -16,33 +16,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
-import com.adsonlucas.SysEstoque.services.CategoryClientService;
+import com.adsonlucas.SysEstoque.entitiesDTO.CategoryProductDTO;
+import com.adsonlucas.SysEstoque.services.CategoryProductService;
 
 @RestController
-@RequestMapping(value = "/categorie/client")
-public class CategoryClientResource {
+@RequestMapping(value = "/categorie/product")
+public class CategoryProductResource {
 	
 	@Autowired
-	private CategoryClientService service;
+	private CategoryProductService service;
 	
 	@GetMapping
-	public ResponseEntity<Page<CategoryClientDTO>> findAllPages(Pageable pageable){
-		Page<CategoryClientDTO> list = service.findAllPaged(pageable);
+	public ResponseEntity<Page<CategoryProductDTO>> findAllPages(Pageable pageable){
+		Page<CategoryProductDTO> list = service.findAllPaged(pageable);
 		
 		return ResponseEntity.ok().body(list);
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<CategoryClientDTO> findByID(@PathVariable Long ID) {
-		CategoryClientDTO dto = service.findByID(ID);
+	public ResponseEntity<CategoryProductDTO> findByID(@PathVariable Long ID) {
+		CategoryProductDTO dto = service.findByID(ID);
 		
 		return ResponseEntity.ok().body(dto);
 	}
 	
 	@PostMapping
-	public ResponseEntity<CategoryClientDTO> insertCategoryClient(@RequestBody CategoryClientDTO catDTO){
-		catDTO = service.insCatClient(catDTO);
+	public ResponseEntity<CategoryProductDTO> insertCategoryProduct(@RequestBody CategoryProductDTO catDTO){
+		catDTO = service.insCatProduct(catDTO);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(catDTO.getID()).toUri();
 		
@@ -50,15 +50,15 @@ public class CategoryClientResource {
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<CategoryClientDTO> updateClient(@PathVariable Long ID, @RequestBody CategoryClientDTO dto) {
-		dto = service.updClient(dto, ID);
+	public ResponseEntity<CategoryProductDTO> updateProduct(@PathVariable Long ID, @RequestBody CategoryProductDTO dto) {
+		dto = service.updProduct(dto, ID);
 		
 		return ResponseEntity.ok().body(dto);
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteClient(@PathVariable Long ID) {
-		service.delClient(ID);
+	public ResponseEntity<Void> deleteProduct(@PathVariable Long ID) {
+		service.delProduct(ID);
 		
 		return ResponseEntity.noContent().build();
 	}
