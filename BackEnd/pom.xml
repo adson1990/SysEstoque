@@ -61,6 +61,14 @@
 		</dependency>
 	</dependencies>
 
+	<repositories> <!-- Solução para o problema de tentar carregar meu projeto em outra máquina Linux e dar erro ao carregar os artefatos do repositório maven-->
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>
+
+
 	<build>
 		<plugins>
 			<plugin>
