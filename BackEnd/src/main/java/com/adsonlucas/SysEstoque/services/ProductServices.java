@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Product;
 import com.adsonlucas.SysEstoque.entitiesDTO.ProductDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -23,6 +24,7 @@ public class ProductServices {
 	
 	@Autowired
 	private ProductRepository productRepository;
+	private Functions function;
 	
 	//CONSULTAS
 	//Todos produtos
@@ -46,11 +48,11 @@ public class ProductServices {
 	// Insert Product
 	@Transactional
 	public ProductDTO insProduct(ProductDTO dto) {
-		Product entity = new Product();
-		copyDTOToEntity(dto, entity);
-		entity = productRepository.save(entity);
+		Product product = new Product();
+		product = function.copyDTOToEntityProduct(dto, product);
+		product = productRepository.save(product);
 		
-		return new ProductDTO(entity);
+		return new ProductDTO(product);
 	}
 	
 	//UPDATES
@@ -59,7 +61,7 @@ public class ProductServices {
 	public ProductDTO updProduct(ProductDTO dto, Long id) {
 		try {
 			Product produto = productRepository.getReferenceById(id);
-			copyDTOToEntity(dto, produto);
+			produto = function.copyDTOToEntityProduct(dto, produto);
 			produto = productRepository.save(produto);
 		
 			return new ProductDTO(produto);
@@ -84,13 +86,6 @@ public class ProductServices {
 			throw new EntidadeNotFoundException("Produto não encontrado com o ID: " + ID);
 		
 		} 
-	}
-	
-	//Métodos customizados
-	private void copyDTOToEntity(ProductDTO dto, Product entity) {
-		
-		entity = new Product(dto);
-
 	}
 
 }

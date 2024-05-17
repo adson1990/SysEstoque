@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.CategoryClient;
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -24,6 +25,8 @@ public class CategoryClientService {
 	
 	@Autowired
 	private CategoryClientRepository repository;
+	
+	private Functions function;
 	
 	@Transactional(readOnly = true)
 	public Page<CategoryClientDTO> findAllPaged(Pageable pageable) {
@@ -43,7 +46,7 @@ public class CategoryClientService {
 	@Transactional
 	public CategoryClientDTO insCatClient(CategoryClientDTO dto) {
 		CategoryClient client = new CategoryClient();
-		copyDTOToEntity(dto, client);
+		client = function.copyDTOToEntityCategoryClient(dto, client);
 		client	=	repository.save(client);
 		
 		return new CategoryClientDTO(client);
@@ -53,7 +56,7 @@ public class CategoryClientService {
 	public CategoryClientDTO updClient(CategoryClientDTO dto, Long id) {
 		try {
 			CategoryClient client = repository.getReferenceById(id);
-			copyDTOToEntity(dto, client);
+			client = function.copyDTOToEntityCategoryClient(dto, client);
 			client = repository.save(client);
 		
 			return new CategoryClientDTO(client);
@@ -73,11 +76,5 @@ public class CategoryClientService {
 			throw new DataBaseException("Violação de integridade do DB ao deletar cliente.");
 		}
 	}
-
 	
-	private void copyDTOToEntity(CategoryClientDTO dto, CategoryClient entity) {
-		
-		entity = new CategoryClient(dto);
-
-	}
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -23,6 +24,7 @@ public class ClientService {
 	
 	@Autowired
 	private ClientRepository clientRepository;
+	private Functions function;
 	
 	//CONSULTAS
 	//Todos clientes
@@ -46,11 +48,11 @@ public class ClientService {
 	// Insert Client
 	@Transactional
 	public ClientDTO insClient(ClientDTO dto) {
-		Client entity = new Client();
-		copyDTOToEntity(dto, entity);
-		entity = clientRepository.save(entity);
+		Client client = new Client();
+		client = function.copyDTOToEntityCLient(dto, client);
+		client = clientRepository.save(client);
 		
-		return new ClientDTO(entity);
+		return new ClientDTO(client);
 	}
 	
 	//UPDATES
@@ -59,7 +61,7 @@ public class ClientService {
 	public ClientDTO updClient(ClientDTO dto, Long id) {
 		try {
 			Client client = clientRepository.getReferenceById(id);
-			copyDTOToEntity(dto, client);
+			client = function.copyDTOToEntityCLient(dto, client);
 			client = clientRepository.save(client);
 		
 			return new ClientDTO(client);
@@ -84,13 +86,6 @@ public class ClientService {
 			throw new EntidadeNotFoundException("Cliente não encontrado com o ID: " + ID);
 		
 		} 
-	}
-	
-	//Métodos customizados
-	private void copyDTOToEntity(ClientDTO dto, Client entity) {
-		
-		entity = new Client(dto);
-
 	}
 
 }

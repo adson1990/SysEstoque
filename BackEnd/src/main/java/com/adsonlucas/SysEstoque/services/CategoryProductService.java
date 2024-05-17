@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.CategoryProduct;
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryProductDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -24,6 +25,7 @@ public class CategoryProductService {
 	
 	@Autowired
 	private CategoryProductRepository repository;
+	private Functions function;
 	
 	@Transactional(readOnly = true)
 	public Page<CategoryProductDTO> findAllPaged(Pageable pageable) {
@@ -43,7 +45,7 @@ public class CategoryProductService {
 	@Transactional
 	public CategoryProductDTO insCatProduct(CategoryProductDTO dto) {
 		CategoryProduct product = new CategoryProduct();
-		copyDTOToEntity(dto, product);
+		product = function.copyDTOToEntityCategoryProduct(dto, product);
 		product	=	repository.save(product);
 		
 		return new CategoryProductDTO(product);
@@ -53,7 +55,7 @@ public class CategoryProductService {
 	public CategoryProductDTO updProduct(CategoryProductDTO dto, Long id) {
 		try {
 			CategoryProduct product = repository.getReferenceById(id);
-			copyDTOToEntity(dto, product);
+			product = function.copyDTOToEntityCategoryProduct(dto, product);
 			product = repository.save(product);
 		
 			return new CategoryProductDTO(product);
@@ -74,10 +76,4 @@ public class CategoryProductService {
 		}
 	}
 
-	
-	private void copyDTOToEntity(CategoryProductDTO dto, CategoryProduct entity) {
-		
-		entity = new CategoryProduct(dto);
-
-	}
 }

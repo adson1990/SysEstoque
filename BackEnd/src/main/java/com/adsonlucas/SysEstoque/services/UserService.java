@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -22,6 +23,7 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	private Functions function;
 	
 	//BUSCA
 	@Transactional(readOnly =true)
@@ -42,7 +44,7 @@ public class UserService {
 	@Transactional
 	public UserDTO instUser(UserDTO dto) {
 		User user = new User();
-		copyDTOToEntity(dto, user);
+		user = function.copyDTOToEntityUser(dto, user);
 		user = userRepository.save(user);
 		
 		return new UserDTO(user);
@@ -52,7 +54,7 @@ public class UserService {
 	public UserDTO updUser(Long ID, UserDTO dto) {
 		try {
 		User user = userRepository.getReferenceById(ID);
-		copyDTOToEntity(dto, user);
+		user = function.copyDTOToEntityUser(dto, user);
 		user = userRepository.save(user);
 		
 		return new UserDTO(user);

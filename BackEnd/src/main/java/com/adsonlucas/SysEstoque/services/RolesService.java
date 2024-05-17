@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -22,6 +23,7 @@ public class RolesService {
 
 	@Autowired
 	private RolesRepository roleRepository;
+	private Functions function;
 	
 	//BUSCA
 	@Transactional(readOnly =true)
@@ -42,7 +44,7 @@ public class RolesService {
 	@Transactional
 	public RolesDTO instRoles(RolesDTO dto) {
 		Roles role = new Roles();
-		copyDTOToEntity(dto, role);
+		role = function.copyDTOToEntityRole(dto, role);
 		role = roleRepository.save(role);
 		
 		return new RolesDTO(role);
@@ -52,7 +54,7 @@ public class RolesService {
 	public RolesDTO updRoles(Long ID, RolesDTO dto) {
 		try {
 		Roles role = roleRepository.getReferenceById(ID);
-		copyDTOToEntity(dto, role);
+		role = function.copyDTOToEntityRole(dto, role);
 		role = roleRepository.save(role);
 		
 		return new RolesDTO(role);
@@ -77,9 +79,5 @@ public class RolesService {
 		
 		} 
 	}
-	
-	private void copyDTOToEntity(RolesDTO dto, Roles entity) {		
-		entity = new Roles(dto);
-	}
-	
+
 }
