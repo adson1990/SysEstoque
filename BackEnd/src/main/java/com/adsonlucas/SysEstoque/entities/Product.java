@@ -28,6 +28,8 @@ public class Product implements Serializable{
 	private Long ID;
 	private String name;
 	private Double price;
+	private String imgUrl;
+	private String description;
 	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private LocalDateTime dtIncluded;
@@ -50,8 +52,10 @@ public class Product implements Serializable{
 	}
 	public Product(ProductDTO productDTO) {
 		this.name = productDTO.getName();
-		this.price = productDTO.getPreco();
-		this.dtIncluded = productDTO.getDtInclusao();
+		this.price = productDTO.getPrice();
+		this.dtIncluded = productDTO.getDtIncluded();
+		this.imgUrl = productDTO.getImgUrl();
+		this.description = productDTO.getDescription();
 	}
 	
 	public Product(ProductDTO produto, Set<CategoryProduct> listCategory) {
@@ -71,19 +75,35 @@ public class Product implements Serializable{
 		this.name = name;
 	}
 
-	public Double getPreco() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPreco(Double preco) {
-		this.price = preco;
+	public void setPrice(Double price) {
+		this.price = price;
 	}
 
-	public LocalDateTime getDtInclusao() {
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public LocalDateTime getDtIncluded() {
 		return dtIncluded;
 	}
 
-	public void setDtInclusao(LocalDateTime dtIncluded) {
+	public void setDtIncluded(LocalDateTime dtIncluded) {
 		this.dtIncluded = dtIncluded;
 	}
 

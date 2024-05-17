@@ -26,6 +26,8 @@ import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
 import com.adsonlucas.SysEstoque.services.ProductServices;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/products")
 public class ProdutoResource {
@@ -58,7 +60,7 @@ public class ProdutoResource {
 	
 	// Insert
 	@PostMapping
-	public ResponseEntity<ProductDTO> insertProduto(@RequestBody ProductDTO dto){
+	public ResponseEntity<ProductDTO> insertProduto(@Valid @RequestBody ProductDTO dto){
 		dto = productService.insProduct(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(dto.getID()).toUri();
@@ -68,7 +70,7 @@ public class ProdutoResource {
 	
 	// Update
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<ProductDTO> updateProduto(@PathVariable Long ID, @RequestBody ProductDTO dto) {
+	public ResponseEntity<ProductDTO> updateProduto(@Valid @PathVariable Long ID, @RequestBody ProductDTO dto) {
 		dto = productService.updProduct(dto, ID);
 		
 		return ResponseEntity.ok().body(dto);

@@ -9,13 +9,24 @@ import java.util.Set;
 import com.adsonlucas.SysEstoque.entities.CategoryProduct;
 import com.adsonlucas.SysEstoque.entities.Product;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 public class ProductDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private Long ID;
+	@Size(min = 5, max = 60, message = "O nome deve ter entre 5 e 60 caracteres.")
+	@NotBlank(message = "Nome não pode ser nulo.")
 	private String name;
+	@Positive(message = "Preço deve ser valor positivo.")
 	private Double price;
+	@PastOrPresent(message = "Data do produto não pode ser posterior a data atual.")
 	private LocalDateTime dtIncluded;
+	private String imgUrl;
+	private String description;
 	
 	private List<CategoryProductDTO> categories = new ArrayList<>();
 	
@@ -33,8 +44,10 @@ public class ProductDTO implements Serializable{
 		super();
 		this.ID = client.getID();
 		this.name = client.getName();
-		this.price = client.getPreco();
-		this.dtIncluded = client.getDtInclusao();
+		this.dtIncluded = client.getDtIncluded();
+		this.price = client.getPrice();
+		this.imgUrl = client.getImgUrl();
+		this.description = client.getDescription();
 	}
 	
 	public ProductDTO(Product entity, Set<CategoryProduct> categories) {
@@ -54,20 +67,36 @@ public class ProductDTO implements Serializable{
 		this.name = name;
 	}
 
-	public Double getPreco() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPreco(Double preco) {
-		this.price = preco;
+	public void setPrice(Double price) {
+		this.price = price;
 	}
 
-	public LocalDateTime getDtInclusao() {
+	public LocalDateTime getDtIncluded() {
 		return dtIncluded;
 	}
 
-	public void setDtInclusao(LocalDateTime dtIncluded) {
+	public void setDtIncluded(LocalDateTime dtIncluded) {
 		this.dtIncluded = dtIncluded;
+	}
+
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	public List<CategoryProductDTO> getCategories() {

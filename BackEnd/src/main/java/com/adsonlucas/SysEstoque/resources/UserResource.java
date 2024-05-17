@@ -22,6 +22,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.services.RolesService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/users")
 public class UserResource {
@@ -53,7 +55,7 @@ public class UserResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<RolesDTO> insertRoles(@RequestBody RolesDTO user){
+	public ResponseEntity<RolesDTO> insertRoles(@Valid @RequestBody RolesDTO user){
 		user = service.instRoles(user);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(user.getID()).toUri();
@@ -62,7 +64,7 @@ public class UserResource {
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<RolesDTO> updRoles(@PathVariable Long ID, @RequestBody RolesDTO dto){
+	public ResponseEntity<RolesDTO> updRoles(@Valid @PathVariable Long ID, @RequestBody RolesDTO dto){
 		RolesDTO user = service.updRoles(ID, dto);
 		
 		return ResponseEntity.ok().body(user);
