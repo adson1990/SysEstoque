@@ -32,7 +32,7 @@ public CategoryProduct copyDTOToEntityCategoryProduct(CategoryProductDTO dto, Ca
 	return entityCategoryProduct = new CategoryProduct(dto);
 	}
 
-public Client copyDTOToEntityCLient(ClientDTO dto, Client entity) {
+public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {
 	
 	return client = new Client(dto);
 	}

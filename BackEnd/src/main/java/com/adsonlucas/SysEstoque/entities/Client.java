@@ -56,8 +56,8 @@ public class Client implements Serializable{
 		this.children = children;
 	}
 	public Client(ClientDTO clientDTO) {
-		this.CPF = clientDTO.getCPF();
 		this.name = clientDTO.getName();
+		this.CPF = clientDTO.getCPF();
 		this.income = clientDTO.getIncome();
 		this.birthDate = clientDTO.getBirthDate();
 		this.children = clientDTO.getChildren();

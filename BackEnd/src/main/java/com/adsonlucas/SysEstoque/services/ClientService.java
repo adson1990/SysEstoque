@@ -49,7 +49,7 @@ public class ClientService {
 	@Transactional
 	public ClientDTO insClient(ClientDTO dto) {
 		Client client = new Client();
-		client = function.copyDTOToEntityCLient(dto, client);
+		client = function.copyDTOToEntityClient(dto, client);
 		client = clientRepository.save(client);
 		
 		return new ClientDTO(client);
@@ -61,7 +61,7 @@ public class ClientService {
 	public ClientDTO updClient(ClientDTO dto, Long id) {
 		try {
 			Client client = clientRepository.getReferenceById(id);
-			client = function.copyDTOToEntityCLient(dto, client);
+			client = function.copyDTOToEntityClient(dto, client);
 			client = clientRepository.save(client);
 		
 			return new ClientDTO(client);

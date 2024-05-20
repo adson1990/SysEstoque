@@ -35,20 +35,22 @@ public class Product implements Serializable{
 	private LocalDateTime dtIncluded;
 	
 	@ManyToMany
-	@JoinTable(name = "tb_produto_categoria",
-			   joinColumns = @JoinColumn(name = "produto_id"),
-			   inverseJoinColumns = @JoinColumn(name = "categoriaProduto_id")
+	@JoinTable(name = "tb_product_category",
+			   joinColumns = @JoinColumn(name = "product_id"),
+			   inverseJoinColumns = @JoinColumn(name = "categoryProduct_id")
 			   )
 	Set<CategoryProduct> categories = new HashSet<>();
 	
 	public Product() {
 	}
 
-	public Product(String name, Double preco, LocalDateTime dtIncluded) {
+	public Product(String name, Double preco, LocalDateTime dtIncluded, String description, String imgUrl) {
 		super();
 		this.name = name;
 		this.price = preco;
 		this.dtIncluded = dtIncluded;
+		this.description = description;
+		this.imgUrl = imgUrl;
 	}
 	public Product(ProductDTO productDTO) {
 		this.name = productDTO.getName();
