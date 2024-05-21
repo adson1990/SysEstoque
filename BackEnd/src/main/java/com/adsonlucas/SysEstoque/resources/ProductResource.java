@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/products")
-public class ProdutoResource {
+public class ProductResource {
 	
 	@Autowired
 	private ProductServices productService;
