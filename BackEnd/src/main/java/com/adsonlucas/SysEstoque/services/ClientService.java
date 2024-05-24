@@ -24,6 +24,8 @@ public class ClientService {
 	
 	@Autowired
 	private ClientRepository clientRepository;
+	
+	@Autowired
 	private Functions function;
 	
 	//CONSULTAS

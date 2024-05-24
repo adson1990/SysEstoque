@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 
@@ -20,6 +22,7 @@ public class UserDTO implements Serializable{
 	@NotBlank(message = "Campo obrigatório")
 	private String nome;
 	private String sobrenome;
+	@Length(min = 5, max = 12)
 	private String senha;
 	@Email(message = "Entrar com e-mail válido")
 	private String email;	

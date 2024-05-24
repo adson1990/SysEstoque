@@ -6,10 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.antlr.v4.runtime.misc.NotNull;
-
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
-import com.adsonlucas.SysEstoque.entities.CategoryClient;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +26,9 @@ public class Client implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long ID;
+	@Column(nullable = false, length = 25)
 	private String name;
+	@Column(nullable = false, unique = true)
 	private String CPF;
 	private Double income;
 	

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,10 @@ import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.services.RolesService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
+@Validated
 @RestController
 @RequestMapping(value = "/users")
 public class UserResource {
@@ -47,7 +51,7 @@ public class UserResource {
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<RolesDTO> findByID(@PathVariable Long ID){
+	public ResponseEntity<RolesDTO> findByID(@PathVariable @NotNull @Positive Long ID){
 		RolesDTO dto = service.findById(ID);
 		
 		
@@ -71,7 +75,7 @@ public class UserResource {
 	}
 	
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> deleteRoles(@PathVariable Long ID) {
+	public ResponseEntity<Void> deleteRoles(@PathVariable @NotNull @Positive Long ID) {
 		service.delRoles(ID);
 		
 		return ResponseEntity.noContent().build();

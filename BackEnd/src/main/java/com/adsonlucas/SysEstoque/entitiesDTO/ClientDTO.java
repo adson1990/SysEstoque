@@ -2,19 +2,26 @@ package com.adsonlucas.SysEstoque.entitiesDTO;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.adsonlucas.SysEstoque.entities.CategoryClient;
 import com.adsonlucas.SysEstoque.entities.Client;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class ClientDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private Long ID;
+	@NotBlank
+	@Size(min = 5, max = 20, message= "Nome deve conter entre 5 e 20 caracteres")
 	private String name;
+	@Length(min = 11, max = 14)
 	private String CPF;
 	private Double income;
 	private Instant birthDate;

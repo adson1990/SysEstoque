@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +28,10 @@ import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
 import com.adsonlucas.SysEstoque.services.ProductServices;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
+@Validated
 @RestController
 @RequestMapping(value = "/products")
 public class ProductResource {
@@ -52,7 +56,7 @@ public class ProductResource {
 	
 	// Select By ID
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<ProductDTO> findProdutoById(@PathVariable Long id){
+	public ResponseEntity<ProductDTO> findProdutoById(@PathVariable @NotNull @Positive Long id){
 		ProductDTO produtoDTO = productService.findById(id);
 	
 		return ResponseEntity.ok().body(produtoDTO);
@@ -78,7 +82,7 @@ public class ProductResource {
 	
 	//DELETE
 	@DeleteMapping(value = "/{ID}")
-	public ResponseEntity<String> deleteProduto(@PathVariable Long ID) {
+	public ResponseEntity<String> deleteProduto(@PathVariable @NotNull @Positive Long ID) {
 		try {
 			productService.delProduct(ID);
 			  return ResponseEntity.ok("Produto com o ID " + ID +" deletado com sucesso!");

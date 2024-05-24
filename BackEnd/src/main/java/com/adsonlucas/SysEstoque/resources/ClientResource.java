@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,11 @@ import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
 import com.adsonlucas.SysEstoque.services.ClientService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+@Validated
 @RestController
 @RequestMapping(value = "/clients")
 public class ClientResource {
@@ -50,7 +56,7 @@ public class ClientResource {
 	
 	// Select By ID
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<ClientDTO> findClientById(@PathVariable Long id){
+	public ResponseEntity<ClientDTO> findClientById(@PathVariable @NotNull @Positive Long id){
 		ClientDTO clientDTO = clientService.findById(id);
 	
 		return ResponseEntity.ok().body(clientDTO);
@@ -58,7 +64,7 @@ public class ClientResource {
 	
 	// Insert
 	@PostMapping
-	public ResponseEntity<ClientDTO> insertClient(@RequestBody ClientDTO dto){
+	public ResponseEntity<ClientDTO> insertClient(@Valid @RequestBody ClientDTO dto){
 		dto = clientService.insClient(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(dto.getID()).toUri();
@@ -68,7 +74,7 @@ public class ClientResource {
 	
 	// Update
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<ClientDTO> updateClient(@PathVariable Long ID, @RequestBody ClientDTO dto) {
+	public ResponseEntity<ClientDTO> updateClient(@Valid @PathVariable Long ID, @RequestBody ClientDTO dto) {
 		dto = clientService.updClient(dto, ID);
 		
 		return ResponseEntity.ok().body(dto);
@@ -76,7 +82,7 @@ public class ClientResource {
 	
 	//DELETE
 	@DeleteMapping(value = "/{ID}")
-	public ResponseEntity<String> deleteClient(@PathVariable Long ID) {
+	public ResponseEntity<String> deleteClient(@PathVariable @NotNull @Positive Long ID) {
 		try {
 			  clientService.delClient(ID);
 			  return ResponseEntity.ok("CLiente com o ID " + ID +" deletado com sucesso!");
