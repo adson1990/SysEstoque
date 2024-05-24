@@ -29,7 +29,7 @@ public class Client implements Serializable{
 	@Column(nullable = false, length = 25)
 	private String name;
 	@Column(nullable = false, unique = true)
-	private String CPF;
+	private String cpf;
 	private Double income;
 	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
@@ -46,17 +46,21 @@ public class Client implements Serializable{
 	public Client() {
 	}
 
-	public Client(String name, String cPF, Double income, Instant birthDate, Integer children) {
+	public Client(String name, String cpf, Double income, Instant birthDate, Integer children) {
 		super();
 		this.name = name;
-		this.CPF = cPF;
+		this.cpf = cpf;
 		this.income = income;
 		this.birthDate = birthDate;
 		this.children = children;
 	}
 	public Client(ClientDTO clientDTO) {
+		
+		if (clientDTO.getID() != null) {
+			this.ID = clientDTO.getID();
+		}
 		this.name = clientDTO.getName();
-		this.CPF = clientDTO.getCPF();
+		this.cpf = clientDTO.getCpf();
 		this.income = clientDTO.getIncome();
 		this.birthDate = clientDTO.getBirthDate();
 		this.children = clientDTO.getChildren();
@@ -70,6 +74,10 @@ public class Client implements Serializable{
 	public Long getID() {
 		return ID;
 	}
+	
+	public void setID(Long ID) {
+		this.ID = ID;
+	}
 
 	public String getName() {
 		return name;
@@ -79,12 +87,12 @@ public class Client implements Serializable{
 		this.name = name;
 	}
 
-	public String getCPF() {
-		return CPF;
+	public String getCpf() {
+		return cpf;
 	}
 
-	public void setCPF(String cPF) {
-		CPF = cPF;
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
 	}
 
 	public Double getIncome() {

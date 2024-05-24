@@ -22,7 +22,7 @@ public class ClientDTO implements Serializable{
 	@Size(min = 5, max = 20, message= "Nome deve conter entre 5 e 20 caracteres")
 	private String name;
 	@Length(min = 11, max = 14)
-	private String CPF;
+	private String cpf;
 	private Double income;
 	private Instant birthDate;
 	private Integer children;
@@ -32,10 +32,10 @@ public class ClientDTO implements Serializable{
 	public ClientDTO() {
 	}
 
-	public ClientDTO(String name, String cPF, Double income, Instant birthDate, Integer children) {
+	public ClientDTO(String name, String cpf, Double income, Instant birthDate, Integer children) {
 		super();
 		this.name = name;
-		this.CPF = cPF;
+		this.cpf = cpf;
 		this.income = income;
 		this.birthDate = birthDate;
 		this.children = children;
@@ -45,7 +45,7 @@ public class ClientDTO implements Serializable{
 		super();
 		this.ID = client.getID();
 		this.name = client.getName();
-		this.CPF = client.getCPF();
+		this.cpf = client.getCpf();
 		this.income = client.getIncome();
 		this.birthDate = client.getBirthDate();
 		this.children = client.getChildren();
@@ -68,12 +68,12 @@ public class ClientDTO implements Serializable{
 		this.name = name;
 	}
 
-	public String getCPF() {
-		return CPF;
+	public String getCpf() {
+		return cpf;
 	}
 
-	public void setCPF(String cPF) {
-		CPF = cPF;
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
 	}
 
 	public Double getIncome() {

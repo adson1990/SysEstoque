@@ -37,7 +37,12 @@ public CategoryProduct copyDTOToEntityCategoryProduct(CategoryProductDTO dto, Ca
 
 public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {
 	
-	return client = new Client(dto);
+	//BeanUtils.copyProperties(dto, entity);
+	
+	entity = new Client(dto);
+	entity.setID(dto.getID());
+	
+	return entity;
 	}
 
 public Product copyDTOToEntityProduct(ProductDTO dto, Product entity) {

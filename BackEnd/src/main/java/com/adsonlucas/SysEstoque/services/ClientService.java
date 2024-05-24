@@ -39,8 +39,8 @@ public class ClientService {
 	
 	// Client By ID
 	@Transactional(readOnly = true)
-	public ClientDTO findById(Long id) {
-		Optional<Client> clientById = clientRepository.findById(id);
+	public ClientDTO findById(Long ID) {
+		Optional<Client> clientById = clientRepository.findById(ID);
 		Client clientEntity = clientById.orElseThrow(() -> new EntidadeNotFoundException("Cliente não encontrado pelo ID informado."));
 		
 		return new ClientDTO(clientEntity, clientEntity.getCategories());
@@ -60,9 +60,10 @@ public class ClientService {
 	//UPDATES
 	//Atualiza cliente
 	@Transactional
-	public ClientDTO updClient(ClientDTO dto, Long id) {
+	public ClientDTO updClient(ClientDTO dto, Long ID) {
 		try {
-			Client client = clientRepository.getReferenceById(id);
+			ClientDTO clientDTO = findById(ID);
+			Client client = new Client(clientDTO);
 			client = function.copyDTOToEntityClient(dto, client);
 			client = clientRepository.save(client);
 		
