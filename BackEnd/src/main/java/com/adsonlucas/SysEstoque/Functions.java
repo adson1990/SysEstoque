@@ -1,5 +1,7 @@
 package com.adsonlucas.SysEstoque;
 
+import org.springframework.stereotype.Component;
+
 import com.adsonlucas.SysEstoque.entities.CategoryClient;
 import com.adsonlucas.SysEstoque.entities.CategoryProduct;
 import com.adsonlucas.SysEstoque.entities.Client;
@@ -13,6 +15,7 @@ import com.adsonlucas.SysEstoque.entitiesDTO.ProductDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 
+@Component
 public class Functions {
 	
 	private CategoryClient entityCategoryClient;
