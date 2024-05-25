@@ -15,9 +15,10 @@ import com.adsonlucas.SysEstoque.entitiesDTO.ProductDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 
+@SuppressWarnings("unused")
 @Component
 public class Functions {
-	
+		
 	private CategoryClient entityCategoryClient;
 	private CategoryProduct entityCategoryProduct;
 	private Client client;
@@ -35,14 +36,10 @@ public CategoryProduct copyDTOToEntityCategoryProduct(CategoryProductDTO dto, Ca
 	return entityCategoryProduct = new CategoryProduct(dto);
 	}
 
-public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {
-	
+public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {	
 	//BeanUtils.copyProperties(dto, entity);
 	
-	entity = new Client(dto);
-	entity.setID(dto.getID());
-	
-	return entity;
+    return entity = new Client(dto, dto.getID());
 	}
 
 public Product copyDTOToEntityProduct(ProductDTO dto, Product entity) {

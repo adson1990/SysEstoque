@@ -2,8 +2,7 @@ package com.adsonlucas.SysEstoque.entitiesDTO;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.validator.constraints.Length;
@@ -27,7 +26,8 @@ public class ClientDTO implements Serializable{
 	private Instant birthDate;
 	private Integer children;
 	
-	private List<CategoryClientDTO> categories = new ArrayList<>();
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Set<CategoryClientDTO> categories = new HashSet();
 	
 	public ClientDTO() {
 	}
@@ -100,11 +100,11 @@ public class ClientDTO implements Serializable{
 		this.children = children;
 	}	
 	
-	public List<CategoryClientDTO> getCategories() {
+	public Set<CategoryClientDTO> getCategories() {
 		return categories;
 	}
 
-	public void setCategories(List<CategoryClientDTO> categories) {
+	public void setCategories(Set<CategoryClientDTO> categories) {
 		this.categories = categories;
 	}
 

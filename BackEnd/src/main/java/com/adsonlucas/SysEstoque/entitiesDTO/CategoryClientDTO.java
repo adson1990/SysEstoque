@@ -29,7 +29,7 @@ public class CategoryClientDTO implements Serializable{
 		return ID;
 	}
 
-	public String getDescrption() {
+	public String getDescription() {
 		return description;
 	}
 

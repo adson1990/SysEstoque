@@ -55,15 +55,21 @@ public class Client implements Serializable{
 		this.children = children;
 	}
 	public Client(ClientDTO clientDTO) {
-		
-		if (clientDTO.getID() != null) {
-			this.ID = clientDTO.getID();
-		}
 		this.name = clientDTO.getName();
 		this.cpf = clientDTO.getCpf();
 		this.income = clientDTO.getIncome();
 		this.birthDate = clientDTO.getBirthDate();
 		this.children = clientDTO.getChildren();
+	}
+	
+	public Client(ClientDTO clientDTO, Long ID) {
+		this(clientDTO);
+		
+		if (ID != null) {
+			this.ID = ID;
+		}
+
+		//clientDTO.getCategories().forEach(cat -> this.categories.add(new CategoryClient(cat.getDescrption())));		
 	}
 	
 	public Client(ClientDTO cliente, Set<CategoryClient> listCategory) {
@@ -73,10 +79,6 @@ public class Client implements Serializable{
 	
 	public Long getID() {
 		return ID;
-	}
-	
-	public void setID(Long ID) {
-		this.ID = ID;
 	}
 
 	public String getName() {
@@ -139,7 +141,4 @@ public class Client implements Serializable{
 		Client other = (Client) obj;
 		return Objects.equals(ID, other.ID);
 	}
-	
-	
-
 }

@@ -36,7 +36,7 @@ public class CategoryClient implements Serializable {
 	
 	public CategoryClient(CategoryClientDTO dto) {
 		super();
-		this.description = dto.getDescrption();
+		this.description = dto.getDescription();
 	}
 
 	public Long getID() {

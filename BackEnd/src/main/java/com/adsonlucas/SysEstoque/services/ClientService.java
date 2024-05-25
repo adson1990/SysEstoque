@@ -63,9 +63,8 @@ public class ClientService {
 	public ClientDTO updClient(ClientDTO dto, Long ID) {
 		try {
 			ClientDTO clientDTO = findById(ID);
-			Client client = new Client(clientDTO);
-			client = function.copyDTOToEntityClient(dto, client);
-			client = clientRepository.save(client);
+			Client client = new Client(dto, clientDTO.getID());
+			clientRepository.save(client);
 		
 			return new ClientDTO(client);
 		}catch(EntityNotFoundException e) {
@@ -80,7 +79,6 @@ public class ClientService {
 
 		if (clientOPT.isPresent()) {
 			try {
-				//this.findById(ID);
 				clientRepository.deleteById(ID);
 			} catch(DataIntegrityViolationException d) {
 				throw new DataBaseException("Violação de integridade do DB.");
