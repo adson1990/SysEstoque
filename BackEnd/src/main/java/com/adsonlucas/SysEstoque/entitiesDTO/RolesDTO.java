@@ -20,9 +20,9 @@ public class RolesDTO implements Serializable{
 		this.authority = authority;
 	}
 
-	public RolesDTO(Roles user) {
-		this.ID = user.getID();
-		this.authority = user.getAuthority();
+	public RolesDTO(Roles role) {
+		this.ID = role.getID();
+		this.authority = role.getAuthority();
 	}
 
 	public String getAuthority() {

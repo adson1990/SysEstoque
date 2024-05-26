@@ -29,14 +29,12 @@ public class Roles implements Serializable{
 	
 	public Roles() {}
 
-	public Roles(Long iD, String authority) {
+	public Roles(String authority) {
 		super();
-		ID = iD;
 		this.authority = authority;
 	}
 
 	public Roles(RolesDTO dto) {
-		this.ID = dto.getID();
 		this.authority = dto.getAuthority();
 	}
 
