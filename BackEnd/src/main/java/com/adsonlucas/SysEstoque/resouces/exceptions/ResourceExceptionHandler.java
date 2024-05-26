@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
+import com.adsonlucas.SysEstoque.exceptions.EntidadeExistenteException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,6 +63,21 @@ public class ResourceExceptionHandler {
 		for (FieldError f : e.getBindingResult().getFieldErrors()) {
 			error.addError(f.getField(), f.getDefaultMessage());
 		}
+		
+		return ResponseEntity.status(status).body(error);
+	}
+	
+	@ExceptionHandler(EntidadeExistenteException.class)
+	public ResponseEntity<StandardError> entityFoundException(EntidadeExistenteException e,
+																	HttpServletRequest request){
+		HttpStatus status = HttpStatus.FOUND;
+		
+		StandardError error = new StandardError();
+		error.setTimeStamp(Instant.now());
+		error.setError("Objeto já existe na base de dados.");
+		error.setMsg(e.getMessage());
+		error.setPath(request.getRequestURI());
+		error.setStatus(status.value());
 		
 		return ResponseEntity.status(status).body(error);
 	}

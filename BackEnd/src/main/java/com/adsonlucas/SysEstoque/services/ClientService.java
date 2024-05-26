@@ -14,6 +14,7 @@ import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
+import com.adsonlucas.SysEstoque.exceptions.EntidadeExistenteException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
 import com.adsonlucas.SysEstoque.repositories.ClientRepository;
 
@@ -50,9 +51,10 @@ public class ClientService {
 	// Insert Client
 	@Transactional
 	public ClientDTO insClient(ClientDTO dto) {
-		Client client = new Client();
-		client = function.copyDTOToEntityClient(dto, client);
-		client = clientRepository.save(client);
+		verificaCliente(dto.getCpf());
+			Client client = new Client();
+			client = function.copyDTOToEntityClient(dto, client);
+			client = clientRepository.save(client);
 		
 		return new ClientDTO(client);
 	}
@@ -61,6 +63,7 @@ public class ClientService {
 	//Atualiza cliente
 	@Transactional
 	public ClientDTO updClient(ClientDTO dto, Long ID) {
+		verificaCliente(dto.getCpf());
 		try {
 			ClientDTO clientDTO = findById(ID);
 			Client client = new Client(dto, clientDTO.getID());
@@ -87,6 +90,16 @@ public class ClientService {
 			throw new EntidadeNotFoundException("Cliente não encontrado com o ID: " + ID);
 		
 		} 
+	}
+	
+	//Métodos customizados
+	
+	//Verificar se já existe cliente antes de inserir ou atualizar.
+	public void verificaCliente(String cpf) {
+		
+		if (clientRepository.findByCpf(cpf).isPresent()) {
+			throw new EntidadeExistenteException("CPF já cadastrado no Banco de Dados.");
+		}
 	}
 
 }

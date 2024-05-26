@@ -127,7 +127,7 @@ public class Client implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(ID);
+		return Objects.hash(ID, cpf);
 	}
 
 	@Override
@@ -139,6 +139,8 @@ public class Client implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Client other = (Client) obj;
-		return Objects.equals(ID, other.ID);
+		return Objects.equals(ID, other.ID) && Objects.equals(cpf, other.cpf);
 	}
+	
+	
 }
