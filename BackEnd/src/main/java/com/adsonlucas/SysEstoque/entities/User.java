@@ -22,7 +22,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_usuario")
+@Table(name = "tb_user")
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -55,10 +55,9 @@ public class User implements Serializable {
 	//CONSTRUTORES	
 	public User() {}
 
-	public User(Long ID, String nome, String sobrenome, String senha, String email, Integer idade, String foto,
+	public User(String nome, String sobrenome, String senha, String email, Integer idade, String foto,
 			LocalDate dt_nascimento) {
 		super();
-		this.ID = ID;
 		this.nome = nome;
 		this.sobrenome = sobrenome;
 		this.senha = senha;
@@ -70,7 +69,6 @@ public class User implements Serializable {
 	
 	public User(UserDTO dto) {
 		super();
-		this.ID = dto.getID();
 		this.nome = dto.getNome();
 		this.sobrenome = dto.getSobrenome();
 		this.senha = dto.getSenha();
@@ -78,6 +76,20 @@ public class User implements Serializable {
 		this.idade = dto.getIdade();
 		this.foto = dto.getFoto();
 		this.dt_nascimento = dto.getDt_nascimento();
+	}
+	
+	public User(UserDTO dto, Set<Roles> listRoles) {
+		this(dto);
+		
+		listRoles.forEach(rol -> this.roles.add(new Roles(rol.getAuthority())));
+	}
+	
+	public User(UserDTO dto, Long ID) {
+		this(dto);
+		
+		if (ID != null) {
+			this.ID = ID;
+		}
 	}
 
 	//MÉTODOS
@@ -160,10 +172,6 @@ public class User implements Serializable {
 
 	public Set<Roles> getRoles() {
 		return roles;
-	}
-
-	public void setRoles(Set<Roles> roles) {
-		this.roles = roles;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
 	private Functions function;
 	
 	//BUSCA
@@ -52,9 +53,10 @@ public class UserService {
 	
 	@Transactional
 	public UserDTO updUser(Long ID, UserDTO dto) {
-		try {
-		User user = userRepository.getReferenceById(ID);
-		user = function.copyDTOToEntityUser(dto, user);
+		try {		
+		User user = new User(findById(ID));
+		user = new User(dto, ID);
+		
 		user = userRepository.save(user);
 		
 		return new UserDTO(user);
@@ -65,11 +67,10 @@ public class UserService {
 	
 	@Transactional
 	public void delUser(Long ID) {
-		Optional<User> clientOPT = userRepository.findById(ID);
+		Optional<User> userOPT = userRepository.findById(ID);
 
-		if (clientOPT.isPresent()) {
+		if (userOPT.isPresent()) {
 			try {
-				//this.findById(ID);
 				userRepository.deleteById(ID);
 			} catch(DataIntegrityViolationException d) {
 				throw new DataBaseException("Violação de integridade do DB.");
@@ -78,10 +79,5 @@ public class UserService {
 			throw new EntidadeNotFoundException("Usuário não encontrado com o ID: " + ID);
 		
 		} 
-	}
-	
-	private void copyDTOToEntity(UserDTO dto, User entity) {		
-		entity = new User(dto);
-	}
-	
+	}	
 }

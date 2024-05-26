@@ -36,10 +36,10 @@ public class UserDTO implements Serializable{
 	
 	public UserDTO() {}
 	
-	public UserDTO(Long iD, String nome, String sobrenome, String senha, String email, Integer idade, String foto,
+	public UserDTO(Long id, String nome, String sobrenome, String senha, String email, Integer idade, String foto,
 			LocalDate dt_nascimento) {
 		super();
-		ID = iD;
+		ID = id;
 		this.nome = nome;
 		this.sobrenome = sobrenome;
 		this.senha = senha;
@@ -119,7 +119,5 @@ public class UserDTO implements Serializable{
 
 	public void setDt_nascimento(LocalDate dt_nascimento) {
 		this.dt_nascimento = dt_nascimento;
-	}	
-	
-	
+	}		
 }

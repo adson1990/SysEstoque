@@ -29,7 +29,8 @@ public class ClientService {
 	@Autowired
 	private Functions function;
 	
-	//CONSULTAS
+	//CRUD
+	
 	//Todos clientes
 	@Transactional(readOnly = true)
 	public Page<ClientDTO> findAllPages(PageRequest pageRequest){
@@ -47,7 +48,6 @@ public class ClientService {
 		return new ClientDTO(clientEntity, clientEntity.getCategories());
 	}
 	
-	//INSERTS
 	// Insert Client
 	@Transactional
 	public ClientDTO insClient(ClientDTO dto) {
@@ -75,7 +75,6 @@ public class ClientService {
 		}
 	}
 	
-	//DELETES
 	//Apaga Cliente
 	public void delClient(Long ID) {
 		Optional<Client> clientOPT = clientRepository.findById(ID);

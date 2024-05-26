@@ -85,7 +85,7 @@ public class ClientResource {
 	public ResponseEntity<String> deleteClient(@PathVariable @NotNull @Positive Long ID) {
 		try {
 			  clientService.delClient(ID);
-			  return ResponseEntity.ok("CLiente com o ID " + ID +" deletado com sucesso!");
+			  return ResponseEntity.ok("Cliente com o ID " + ID +" deletado com sucesso!");
 		}catch(EntidadeNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
 		}catch (DataIntegrityViolationException d) {
