@@ -37,8 +37,8 @@ public class ProductServices {
 	
 	// Product By ID
 	@Transactional(readOnly = true)
-	public ProductDTO findById(Long id) {
-		Optional<Product> produtoById = productRepository.findById(id);
+	public ProductDTO findById(Long ID) {
+		Optional<Product> produtoById = productRepository.findById(ID);
 		Product productEntity = produtoById.orElseThrow(() -> new EntidadeNotFoundException("Produto não encontrado pelo ID informado."));
 		
 		return new ProductDTO(productEntity, productEntity.getCategories());
@@ -58,11 +58,11 @@ public class ProductServices {
 	//UPDATES
 	//Atualiza produto
 	@Transactional
-	public ProductDTO updProduct(ProductDTO dto, Long id) {
+	public ProductDTO updProduct(ProductDTO dto, Long ID) {
 		try {
-			Product produto = productRepository.getReferenceById(id);
-			produto = function.copyDTOToEntityProduct(dto, produto);
-			produto = productRepository.save(produto);
+			ProductDTO produtoDTO = findById(ID);
+			Product produto = new Product(dto, produtoDTO.getID());
+			productRepository.save(produto);
 		
 			return new ProductDTO(produto);
 		}catch(EntityNotFoundException e) {

@@ -65,6 +65,14 @@ public class Product implements Serializable{
 		listCategory.forEach(cat -> this.categories.add(new CategoryProduct(cat.getDescription())));
 	}
 	
+	public Product(ProductDTO produto, Long ID) {
+		this(produto);
+		
+		if (ID != null) {
+		  this.ID = ID;
+		}
+	}
+	
 	public Long getID() {
 		return ID;
 	}

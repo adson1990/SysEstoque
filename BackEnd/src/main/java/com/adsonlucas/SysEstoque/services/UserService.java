@@ -54,10 +54,10 @@ public class UserService {
 	@Transactional
 	public UserDTO updUser(Long ID, UserDTO dto) {
 		try {		
-		User user = new User(findById(ID));
-		user = new User(dto, ID);
+		UserDTO userDTO = findById(ID);
+		User user = new User(dto, userDTO.getID());
 		
-		user = userRepository.save(user);
+		userRepository.save(user);
 		
 		return new UserDTO(user);
 		}catch(EntityNotFoundException e) {

@@ -33,9 +33,9 @@ public class RolesResource {
 	@GetMapping	
 	public ResponseEntity<Page<RolesDTO>> findAll(
 	@RequestParam(value = "page", defaultValue = "0")	Integer page,
-	@RequestParam(value = "linesPerPage", defaultValue = "5") Integer linesPerPage,
+	@RequestParam(value = "linesPerPage", defaultValue = "4") Integer linesPerPage,
 	@RequestParam(value = "direction", defaultValue = "ASC") String direction,
-	@RequestParam(value = "OrderBy", defaultValue = "name") String OrderBy
+	@RequestParam(value = "OrderBy", defaultValue = "ID") String OrderBy
 	){
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), OrderBy);
 		
@@ -44,7 +44,7 @@ public class RolesResource {
 		return ResponseEntity.ok().body(list);
 	}
 	
-	@GetMapping(value = "/{id}")
+	@GetMapping(value = "/{ID}")
 	public ResponseEntity<RolesDTO> findByID(@PathVariable Long ID){
 		RolesDTO dto = service.findById(ID);
 		
@@ -61,14 +61,14 @@ public class RolesResource {
 		return ResponseEntity.created(uri).body(role);
 	}
 	
-	@PutMapping(value = "/{id}")
+	@PutMapping(value = "/{ID}")
 	public ResponseEntity<RolesDTO> updRoles(@PathVariable Long ID, @RequestBody RolesDTO dto){
 		RolesDTO role = service.updRoles(ID, dto);
 		
 		return ResponseEntity.ok().body(role);
 	}
 	
-	@DeleteMapping(value = "/{id}")
+	@DeleteMapping(value = "/{ID}")
 	public ResponseEntity<Void> deleteRoles(@PathVariable Long ID) {
 		service.delRoles(ID);
 		

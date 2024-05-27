@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.adsonlucas.SysEstoque.entities.CategoryProduct;
 import com.adsonlucas.SysEstoque.entities.Product;
 
@@ -18,7 +20,7 @@ public class ProductDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private Long ID;
-	@Size(min = 5, max = 60, message = "O nome deve ter entre 5 e 60 caracteres.")
+	@Size(min = 5, max = 15, message = "O nome deve ter entre 5 e 60 caracteres.")
 	@NotBlank(message = "Nome não pode ser nulo.")
 	private String name;
 	@Positive(message = "Preço deve ser valor positivo.")
@@ -26,6 +28,7 @@ public class ProductDTO implements Serializable{
 	@PastOrPresent(message = "Data do produto não pode ser posterior a data atual.")
 	private LocalDateTime dtIncluded;
 	private String imgUrl;
+	@Length(max = 50, message = "Descrição deve conter no máximo 50 caracteres.")
 	private String description;
 	
 	private List<CategoryProductDTO> categories = new ArrayList<>();

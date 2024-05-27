@@ -55,9 +55,9 @@ public class ProductResource {
 	}
 	
 	// Select By ID
-	@GetMapping(value = "/{id}")
-	public ResponseEntity<ProductDTO> findProdutoById(@PathVariable @NotNull @Positive Long id){
-		ProductDTO produtoDTO = productService.findById(id);
+	@GetMapping(value = "/{ID}")
+	public ResponseEntity<ProductDTO> findProdutoById(@PathVariable @NotNull @Positive Long ID){
+		ProductDTO produtoDTO = productService.findById(ID);
 	
 		return ResponseEntity.ok().body(produtoDTO);
 	}
@@ -73,7 +73,7 @@ public class ProductResource {
 	}
 	
 	// Update
-	@PutMapping(value = "/{id}")
+	@PutMapping(value = "/{ID}")
 	public ResponseEntity<ProductDTO> updateProduto(@Valid @PathVariable Long ID, @RequestBody ProductDTO dto) {
 		dto = productService.updProduct(dto, ID);
 		

@@ -1,5 +1,8 @@
 package com.adsonlucas.SysEstoque;
 
+import java.time.LocalDateTime;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import com.adsonlucas.SysEstoque.entities.CategoryClient;
@@ -37,14 +40,18 @@ public CategoryProduct copyDTOToEntityCategoryProduct(CategoryProductDTO dto, Ca
 	}
 
 public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {	
-	//BeanUtils.copyProperties(dto, entity);
+	BeanUtils.copyProperties(dto, entity);
 	
-    return entity = new Client(dto, dto.getID());
+	return entity;
+	
+    //return entity = new Client(dto, entity.getID());
 	}
 
 public Product copyDTOToEntityProduct(ProductDTO dto, Product entity) {
+	BeanUtils.copyProperties(dto, entity);
+	entity.setDtIncluded(LocalDateTime.now());
 	
-	return product = new Product(dto);
+	return entity;
 	}
 
 public Roles copyDTOToEntityRole(RolesDTO dto, Roles entity) {		
@@ -52,7 +59,9 @@ public Roles copyDTOToEntityRole(RolesDTO dto, Roles entity) {
 	}
 
 public User copyDTOToEntityUser(UserDTO dto, User entity) {		
-	return entity = new User(dto);
+	BeanUtils.copyProperties(dto, entity);
+	
+	return entity;
 	}
 
 }
