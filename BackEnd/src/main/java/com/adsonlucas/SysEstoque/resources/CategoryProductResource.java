@@ -33,7 +33,7 @@ public class CategoryProductResource {
 		return ResponseEntity.ok().body(list);
 	}
 	
-	@GetMapping(value = "/{id}")
+	@GetMapping(value = "/{ID}")
 	public ResponseEntity<CategoryProductDTO> findByID(@PathVariable Long ID) {
 		CategoryProductDTO dto = service.findByID(ID);
 		
@@ -43,20 +43,20 @@ public class CategoryProductResource {
 	@PostMapping
 	public ResponseEntity<CategoryProductDTO> insertCategoryProduct(@RequestBody CategoryProductDTO catDTO){
 		catDTO = service.insCatProduct(catDTO);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{ID}")
 				.buildAndExpand(catDTO.getID()).toUri();
 		
 		return ResponseEntity.created(uri).body(catDTO);
 	}
 	
-	@PutMapping(value = "/{id}")
+	@PutMapping(value = "/{ID}")
 	public ResponseEntity<CategoryProductDTO> updateProduct(@PathVariable Long ID, @RequestBody CategoryProductDTO dto) {
 		dto = service.updProduct(dto, ID);
 		
 		return ResponseEntity.ok().body(dto);
 	}
 	
-	@DeleteMapping(value = "/{id}")
+	@DeleteMapping(value = "/{ID}")
 	public ResponseEntity<Void> deleteProduct(@PathVariable Long ID) {
 		service.delProduct(ID);
 		

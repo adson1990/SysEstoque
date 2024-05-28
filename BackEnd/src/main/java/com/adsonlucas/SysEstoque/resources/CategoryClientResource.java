@@ -33,7 +33,7 @@ public class CategoryClientResource {
 		return ResponseEntity.ok().body(list);
 	}
 	
-	@GetMapping(value = "/{id}")
+	@GetMapping(value = "/{ID}")
 	public ResponseEntity<CategoryClientDTO> findByID(@PathVariable Long ID) {
 		CategoryClientDTO dto = service.findByID(ID);
 		
@@ -43,20 +43,20 @@ public class CategoryClientResource {
 	@PostMapping
 	public ResponseEntity<CategoryClientDTO> insertCategoryClient(@RequestBody CategoryClientDTO catDTO){
 		catDTO = service.insCatClient(catDTO);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{ID}")
 				.buildAndExpand(catDTO.getID()).toUri();
 		
 		return ResponseEntity.created(uri).body(catDTO);
 	}
 	
-	@PutMapping(value = "/{id}")
+	@PutMapping(value = "/{ID}")
 	public ResponseEntity<CategoryClientDTO> updateClient(@PathVariable Long ID, @RequestBody CategoryClientDTO dto) {
 		dto = service.updClient(dto, ID);
 		
 		return ResponseEntity.ok().body(dto);
 	}
 	
-	@DeleteMapping(value = "/{id}")
+	@DeleteMapping(value = "/{ID}")
 	public ResponseEntity<Void> deleteClient(@PathVariable Long ID) {
 		service.delClient(ID);
 		

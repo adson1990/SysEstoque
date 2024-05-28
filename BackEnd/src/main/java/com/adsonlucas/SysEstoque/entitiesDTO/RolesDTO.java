@@ -5,10 +5,13 @@ import java.util.Objects;
 
 import com.adsonlucas.SysEstoque.entities.Roles;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class RolesDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private Long ID;
+	@NotBlank(message = "Insira um título para essa regra.")
 	private String authority;
 	
 	public RolesDTO () {

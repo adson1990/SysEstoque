@@ -1,12 +1,10 @@
 package com.adsonlucas.SysEstoque.resources; 
 
-
 import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.services.RolesService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/roles")
@@ -31,15 +30,10 @@ public class RolesResource {
 	
 	//BUSCA
 	@GetMapping	
-	public ResponseEntity<Page<RolesDTO>> findAll(
-	@RequestParam(value = "page", defaultValue = "0")	Integer page,
-	@RequestParam(value = "linesPerPage", defaultValue = "4") Integer linesPerPage,
-	@RequestParam(value = "direction", defaultValue = "ASC") String direction,
-	@RequestParam(value = "OrderBy", defaultValue = "ID") String OrderBy
-	){
-		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), OrderBy);
+	public ResponseEntity<Page<RolesDTO>> findAll(Pageable pageable){
+		// parâmetros: page, size, sort 
 		
-		Page<RolesDTO> list = service.findAllPages(pageRequest);
+		Page<RolesDTO> list = service.findAllPages(pageable);
 		
 		return ResponseEntity.ok().body(list);
 	}
@@ -53,7 +47,7 @@ public class RolesResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<RolesDTO> insertRoles(@RequestBody RolesDTO role){
+	public ResponseEntity<RolesDTO> insertRoles(@Valid @RequestBody RolesDTO role){
 		role = service.instRoles(role);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(role.getID()).toUri();
@@ -62,7 +56,7 @@ public class RolesResource {
 	}
 	
 	@PutMapping(value = "/{ID}")
-	public ResponseEntity<RolesDTO> updRoles(@PathVariable Long ID, @RequestBody RolesDTO dto){
+	public ResponseEntity<RolesDTO> updRoles(@Valid @PathVariable Long ID, @RequestBody RolesDTO dto){
 		RolesDTO role = service.updRoles(ID, dto);
 		
 		return ResponseEntity.ok().body(role);
