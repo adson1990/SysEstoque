@@ -43,14 +43,14 @@ public class ProductDTO implements Serializable{
 		this.dtIncluded = dtIncluded;
 	}
 
-	public ProductDTO(Product client) {
+	public ProductDTO(Product product) {
 		super();
-		this.ID = client.getID();
-		this.name = client.getName();
-		this.dtIncluded = client.getDtIncluded();
-		this.price = client.getPrice();
-		this.imgUrl = client.getImgUrl();
-		this.description = client.getDescription();
+		this.ID = product.getID();
+		this.name = product.getName();
+		this.dtIncluded = product.getDtIncluded();
+		this.price = product.getPrice();
+		this.imgUrl = product.getImgUrl();
+		this.description = product.getDescription();
 	}
 	
 	public ProductDTO(Product entity, Set<CategoryProduct> categories) {

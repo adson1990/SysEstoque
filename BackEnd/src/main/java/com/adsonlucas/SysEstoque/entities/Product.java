@@ -55,7 +55,7 @@ public class Product implements Serializable{
 	public Product(ProductDTO productDTO) {
 		this.name = productDTO.getName();
 		this.price = productDTO.getPrice();
-		this.dtIncluded = productDTO.getDtIncluded();
+		this.dtIncluded = LocalDateTime.now();
 		this.imgUrl = productDTO.getImgUrl();
 		this.description = productDTO.getDescription();
 	}

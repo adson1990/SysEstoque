@@ -48,10 +48,9 @@ public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {
 	}
 
 public Product copyDTOToEntityProduct(ProductDTO dto, Product entity) {
-	BeanUtils.copyProperties(dto, entity);
-	entity.setDtIncluded(LocalDateTime.now());
+	//BeanUtils.copyProperties(dto, entity);
 	
-	return entity;
+	return entity = new Product(dto);
 	}
 
 public Roles copyDTOToEntityRole(RolesDTO dto, Roles entity) {		

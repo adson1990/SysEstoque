@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.adsonlucas.SysEstoque.Functions;
+//import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Product;
 import com.adsonlucas.SysEstoque.entitiesDTO.ProductDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -24,9 +24,8 @@ public class ProductServices {
 	
 	@Autowired
 	private ProductRepository productRepository;
-	private Functions function;
+	//private Functions function;
 	
-	//CONSULTAS
 	//Todos produtos
 	@Transactional(readOnly = true)
 	public Page<ProductDTO> findAllPages(PageRequest pageRequest){
@@ -44,18 +43,16 @@ public class ProductServices {
 		return new ProductDTO(productEntity, productEntity.getCategories());
 	}
 	
-	//INSERTS
 	// Insert Product
 	@Transactional
 	public ProductDTO insProduct(ProductDTO dto) {
-		Product product = new Product();
-		product = function.copyDTOToEntityProduct(dto, product);
+		Product product = new Product(dto);
+		//product = function.copyDTOToEntityProduct(dto, product);
 		product = productRepository.save(product);
 		
 		return new ProductDTO(product);
 	}
 	
-	//UPDATES
 	//Atualiza produto
 	@Transactional
 	public ProductDTO updProduct(ProductDTO dto, Long ID) {
@@ -70,7 +67,6 @@ public class ProductServices {
 		}
 	}
 	
-	//DELETES
 	//Apaga Producte
 	public void delProduct(Long ID) {
 		Optional<Product> productOPT = productRepository.findById(ID);
