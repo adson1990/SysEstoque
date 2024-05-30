@@ -2,10 +2,15 @@ package com.adsonlucas.SysEstoque.services;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +24,10 @@ import com.adsonlucas.SysEstoque.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService{
 
+	private static Logger logger = LoggerFactory.getLogger(UserService.class);
+	
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -79,5 +86,18 @@ public class UserService {
 			throw new EntidadeNotFoundException("Usuário não encontrado com o ID: " + ID);
 		
 		} 
+	}
+
+	// Verificação de acesso ao sistema UserDetailsService
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = userRepository.findByEmail(username);
+		
+		if (user == null) {
+			logger.error("User not found: " + username);
+			throw new UsernameNotFoundException("Email não encontrado.");
+		}
+		logger.info("User found: " + username);
+		return user;
 	}	
 }
