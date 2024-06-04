@@ -15,8 +15,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,7 +53,7 @@ public class User implements UserDetails, Serializable {
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant updateAt;
 	
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_user_role",
 			   joinColumns = @JoinColumn(name = "user_id"),
 			   inverseJoinColumns = @JoinColumn(name = "role_id")

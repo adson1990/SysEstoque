@@ -8,8 +8,10 @@ import java.util.Set;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,7 +38,7 @@ public class Client implements Serializable{
 	private Instant birthDate;
 	private Integer children;
 	
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_client_category",
 			   joinColumns = @JoinColumn(name = "client_id"),
 			   inverseJoinColumns = @JoinColumn(name = "categoryclient_id")

@@ -8,8 +8,10 @@ import java.util.Set;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.ProductDTO;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,7 +36,7 @@ public class Product implements Serializable{
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private LocalDateTime dtIncluded;
 	
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_product_category",
 			   joinColumns = @JoinColumn(name = "product_id"),
 			   inverseJoinColumns = @JoinColumn(name = "categoryProduct_id")
