@@ -15,9 +15,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.adsonlucas.SysEstoque.services.UserService;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 
 @Configuration
 @EnableWebSecurity
@@ -43,9 +51,9 @@ public class WebSecurityConfig {
 		
 		return http.build();
 	}
-    
+
     @Bean
-    public PasswordEncoder passEncoder() {
+    BCryptPasswordEncoder passEncoder() {
     	return new BCryptPasswordEncoder();
     }
     
@@ -58,6 +66,19 @@ public class WebSecurityConfig {
     			.userDetailsService(service)
     			.passwordEncoder(encoder)
     			.and().build();
+    } 
+
+    @Bean
+    JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withPublicKey(this.publicKey).build(); // fará a descriptografia quando receber a requisição
+    }
+
+    @Bean
+    JwtEncoder jwtEncoder() {
+    	JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
+    	var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+    	
+    	return new NimbusJwtEncoder(jwks);
     }
 	
 }
