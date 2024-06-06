@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 
 import jakarta.persistence.CascadeType;
@@ -180,6 +182,10 @@ public class User implements UserDetails, Serializable {
 
 	public Set<Roles> getRoles() {
 		return roles;
+	}	
+
+	public void setRoles(Set<Roles> roles) {
+		this.roles = roles;
 	}
 
 	@Override
@@ -208,8 +214,7 @@ public class User implements UserDetails, Serializable {
 
 	@Override
 	public String getPassword() {
-		// TODO Auto-generated method stub
-		return null;
+		return senha;
 	}
 
 	@Override
@@ -235,6 +240,11 @@ public class User implements UserDetails, Serializable {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+		passwordEncoder.matches(loginRequest.password(), this.senha);
+		return false;
 	}
 
 }

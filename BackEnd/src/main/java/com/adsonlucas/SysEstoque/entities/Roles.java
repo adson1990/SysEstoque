@@ -49,6 +49,21 @@ public class Roles implements Serializable{
 	public void setAuthority(String authority) {
 		this.authority = authority;
 	}
+	
+	public enum Values{
+		ADMIN(1L),
+		BASIC(2L);		
+		
+		long roleId;
+		
+		Values(long roleId){
+			this.roleId = roleId;
+		}
+		
+		public long getRoleId() {
+			return roleId;
+		}
+	}
 
 	@Override
 	public int hashCode() {
