@@ -1,5 +1,7 @@
 package com.adsonlucas.SysEstoque.config;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 
 import javax.management.relation.Role;
@@ -54,10 +56,11 @@ public class AdminUserConfig implements CommandLineRunner {
 									 var user = new User();
 									 user.setNome("admin");
 									 user.setSobrenome("");
-									 user.setEmail("");
-									 user.setIdade(00);
+									 user.setEmail("admin@exemplo.com.br");
+									 user.setIdade(01);
 									 user.setFoto("");
-									 user.setDt_nascimento(null);
+									 LocalDate dtNascimento = LocalDate.of(1900, 01, 01);
+									 user.setDt_nascimento(dtNascimento);
 									 user.setSenha(passwordEncoder.encode("123456"));
 									 user.setRoles(Set.of(roleAdmin));
 									 userRepository.save(user);

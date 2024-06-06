@@ -51,7 +51,7 @@ public class TokenController {
 				 	  .expiresAt(now.plusSeconds(expiresIn))
 				 	  .build();
 		 
-		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // utilizando chave priv para criptografar
 		 
 		 
 		 return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));

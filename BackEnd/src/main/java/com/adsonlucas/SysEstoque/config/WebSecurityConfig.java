@@ -74,7 +74,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    JwtEncoder jwtEncoder() {
+    JwtEncoder jwtEncoder() { // criptografa as requisições
     	JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
     	var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
     	
