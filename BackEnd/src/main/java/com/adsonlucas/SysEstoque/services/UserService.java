@@ -90,14 +90,16 @@ public class UserService implements UserDetailsService{
 
 	// Verificação de acesso ao sistema UserDetailsService
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByEmail(username);
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {		
+		
+		var user = userRepository.findByNome(username);
 		
 		if (user == null) {
 			logger.error("User not found: " + username);
-			throw new UsernameNotFoundException("Email não encontrado.");
+			throw new UsernameNotFoundException("Usuário não encontrado.");
 		}
 		logger.info("User found: " + username);
-		return user;
+	//	User user2 = new User(user.get());
+		return null;
 	}	
 }
