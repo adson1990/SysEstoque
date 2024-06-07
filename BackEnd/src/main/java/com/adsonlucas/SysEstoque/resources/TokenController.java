@@ -37,21 +37,22 @@ public class TokenController {
 		
 		var user = userRepository.findByNome(loginRequest.username());
 		
-		 if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {
+		 if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) { // verifica se user e pass estão corretos
 			 throw new BadCredentialsException("user is invalid!");
 		 }
 		 
 		 var now = Instant.now();
 		 var expiresIn = 300L;
 		 
+		 //configuração de atributos do JSON
 		 var claims = JwtClaimsSet.builder()
-				 	  .issuer("myBackend")
-				 	  .subject(user.get().getID().toString())
-				 	  .issuedAt(now)
-				 	  .expiresAt(now.plusSeconds(expiresIn))
+				 	  .issuer("myBackend") // quem está gerando o token
+				 	  .subject(user.get().getID().toString()) //usuário quem é 
+				 	  .issuedAt(now) // data de emissão do token
+				 	  .expiresAt(now.plusSeconds(expiresIn)) // tempo de expiração
 				 	  .build();
 		 
-		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // utilizando chave priv para criptografar
+		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
 		 
 		 
 		 return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));

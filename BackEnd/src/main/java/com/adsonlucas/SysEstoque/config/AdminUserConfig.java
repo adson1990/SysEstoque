@@ -1,10 +1,7 @@
 package com.adsonlucas.SysEstoque.config;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Set;
-
-import javax.management.relation.Role;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -46,7 +43,14 @@ public class AdminUserConfig implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) throws Exception {
 		
-		var roleAdmin = rolesRepository.findByAuthority(Roles.Values.ADMIN.name());
+		var roleAdminOptional = rolesRepository.findByAuthority(Roles.Values.ADMIN.name()); //Busca se já existe a role admin no DB
+		Roles roleAdmin;
+		if (roleAdminOptional == null) {
+			roleAdmin = new Roles(Roles.Values.ADMIN.name()); // caso não exista cria a rola admin
+			rolesRepository.save(roleAdmin);
+		} else {
+			roleAdmin = roleAdminOptional;
+		}
 		
 		var userAdmin = userRepository.findByNome("admin");
 		

@@ -6,6 +6,7 @@ import java.security.interfaces.RSAPublicKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -37,18 +38,28 @@ public class WebSecurityConfig {
 	
 	@Value("${jwt.private.key}")
 	private RSAPrivateKey privateKey;
+	
+	@Bean
+    @Order(1) // priorizar a config do consle h2
+    SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/h2-console/**") // aplicar essas configs apenas para URLs que começam com /h2-console/
+            .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll()) // permitir todas as requisições
+            .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));// configurar as opções de frame para permitir o carregamento do console h2
+
+        return http.build();
+    }
 
     @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		
 		http
-			.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated()) //Todas as requisições devem ser autenticadas.
-			.csrf(csrf -> csrf.disable()) //vulnerabilidade proposta para facilitar os testes, nunca subir em produção
-			.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) //configuração padrão de autenticação com JWT
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // não precisa guardar nada em sessão
-			
-			;
-		
+		.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated()) //Todas as requisições devem ser autenticadas.
+		.csrf(csrf -> csrf.disable()) //vulnerabilidade proposta para facilitar os testes, nunca subir em produção
+		.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) //configuração padrão de autenticação com JWT
+		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // não precisa guardar nada em sessão		
+		;
 		return http.build();
 	}
 
