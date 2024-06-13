@@ -3,12 +3,12 @@ package com.adsonlucas.SysEstoque.config;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -33,64 +33,91 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
-	
+
 	@Value("${jwt.public.key}")
 	private RSAPublicKey publicKey;
-	
+
 	@Value("${jwt.private.key}")
 	private RSAPrivateKey privateKey;
+
+	private UserDetailsService userDetailsService;
+
+	@Lazy // inicializa apenas quando for realmente necessária, quebrando a referência
+			// circular.
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public WebSecurityConfig(UserDetailsService userDetailsService) {
+		this.userDetailsService = userDetailsService;
+	}
+
+	public WebSecurityConfig(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+		super();
+		this.userDetailsService = userDetailsService;
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+	}
+
+	@Bean
+	SecurityFilterChain configure(HttpSecurity http) throws Exception {
+
+		http.authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/login")
+				.permitAll() // permitir todos os tipos de requisição de login
+				.anyRequest().authenticated()) // Todas as requisições devem ser autenticadas.
+				.csrf(csrf -> csrf.disable()) // vulnerabilidade proposta para facilitar os testes, nunca subir em produção
+				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) // configuração padrão de autenticação com JWT
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // não precisa guardar nada em sessão																												
+		;
+		return http.build();
+	}
 	
 	@Bean
-    @Order(1) // priorizar a config do consle h2
-    SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/h2-console/**") // aplicar essas configs apenas para URLs que começam com /h2-console/
-            .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll()) // permitir todas as requisições
-            .csrf(csrf -> csrf.disable())
-            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));// configurar as opções de frame para permitir o carregamento do console h2
+            .authorizeHttpRequests((requests) -> requests
+                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .formLogin((form) -> form
+                .loginPage("/login")
+                .permitAll()
+            )
+            .httpBasic(Customizer.withDefaults()) // Mantém a configuração padrão para httpBasic
+            .csrf(csrf -> csrf.disable()) // Desabilita CSRF
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // Desabilita frameOptions para o H2 console
 
         return http.build();
     }
 
-    @Bean
-    SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		
-		http
-		.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(HttpMethod.POST, "/login").permitAll() //permitir todos os tipos de requisição de login
-				.anyRequest().authenticated()) //Todas as requisições devem ser autenticadas.
-		.csrf(csrf -> csrf.disable()) //vulnerabilidade proposta para facilitar os testes, nunca subir em produção
-		.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) //configuração padrão de autenticação com JWT
-		.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // não precisa guardar nada em sessão		
-		;
-		return http.build();
+	@Bean
+	BCryptPasswordEncoder passEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
-    @Bean
-    BCryptPasswordEncoder passEncoder() {
-    	return new BCryptPasswordEncoder();
-    }
-    
-    @Bean
-    AuthenticationManager authenticationManager(HttpSecurity http, UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder)
-                .and()
-                .build();
-    }
+	/*
+	 * @Bean DaoAuthenticationProvider authenticationProvider() {
+	 * DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+	 * authProvider.setUserDetailsService(userDetailsService);
+	 * authProvider.setPasswordEncoder(passwordEncoder); return authProvider; }
+	 */
 
-    @Bean
-    JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(this.publicKey).build(); // fará a descriptografia quando receber a requisição
-    }
+	@Bean
+	JwtDecoder jwtDecoder() {
+		return NimbusJwtDecoder.withPublicKey(this.publicKey).build(); // fará a descriptografia quando receber a
+																		// requisição
+	}
 
-    @Bean
-    JwtEncoder jwtEncoder() { // criptografa as requisições
-    	JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
-    	var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-    	
-    	return new NimbusJwtEncoder(jwks);
-    }
-	
+	@Bean
+	JwtEncoder jwtEncoder() { // criptografa as requisições
+		JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
+		var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+
+		return new NimbusJwtEncoder(jwks);
+	}
+
 }

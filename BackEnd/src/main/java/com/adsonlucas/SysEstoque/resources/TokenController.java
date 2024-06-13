@@ -28,17 +28,21 @@ public class TokenController {
 	@Autowired
 	private UserRepository userRepository;
 	
-	public TokenController(JwtEncoder jwtEncoder) {
+	public TokenController(JwtEncoder jwtEncoder, BCryptPasswordEncoder bCryptPasswordEncoder,
+						  UserRepository userRepository) {
 		this.jwtEncoder = jwtEncoder;
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+		this.userRepository = userRepository;
 	}
-	
+
+
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
 		
 		var user = userRepository.findByNome(loginRequest.username());
 		
 		 if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) { // verifica se user e pass estão corretos
-			 throw new BadCredentialsException("user is invalid!");
+			 throw new BadCredentialsException("user or password is invalid!");
 		 }
 		 
 		 var now = Instant.now();
@@ -46,7 +50,7 @@ public class TokenController {
 		 
 		 //configuração de atributos do JSON
 		 var claims = JwtClaimsSet.builder()
-				 	  .issuer("myBackend") // quem está gerando o token
+				 	  .issuer("Backend") // quem está gerando o token
 				 	  .subject(user.get().getID().toString()) //usuário quem é 
 				 	  .issuedAt(now) // data de emissão do token
 				 	  .expiresAt(now.plusSeconds(expiresIn)) // tempo de expiração

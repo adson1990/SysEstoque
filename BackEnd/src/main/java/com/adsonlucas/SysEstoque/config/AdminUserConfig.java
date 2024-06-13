@@ -25,8 +25,7 @@ public class AdminUserConfig implements CommandLineRunner {
 	private UserRepository userRepository;
 	
 	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
-	
+	private BCryptPasswordEncoder passwordEncoder;	
 	
 
 	public AdminUserConfig(RolesRepository rolesRepository, UserRepository userRepository,
@@ -37,20 +36,18 @@ public class AdminUserConfig implements CommandLineRunner {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-
-
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
 		
-		var roleAdminOptional = rolesRepository.findByAuthority(Roles.Values.ADMIN.name()); //Busca se já existe a role admin no DB
-		Roles roleAdmin;
-		if (roleAdminOptional == null) {
+		var roleAdmin = rolesRepository.findByAuthority(Roles.Values.ADMIN.name()); //Busca se já existe a role admin no DB
+
+		if (roleAdmin == null) {
 			roleAdmin = new Roles(Roles.Values.ADMIN.name()); // caso não exista cria a rola admin
 			rolesRepository.save(roleAdmin);
-		} else {
-			roleAdmin = roleAdminOptional;
 		}
+		
+		 Roles finalRoleAdmin = roleAdmin; // variável final para uso no lambda
 		
 		var userAdmin = userRepository.findByNome("admin");
 		
@@ -61,12 +58,12 @@ public class AdminUserConfig implements CommandLineRunner {
 									 user.setNome("admin");
 									 user.setSobrenome("");
 									 user.setEmail("admin@exemplo.com.br");
-									 user.setIdade(01);
+									 user.setIdade(1);
 									 user.setFoto("");
 									 LocalDate dtNascimento = LocalDate.of(1900, 01, 01);
 									 user.setDt_nascimento(dtNascimento);
 									 user.setSenha(passwordEncoder.encode("123456"));
-									 user.setRoles(Set.of(roleAdmin));
+									 user.setRoles(Set.of(finalRoleAdmin));
 									 userRepository.save(user);
 								 }
 								 );

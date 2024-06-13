@@ -219,7 +219,7 @@ public class User implements UserDetails, Serializable {
 
 	@Override
 	public String getUsername() {
-		return email;
+		return nome;
 	}
 	
 	@Override
@@ -243,8 +243,7 @@ public class User implements UserDetails, Serializable {
 	}
 
 	public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
-		passwordEncoder.matches(loginRequest.password(), this.senha);
-		return false;
+		return passwordEncoder.matches(loginRequest.password(), this.senha);
 	}
 
 }
