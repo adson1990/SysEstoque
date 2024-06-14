@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -42,8 +43,7 @@ public class WebSecurityConfig {
 
 	private UserDetailsService userDetailsService;
 
-	@Lazy // inicializa apenas quando for realmente necessária, quebrando a referência
-			// circular.
+	@Lazy // inicializa apenas quando for realmente necessária, quebrando a referência circular.
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -57,13 +57,29 @@ public class WebSecurityConfig {
 		this.userDetailsService = userDetailsService;
 		this.passwordEncoder = passwordEncoder;
 	}
-
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-	}
-
+	
 	@Bean
-	SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests((requests) -> requests
+                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .formLogin((form) -> form
+                .loginPage("/login**")
+                .permitAll()
+            )
+            .httpBasic(Customizer.withDefaults()) // Mantém a configuração padrão para httpBasic
+            .csrf(csrf -> csrf.disable()) // Desabilita CSRF
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // Desabilita frameOptions para o H2 console
+
+        return http.build();
+    }
+
+	@Order(1)
+	@Bean
+	SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
 
 		http.authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/login")
 				.permitAll() // permitir todos os tipos de requisição de login
@@ -76,28 +92,16 @@ public class WebSecurityConfig {
 	}
 	
 	@Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/public/**").permitAll()// Permitir acesso sem autenticação aos endpoints públicos
+                .anyRequest().authenticated() // Requer autenticação para qualquer outra requisição
             )
-            .formLogin((form) -> form
-                .loginPage("/login")
-                .permitAll()
-            )
-            .httpBasic(Customizer.withDefaults()) // Mantém a configuração padrão para httpBasic
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF
-            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // Desabilita frameOptions para o H2 console
-
+            .httpBasic(Customizer.withDefaults()); // Utiliza autenticação HTTP básica
         return http.build();
     }
-
-	@Bean
-	BCryptPasswordEncoder passEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 
 	/*
 	 * @Bean DaoAuthenticationProvider authenticationProvider() {
@@ -105,6 +109,11 @@ public class WebSecurityConfig {
 	 * authProvider.setUserDetailsService(userDetailsService);
 	 * authProvider.setPasswordEncoder(passwordEncoder); return authProvider; }
 	 */
+	
+	@Bean
+	BCryptPasswordEncoder passEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 	@Bean
 	JwtDecoder jwtDecoder() {
@@ -118,6 +127,10 @@ public class WebSecurityConfig {
 		var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
 
 		return new NimbusJwtEncoder(jwks);
+	}
+	
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
 	}
 
 }
