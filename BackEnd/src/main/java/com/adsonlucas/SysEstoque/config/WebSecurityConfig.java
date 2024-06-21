@@ -16,6 +16,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.nimbusds.jose.jwk.JWK;
@@ -46,6 +50,10 @@ public class WebSecurityConfig {
 	@Lazy // inicializa apenas quando for realmente necessária, quebrando a referência circular.
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	private static final String[] PUBLIC = {"/oauth/token"};
+	private static final String[] OPERATOR_OR_ADMIN = {"/clients**"};
+	private static final String[] ADMIN = {"/users/**"};
 
 	@Autowired
 	public WebSecurityConfig(UserDetailsService userDetailsService) {
@@ -58,13 +66,14 @@ public class WebSecurityConfig {
 		this.passwordEncoder = passwordEncoder;
 	}
 	
+	// H2
 	@Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                //.requestMatchers("/admin/**").hasRole("ADMIN")
+               // .anyRequest().authenticated()
             )
             .formLogin((form) -> form
                 .loginPage("/login**")
@@ -92,15 +101,36 @@ public class WebSecurityConfig {
 	}
 	
 	@Bean
-    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChainEndPoints(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**").permitAll()// Permitir acesso sem autenticação aos endpoints públicos
-                .anyRequest().authenticated() // Requer autenticação para qualquer outra requisição
+            	.requestMatchers(PUBLIC).permitAll()	
+                .requestMatchers(HttpMethod.GET, OPERATOR_OR_ADMIN).permitAll()
+                .requestMatchers(OPERATOR_OR_ADMIN).hasAnyRole("OPERATOR", "ADMIN")
+                .requestMatchers(ADMIN).hasRole("ADMIN")
+            .anyRequest().authenticated() 
             )
-            .httpBasic(Customizer.withDefaults()); // Utiliza autenticação HTTP básica
+            .csrf(csrf -> csrf.disable() );
+
         return http.build();
+    }
+	
+	@Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        // Customize the JWT converter if needed
+        return converter;
+	}
+
+	//userdetail para fins de teste de login
+    @Bean
+    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+        UserDetails user = User.builder()
+            .username("admin")
+            .password(passwordEncoder.encode("123456"))
+            .roles("USER")
+            .build();
+        return new InMemoryUserDetailsManager(user);
     }
 
 	/*
@@ -117,8 +147,7 @@ public class WebSecurityConfig {
 
 	@Bean
 	JwtDecoder jwtDecoder() {
-		return NimbusJwtDecoder.withPublicKey(this.publicKey).build(); // fará a descriptografia quando receber a
-																		// requisição
+		return NimbusJwtDecoder.withPublicKey(this.publicKey).build(); // fará a descriptografia quando receber a requisição
 	}
 
 	@Bean
