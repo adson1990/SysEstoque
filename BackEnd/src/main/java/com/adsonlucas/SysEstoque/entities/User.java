@@ -107,10 +107,6 @@ public class User implements UserDetails, Serializable {
 		return ID;
 	}
 
-	public String getNome() {
-		return nome;
-	}
-
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
@@ -121,10 +117,6 @@ public class User implements UserDetails, Serializable {
 
 	public void setSobrenome(String sobrenome) {
 		this.sobrenome = sobrenome;
-	}
-
-	public String getSenha() {
-		return senha;
 	}
 
 	public void setSenha(String senha) {

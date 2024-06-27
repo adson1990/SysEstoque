@@ -1,6 +1,7 @@
 package com.adsonlucas.SysEstoque.services;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,14 +12,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.adsonlucas.SysEstoque.Functions;
+import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
+import com.adsonlucas.SysEstoque.repositories.RolesRepository;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +34,10 @@ public class UserService implements UserDetailsService{
 	
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private RolesRepository roleRepository;
+	private BCryptPasswordEncoder passwordEnconder;
+	
 	@Autowired
 	private Functions function;
 	
@@ -52,7 +60,10 @@ public class UserService implements UserDetailsService{
 	@Transactional
 	public UserDTO instUser(UserDTO dto) {
 		User user = new User();
+		var basicRole = roleRepository.findByAuthority(Roles.Values.BASIC.name());
 		user = function.copyDTOToEntityUser(dto, user);
+		user.setSenha(passwordEnconder.encode(dto.getSenha())); //encriptar a senha
+		user.setRoles(Set.of(basicRole)); //adicionar regra basica, padrão na criação de usuários
 		user = userRepository.save(user);
 		
 		return new UserDTO(user);

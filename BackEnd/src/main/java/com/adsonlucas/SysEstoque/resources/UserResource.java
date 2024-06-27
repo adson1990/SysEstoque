@@ -38,8 +38,8 @@ import jakarta.validation.constraints.Positive;
 public class UserResource {
 	
 	@Autowired
-	private UserService service;
-	
+	private UserService userService;
+
 	//BUSCA
 	@GetMapping	
 	public ResponseEntity<Page<UserDTO>> findAll(
@@ -50,14 +50,14 @@ public class UserResource {
 	){
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBY);
 		
-		Page<UserDTO> list = service.findAllPages(pageRequest);
+		Page<UserDTO> list = userService.findAllPages(pageRequest);
 		
 		return ResponseEntity.ok().body(list);
 	}
 	
 	@GetMapping(value = "/{ID}")
 	public ResponseEntity<UserDTO> findByID(@PathVariable @NotNull @Positive Long ID){
-		UserDTO dto = service.findById(ID);
+		UserDTO dto = userService.findById(ID);
 		
 		
 		return ResponseEntity.ok().body(dto);
@@ -65,7 +65,7 @@ public class UserResource {
 	
 	@PostMapping
 	public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserDTO user){
-		user = service.instUser(user);
+		user = userService.instUser(user);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(user.getID()).toUri();
 		
@@ -74,7 +74,7 @@ public class UserResource {
 	
 	@PutMapping(value = "/{ID}")
 	public ResponseEntity<UserDTO> updUser(@Valid @PathVariable Long ID, @RequestBody UserDTO dto){
-		UserDTO user = service.updUser(ID, dto);
+		UserDTO user = userService.updUser(ID, dto);
 		
 		return ResponseEntity.ok().body(user);
 	}
@@ -82,7 +82,7 @@ public class UserResource {
 	@DeleteMapping(value = "/{ID}")
 	public ResponseEntity<String> deleteUser(@PathVariable @NotNull @Positive Long ID) {
 		try {
-			  service.delUser(ID);
+			  userService.delUser(ID);
 			  return ResponseEntity.ok("Usuário com o ID " + ID +" deletado com sucesso!");
 		}catch(EntidadeNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);

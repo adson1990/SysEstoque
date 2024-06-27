@@ -52,9 +52,9 @@ public class UserDTO implements Serializable{
 	public UserDTO(User user) {
 		super();
 		ID = user.getID();
-		this.nome = user.getNome();
+		this.nome = user.getUsername();
 		this.sobrenome = user.getSobrenome();
-		this.senha =user.getSenha();
+		this.senha =user.getPassword();
 		this.email = user.getEmail();
 		this.idade = user.getIdade();
 		this.foto = user.getFoto();

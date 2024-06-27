@@ -43,24 +43,30 @@ public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {
 	BeanUtils.copyProperties(dto, entity);
 	
 	return entity;
-	
-    //return entity = new Client(dto, entity.getID());
 	}
 
-public Product copyDTOToEntityProduct(ProductDTO dto, Product entity) {
-	//BeanUtils.copyProperties(dto, entity);
-	
+public Product copyDTOToEntityProduct(ProductDTO dto, Product entity) {	
 	return entity = new Product(dto);
 	}
 
 public Roles copyDTOToEntityRole(RolesDTO dto, Roles entity) {		
-	return entity = new Roles(dto);
-	}
-
-public User copyDTOToEntityUser(UserDTO dto, User entity) {		
 	BeanUtils.copyProperties(dto, entity);
 	
 	return entity;
+	}
+
+public User copyDTOToEntityUser(UserDTO dto, User entity) {		
+/*	User user = new User();
+	user.setNome(dto.getNome());
+	user.setEmail(dto.getEmail());
+	user.setSobrenome(dto.getSobrenome());
+	user.setFoto(dto.getFoto());
+	user.setIdade(dto.getIdade());
+	user.setDt_nascimento(dto.getDt_nascimento()); */
+	
+	 BeanUtils.copyProperties(dto, entity);
+	 
+	 return entity;
 	}
 
 }

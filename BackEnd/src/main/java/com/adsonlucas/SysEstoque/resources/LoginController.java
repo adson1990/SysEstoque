@@ -18,7 +18,7 @@ import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
 
 @RestController
-public class TokenController {
+public class LoginController {
 
 	private JwtEncoder jwtEncoder = null;
 	
@@ -28,7 +28,7 @@ public class TokenController {
 	@Autowired
 	private UserRepository userRepository;
 	
-	public TokenController(JwtEncoder jwtEncoder, BCryptPasswordEncoder bCryptPasswordEncoder,
+	public LoginController(JwtEncoder jwtEncoder, BCryptPasswordEncoder bCryptPasswordEncoder,
 						  UserRepository userRepository) {
 		this.jwtEncoder = jwtEncoder;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;

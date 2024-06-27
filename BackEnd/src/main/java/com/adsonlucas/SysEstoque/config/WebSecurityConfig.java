@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -51,9 +50,8 @@ public class WebSecurityConfig {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	private static final String[] PUBLIC = {"/oauth/token"};
-	private static final String[] OPERATOR_OR_ADMIN = {"/clients**"};
-	private static final String[] ADMIN = {"/users/**"};
+	private static final String[] PUBLIC = {"/login"};
+	private static final String[] METODOS_POST = {"/users","/clients","/products"};
 
 	@Autowired
 	public WebSecurityConfig(UserDetailsService userDetailsService) {
@@ -65,33 +63,14 @@ public class WebSecurityConfig {
 		this.userDetailsService = userDetailsService;
 		this.passwordEncoder = passwordEncoder;
 	}
-	
-	// H2
+
+//	@Order(1)
 	@Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/h2-console/**").permitAll()
-                //.requestMatchers("/admin/**").hasRole("ADMIN")
-               // .anyRequest().authenticated()
-            )
-            .formLogin((form) -> form
-                .loginPage("/login**")
-                .permitAll()
-            )
-            .httpBasic(Customizer.withDefaults()) // Mantém a configuração padrão para httpBasic
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF
-            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // Desabilita frameOptions para o H2 console
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http.build();
-    }
-
-	@Order(1)
-	@Bean
-	SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
-
-		http.authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/login")
-				.permitAll() // permitir todos os tipos de requisição de login
+		http.authorizeHttpRequests(authorize -> authorize
+				.requestMatchers(HttpMethod.POST, PUBLIC).permitAll() // permitir todos os tipos de requisição de login
+				.requestMatchers(HttpMethod.POST, METODOS_POST).permitAll()
 				.anyRequest().authenticated()) // Todas as requisições devem ser autenticadas.
 				.csrf(csrf -> csrf.disable()) // vulnerabilidade proposta para facilitar os testes, nunca subir em produção
 				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) // configuração padrão de autenticação com JWT
@@ -99,21 +78,6 @@ public class WebSecurityConfig {
 		;
 		return http.build();
 	}
-	
-	@Bean
-    SecurityFilterChain securityFilterChainEndPoints(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(auth -> auth
-            	.requestMatchers(PUBLIC).permitAll()	
-                .requestMatchers(HttpMethod.GET, OPERATOR_OR_ADMIN).permitAll()
-                .requestMatchers(OPERATOR_OR_ADMIN).hasAnyRole("OPERATOR", "ADMIN")
-                .requestMatchers(ADMIN).hasRole("ADMIN")
-            .anyRequest().authenticated() 
-            )
-            .csrf(csrf -> csrf.disable() );
-
-        return http.build();
-    }
 	
 	@Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
@@ -132,13 +96,6 @@ public class WebSecurityConfig {
             .build();
         return new InMemoryUserDetailsManager(user);
     }
-
-	/*
-	 * @Bean DaoAuthenticationProvider authenticationProvider() {
-	 * DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-	 * authProvider.setUserDetailsService(userDetailsService);
-	 * authProvider.setPasswordEncoder(passwordEncoder); return authProvider; }
-	 */
 	
 	@Bean
 	BCryptPasswordEncoder passEncoder() {
