@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import com.adsonlucas.SysEstoque.repositories.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
+@EnableMethodSecurity
 public class ClientService {
 	
 	@Autowired
@@ -50,6 +53,7 @@ public class ClientService {
 	
 	// Insert Client
 	@Transactional
+	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public ClientDTO insClient(ClientDTO dto) {
 		verificaCliente(dto.getCpf());
 			Client client = new Client();

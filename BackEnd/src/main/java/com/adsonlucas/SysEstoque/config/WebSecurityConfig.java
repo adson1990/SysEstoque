@@ -27,6 +27,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -51,7 +52,9 @@ public class WebSecurityConfig {
 	private PasswordEncoder passwordEncoder;
 	
 	private static final String[] PUBLIC = {"/login"};
-	private static final String[] METODOS_POST = {"/users","/clients","/products"};
+	private static final String[] TESTE_INSERTS= {"/users","/clients","/products"};
+	private static final String[] TESTE_BUSCA= {"/users**","/clients**","/products**","/roles**","/categorie/**"};
+	private static final String[] TESTE_UPD_DEL= {"/users/**","/clients/**","/products/**"};
 
 	@Autowired
 	public WebSecurityConfig(UserDetailsService userDetailsService) {
@@ -70,9 +73,16 @@ public class WebSecurityConfig {
 
 		http.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(HttpMethod.POST, PUBLIC).permitAll() // permitir todos os tipos de requisição de login
-				.requestMatchers(HttpMethod.POST, METODOS_POST).permitAll()
-				.anyRequest().authenticated()) // Todas as requisições devem ser autenticadas.
+				.requestMatchers(HttpMethod.POST, TESTE_INSERTS).permitAll()
+				.requestMatchers(HttpMethod.GET, TESTE_BUSCA).permitAll()
+				.requestMatchers(HttpMethod.PUT, TESTE_UPD_DEL).permitAll()
+				.requestMatchers(HttpMethod.DELETE, TESTE_UPD_DEL).permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+				.anyRequest().authenticated()) // Todas as requisições devem ser autenticadas.	
 				.csrf(csrf -> csrf.disable()) // vulnerabilidade proposta para facilitar os testes, nunca subir em produção
+				.headers(headers -> headers
+						.frameOptions(frameOptions -> frameOptions
+								.sameOrigin())) //permitir frames de mesma origem para que o console H2 possa abrir
 				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) // configuração padrão de autenticação com JWT
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // não precisa guardar nada em sessão																												
 		;

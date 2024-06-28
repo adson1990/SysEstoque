@@ -1,6 +1,7 @@
 package com.adsonlucas.SysEstoque.resources;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
@@ -48,12 +50,18 @@ public class LoginController {
 		 var now = Instant.now();
 		 var expiresIn = 300L;
 		 
+		 var scopes = user.get().getRoles()
+				 .stream()
+				 .map(Roles::getAuthority)
+				 .collect(Collectors.joining(" ")); // obter o scopo de permissão do usuário que esta logando no sistema
+		 
 		 //configuração de atributos do JSON
 		 var claims = JwtClaimsSet.builder()
 				 	  .issuer("Backend") // quem está gerando o token
 				 	  .subject(user.get().getID().toString()) //usuário quem é 
 				 	  .issuedAt(now) // data de emissão do token
 				 	  .expiresAt(now.plusSeconds(expiresIn)) // tempo de expiração
+				 	  .claim("scope", scopes) // obtendo scopo da requisição
 				 	  .build();
 		 
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims

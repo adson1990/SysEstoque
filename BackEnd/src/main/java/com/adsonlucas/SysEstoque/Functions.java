@@ -55,15 +55,7 @@ public Roles copyDTOToEntityRole(RolesDTO dto, Roles entity) {
 	return entity;
 	}
 
-public User copyDTOToEntityUser(UserDTO dto, User entity) {		
-/*	User user = new User();
-	user.setNome(dto.getNome());
-	user.setEmail(dto.getEmail());
-	user.setSobrenome(dto.getSobrenome());
-	user.setFoto(dto.getFoto());
-	user.setIdade(dto.getIdade());
-	user.setDt_nascimento(dto.getDt_nascimento()); */
-	
+public User copyDTOToEntityUser(UserDTO dto, User entity) {			
 	 BeanUtils.copyProperties(dto, entity);
 	 
 	 return entity;

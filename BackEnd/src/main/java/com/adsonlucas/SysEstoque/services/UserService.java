@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,6 +30,7 @@ import com.adsonlucas.SysEstoque.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
+@EnableMethodSecurity
 public class UserService implements UserDetailsService{
 
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -58,7 +61,9 @@ public class UserService implements UserDetailsService{
 	}
 	
 	@Transactional
+	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public UserDTO instUser(UserDTO dto) {
+		passwordEnconder = new BCryptPasswordEncoder();
 		User user = new User();
 		var basicRole = roleRepository.findByAuthority(Roles.Values.BASIC.name());
 		user = function.copyDTOToEntityUser(dto, user);

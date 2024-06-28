@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import com.adsonlucas.SysEstoque.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
+@EnableMethodSecurity
 public class ProductServices {
 	
 	@Autowired
@@ -43,8 +46,9 @@ public class ProductServices {
 		return new ProductDTO(productEntity, productEntity.getCategories());
 	}
 	
-	// Insert Product
+	// Inserir produto
 	@Transactional
+	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public ProductDTO insProduct(ProductDTO dto) {
 		Product product = new Product(dto);
 		//product = function.copyDTOToEntityProduct(dto, product);
@@ -53,7 +57,7 @@ public class ProductServices {
 		return new ProductDTO(product);
 	}
 	
-	//Atualiza produto
+	//Atualizar produto
 	@Transactional
 	public ProductDTO updProduct(ProductDTO dto, Long ID) {
 		try {
@@ -67,7 +71,7 @@ public class ProductServices {
 		}
 	}
 	
-	//Apaga Producte
+	//Apagar produto
 	public void delProduct(Long ID) {
 		Optional<Product> productOPT = productRepository.findById(ID);
 
