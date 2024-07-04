@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
+import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
@@ -41,6 +43,7 @@ public class UserService implements UserDetailsService{
 	@Autowired
 	private RolesRepository roleRepository;
 	private BCryptPasswordEncoder passwordEnconder;
+	LoginRequest loginRequest;
 	
 	@Autowired
 	private Functions function;
@@ -115,6 +118,8 @@ public class UserService implements UserDetailsService{
 		}else if (userOptional.get().isEnabled()) {
 			logger.warn("Conta Bloqueada. " + username); 
 			throw new LockedException("Conta bloqueada, favor entrar em contato com o suporte.");
+		}else if (!userOptional.get().isLoginCorrect(loginRequest, passwordEnconder)){
+			throw new BadCredentialsException("user or password is invalid!");
 		}
 		
 		logger.info("User found: " + username);

@@ -1,11 +1,12 @@
 package com.adsonlucas.SysEstoque.resources;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.adsonlucas.SysEstoque.entities.RefreshToken;
 import com.adsonlucas.SysEstoque.entities.Roles;
+import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshRequest;
@@ -53,17 +55,17 @@ public class LoginController {
 
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){	
-		userService.loadUserByUsername(loginRequest.username()); // este método lança 2 exceções
-		var user =  userRepository.findByNome(loginRequest.username());;
+		Optional<UserDetails> user = Optional.of(userService.loadUserByUsername(loginRequest.username())); 
+		//var user =  userRepository.findByNome(loginRequest.username());;
 		
-		if (!user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)){
+		/*if (!user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)){
 			throw new BadCredentialsException("user or password is invalid!");
-		}
+		} */
 		 
 		 var now = Instant.now();
 		 var accessTokenExpiresIn = 300L; // 5 min
 		 
-		 var scopes = user.get().getRoles()
+		 var scopes = ((User) user.get()).getRoles()
 				 .stream()
 				 .map(Roles::getAuthority)
 				 .collect(Collectors.joining(" ")); // obter o scopo de permissão do usuário que esta logando no sistema
