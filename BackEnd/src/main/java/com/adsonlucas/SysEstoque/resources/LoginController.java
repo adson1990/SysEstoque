@@ -10,14 +10,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adsonlucas.SysEstoque.entities.RefreshToken;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
+import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshRequest;
+import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshResponse;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
+import com.adsonlucas.SysEstoque.resouces.exceptions.TokenRefreshException;
+import com.adsonlucas.SysEstoque.services.RefreshTokenService;
+import com.adsonlucas.SysEstoque.services.UserService;
 
 @RestController
 public class LoginController {
@@ -30,25 +37,31 @@ public class LoginController {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+    private RefreshTokenService refreshTokenService;
+	
 	public LoginController(JwtEncoder jwtEncoder, BCryptPasswordEncoder bCryptPasswordEncoder,
-						  UserRepository userRepository) {
+						  UserRepository userRepository, RefreshTokenService refreshTokenService) {
 		this.jwtEncoder = jwtEncoder;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.userRepository = userRepository;
+		this.refreshTokenService = refreshTokenService;
 	}
 
-
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
+	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){	
+		userService.loadUserByUsername(loginRequest.username()); // este método lança 2 exceções
+		var user =  userRepository.findByNome(loginRequest.username());;
 		
-		var user = userRepository.findByNome(loginRequest.username());
-		
-		 if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) { // verifica se user e pass estão corretos
-			 throw new BadCredentialsException("user or password is invalid!");
-		 }
+		if (!user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)){
+			throw new BadCredentialsException("user or password is invalid!");
+		}
 		 
 		 var now = Instant.now();
-		 var expiresIn = 300L;
+		 var accessTokenExpiresIn = 300L; // 5 min
 		 
 		 var scopes = user.get().getRoles()
 				 .stream()
@@ -60,13 +73,46 @@ public class LoginController {
 				 	  .issuer("Backend") // quem está gerando o token
 				 	  .subject(user.get().getID().toString()) //usuário quem é 
 				 	  .issuedAt(now) // data de emissão do token
-				 	  .expiresAt(now.plusSeconds(expiresIn)) // tempo de expiração
+				 	  .expiresAt(now.plusSeconds(accessTokenExpiresIn)) // tempo de expiração
 				 	  .claim("scope", scopes) // obtendo scopo da requisição
 				 	  .build();
 		 
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
 		 
+		 var refreshToken = refreshTokenService.createRefreshToken(user.get().getID());
 		 
-		 return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));
+		 return ResponseEntity.ok(new LoginResponse(jwtValue, accessTokenExpiresIn, refreshToken.getToken()));
 	}
+	
+	@PostMapping("/auth/refresh")
+	@Transactional
+    public ResponseEntity<TokenRefreshResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
+        String requestRefreshToken = request.refreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    var now = Instant.now();
+                    var accessTokenExpiresIn = 300L; // 5 min
+
+                    var scopes = user.getRoles()
+                            .stream()
+                            .map(Roles::getAuthority)
+                            .collect(Collectors.joining(" "));
+
+                    var claims = JwtClaimsSet.builder()
+                            .issuer("Backend")
+                            .subject(user.getID().toString())
+                            .issuedAt(now)
+                            .expiresAt(now.plusSeconds(accessTokenExpiresIn))
+                            .claim("scope", scopes)
+                            .build();
+
+                    var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+
+                    return ResponseEntity.ok(new TokenRefreshResponse(jwtValue, requestRefreshToken));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
+    }
 }

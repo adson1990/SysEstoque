@@ -48,7 +48,6 @@ public class ProductServices {
 	
 	// Inserir produto
 	@Transactional
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public ProductDTO insProduct(ProductDTO dto) {
 		Product product = new Product(dto);
 		//product = function.copyDTOToEntityProduct(dto, product);
@@ -72,6 +71,8 @@ public class ProductServices {
 	}
 	
 	//Apagar produto
+	@Transactional
+	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public void delProduct(Long ID) {
 		Optional<Product> productOPT = productRepository.findById(ID);
 

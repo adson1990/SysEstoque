@@ -47,6 +47,7 @@ public class User implements UserDetails, Serializable {
 	private String email;
 	private Integer idade;
 	private String foto;
+	private Boolean accountBlok;
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private LocalDate dt_nascimento;
 	
@@ -75,6 +76,19 @@ public class User implements UserDetails, Serializable {
 		this.idade = idade;
 		this.foto = foto;
 		this.dt_nascimento = dt_nascimento;
+	}
+	
+	public User(String nome, String sobrenome, String senha, String email, Integer idade, String foto,
+			LocalDate dt_nascimento, Boolean accountBlok) {
+		super();
+		this.nome = nome;
+		this.sobrenome = sobrenome;
+		this.senha = senha;
+		this.email = email;
+		this.idade = idade;
+		this.foto = foto;
+		this.dt_nascimento = dt_nascimento;
+		this.accountBlok = accountBlok;
 	}
 	
 	public User(UserDTO dto) {
@@ -153,6 +167,14 @@ public class User implements UserDetails, Serializable {
 
 	public void setDt_nascimento(LocalDate dt_nascimento) {
 		this.dt_nascimento = dt_nascimento;
+	}	
+
+	public Boolean getAccountBlok() {
+		return accountBlok;
+	}
+
+	public void setAccountBlok(Boolean accountBlok) {
+		this.accountBlok = accountBlok;
 	}
 
 	// finalidade auditoria, inserção e atualização de cadastro
@@ -231,7 +253,12 @@ public class User implements UserDetails, Serializable {
 	
 	@Override
 	public boolean isEnabled() {
-		return true;
+		
+		if (this.accountBlok) {
+			return false;
+		}else {
+			return true;
+		}
 	}
 
 	public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
