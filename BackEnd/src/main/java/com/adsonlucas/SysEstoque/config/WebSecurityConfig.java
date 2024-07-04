@@ -51,10 +51,10 @@ public class WebSecurityConfig {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	private static final String[] PUBLIC = {"/login"};
-	private static final String[] TESTE_INSERTS= {"/users","/clients","/products"};
+	private static final String[] PUBLIC = {"/login","/auth/refresh"};
+/*	private static final String[] TESTE_INSERTS= {"/users","/clients","/products"};
 	private static final String[] TESTE_BUSCA= {"/users**","/clients**","/products**","/roles**","/categorie/**"};
-	private static final String[] TESTE_UPD_DEL= {"/users/**","/clients/**","/products/**"};
+	private static final String[] TESTE_UPD_DEL= {"/users/**","/clients/**","/products/**"}; */
 
 	@Autowired
 	public WebSecurityConfig(UserDetailsService userDetailsService) {
@@ -72,11 +72,11 @@ public class WebSecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 		http.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(HttpMethod.POST, PUBLIC).permitAll() // permitir todos os tipos de requisição de login
-				.requestMatchers(HttpMethod.POST, TESTE_INSERTS).permitAll()
+				.requestMatchers(HttpMethod.POST, PUBLIC).permitAll() // permitir todos os tipos de requisição de rotas públicas
+			/*	.requestMatchers(HttpMethod.POST, TESTE_INSERTS).permitAll()
 				.requestMatchers(HttpMethod.GET, TESTE_BUSCA).permitAll()
 				.requestMatchers(HttpMethod.PUT, TESTE_UPD_DEL).permitAll()
-				.requestMatchers(HttpMethod.DELETE, TESTE_UPD_DEL).permitAll()
+				.requestMatchers(HttpMethod.DELETE, TESTE_UPD_DEL).permitAll() */
 				.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
 				.anyRequest().authenticated()) // Todas as requisições devem ser autenticadas.	
 				.csrf(csrf -> csrf.disable()) // vulnerabilidade proposta para facilitar os testes, nunca subir em produção

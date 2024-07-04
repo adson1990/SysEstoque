@@ -53,7 +53,6 @@ public class ClientService {
 	
 	// Insert Client
 	@Transactional
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public ClientDTO insClient(ClientDTO dto) {
 		verificaCliente(dto.getCpf());
 			Client client = new Client();
@@ -80,6 +79,8 @@ public class ClientService {
 	}
 	
 	//Apaga Cliente
+	@Transactional
+	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public void delClient(Long ID) {
 		Optional<Client> clientOPT = clientRepository.findById(ID);
 

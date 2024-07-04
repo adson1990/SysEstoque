@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -61,7 +62,6 @@ public class UserService implements UserDetailsService{
 	}
 	
 	@Transactional
-	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public UserDTO instUser(UserDTO dto) {
 		passwordEnconder = new BCryptPasswordEncoder();
 		User user = new User();
@@ -89,6 +89,7 @@ public class UserService implements UserDetailsService{
 	}
 	
 	@Transactional
+	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public void delUser(Long ID) {
 		Optional<User> userOPT = userRepository.findById(ID);
 
@@ -104,18 +105,20 @@ public class UserService implements UserDetailsService{
 		} 
 	}
 
-	// Verificação de acesso ao sistema UserDetailsService
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {		
-		
 		Optional<User> userOptional = userRepository.findByNome(username);
 		
 		if (userOptional.isEmpty()) {
 			logger.error("User not found: " + username);
 			throw new UsernameNotFoundException("Usuário não encontrado.");
+		}else if (userOptional.get().isEnabled()) {
+			logger.warn("Conta Bloqueada. " + username); 
+			throw new LockedException("Conta bloqueada, favor entrar em contato com o suporte.");
 		}
+		
 		logger.info("User found: " + username);
 		User user = userOptional.get();
 		return user;
-	}
+	} 
 }

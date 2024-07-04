@@ -31,6 +31,7 @@ public class UserDTO implements Serializable{
 	private String foto;
 	@PastOrPresent(message = "Não pode ser data maior que a atual")
 	private LocalDate dt_nascimento;
+	private Boolean accountBlok;
 	Set<Roles> roles = new HashSet<>();
 	
 	
@@ -47,6 +48,20 @@ public class UserDTO implements Serializable{
 		this.idade = idade;
 		this.foto = foto;
 		this.dt_nascimento = dt_nascimento;
+	}
+	
+	public UserDTO(Long id, String nome, String sobrenome, String senha, String email, Integer idade, String foto,
+			LocalDate dt_nascimento, Boolean accountBlok) {
+		super();
+		ID = id;
+		this.nome = nome;
+		this.sobrenome = sobrenome;
+		this.senha = senha;
+		this.email = email;
+		this.idade = idade;
+		this.foto = foto;
+		this.dt_nascimento = dt_nascimento;
+		this.accountBlok = accountBlok;
 	}
 	
 	public UserDTO(User user) {
@@ -119,5 +134,14 @@ public class UserDTO implements Serializable{
 
 	public void setDt_nascimento(LocalDate dt_nascimento) {
 		this.dt_nascimento = dt_nascimento;
-	}		
+	}
+
+	public Boolean getAccountBlok() {
+		return accountBlok;
+	}
+
+	public void setAccountBlok(Boolean accountBlok) {
+		this.accountBlok = accountBlok;
+	}	
+	
 }
