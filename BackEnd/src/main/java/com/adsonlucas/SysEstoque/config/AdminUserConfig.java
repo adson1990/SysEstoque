@@ -55,7 +55,7 @@ public class AdminUserConfig implements CommandLineRunner {
 								 (user) -> {System.out.println("Admin já existe"); },
 								 () -> {
 									 var user = new User();
-									 user.setNome("admin");
+									 user.setNome("ADMIN");
 									 user.setSobrenome("");
 									 user.setEmail("admin@exemplo.com.br");
 									 user.setIdade(1);
@@ -64,6 +64,7 @@ public class AdminUserConfig implements CommandLineRunner {
 									 user.setDt_nascimento(dtNascimento);
 									 user.setSenha(passwordEncoder.encode("123456"));
 									 user.setRoles(Set.of(finalRoleAdmin));
+									 user.setAccountBlok(false);
 									 userRepository.save(user);
 								 }
 								 );

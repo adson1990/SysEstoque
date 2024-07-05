@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
+import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
@@ -41,6 +42,7 @@ public class UserService implements UserDetailsService{
 	@Autowired
 	private RolesRepository roleRepository;
 	private BCryptPasswordEncoder passwordEnconder;
+	LoginRequest loginRequest;
 	
 	@Autowired
 	private Functions function;
@@ -108,6 +110,7 @@ public class UserService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {		
 		Optional<User> userOptional = userRepository.findByNome(username);
+		passwordEnconder = new BCryptPasswordEncoder();
 		
 		if (userOptional.isEmpty()) {
 			logger.error("User not found: " + username);
@@ -121,4 +124,5 @@ public class UserService implements UserDetailsService{
 		User user = userOptional.get();
 		return user;
 	} 
+	
 }

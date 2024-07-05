@@ -1,6 +1,7 @@
 package com.adsonlucas.SysEstoque.resources;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.adsonlucas.SysEstoque.entities.RefreshToken;
 import com.adsonlucas.SysEstoque.entities.Roles;
+import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshRequest;
@@ -31,9 +33,11 @@ public class LoginController {
 
 	private JwtEncoder jwtEncoder = null;
 	
+	@SuppressWarnings("unused")
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
+	@SuppressWarnings("unused")
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -53,10 +57,9 @@ public class LoginController {
 
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){	
-		userService.loadUserByUsername(loginRequest.username()); // este método lança 2 exceções
-		var user =  userRepository.findByNome(loginRequest.username());;
+		Optional<User> user = Optional.ofNullable((User) userService.loadUserByUsername(loginRequest.username()));
 		
-		if (!user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)){
+		if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.get().getPassword())){
 			throw new BadCredentialsException("user or password is invalid!");
 		}
 		 
