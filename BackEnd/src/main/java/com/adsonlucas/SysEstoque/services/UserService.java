@@ -10,7 +10,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -111,6 +110,7 @@ public class UserService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {		
 		Optional<User> userOptional = userRepository.findByNome(username);
+		passwordEnconder = new BCryptPasswordEncoder();
 		
 		if (userOptional.isEmpty()) {
 			logger.error("User not found: " + username);
@@ -118,12 +118,11 @@ public class UserService implements UserDetailsService{
 		}else if (userOptional.get().isEnabled()) {
 			logger.warn("Conta Bloqueada. " + username); 
 			throw new LockedException("Conta bloqueada, favor entrar em contato com o suporte.");
-		}else if (!userOptional.get().isLoginCorrect(loginRequest, passwordEnconder)){
-			throw new BadCredentialsException("user or password is invalid!");
 		}
 		
 		logger.info("User found: " + username);
 		User user = userOptional.get();
 		return user;
 	} 
+	
 }

@@ -14,7 +14,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
 
 import jakarta.persistence.CascadeType;
@@ -41,6 +40,7 @@ public class User implements UserDetails, Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long ID;
+	@Column(name = "NOME")
 	private String nome;
 	private String sobrenome;
 	private String senha;
@@ -255,14 +255,10 @@ public class User implements UserDetails, Serializable {
 	public boolean isEnabled() {
 		
 		if (this.accountBlok) {
-			return false;
-		}else {
 			return true;
+		}else {
+			return false;
 		}
-	}
-
-	public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
-		return passwordEncoder.matches(loginRequest.password(), this.senha);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -75,6 +76,21 @@ public class ResourceExceptionHandler {
 		StandardError error = new StandardError();
 		error.setTimeStamp(Instant.now());
 		error.setError("Objeto já existe na base de dados.");
+		error.setMsg(e.getMessage());
+		error.setPath(request.getRequestURI());
+		error.setStatus(status.value());
+		
+		return ResponseEntity.status(status).body(error);
+	}
+	
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<StandardError> badCredentialsException(BadCredentialsException e,
+																	HttpServletRequest request){
+		HttpStatus status = HttpStatus.UNAUTHORIZED;
+		
+		StandardError error = new StandardError();
+		error.setTimeStamp(Instant.now());
+		error.setError("Usuário e/ou senha incorretos.");
 		error.setMsg(e.getMessage());
 		error.setPath(request.getRequestURI());
 		error.setStatus(status.value());
