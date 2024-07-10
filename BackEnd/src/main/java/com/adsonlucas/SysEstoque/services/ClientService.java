@@ -4,9 +4,11 @@ package com.adsonlucas.SysEstoque.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Client;
+import com.adsonlucas.SysEstoque.entities.Enderecos;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeExistenteException;
@@ -34,12 +37,24 @@ public class ClientService {
 	
 	//CRUD
 	
+	//Todos Endereços
+	@Transactional(readOnly = true)
+    public void printEnderecos(Long pessoaId) {
+        Client pessoa = clientRepository.findPessoaWithEnderecos(pessoaId);
+        System.out.println("Nome da pessoa: " + pessoa.getName());
+
+        for (Enderecos endereco : pessoa.getEnderecos()) {
+            System.out.println("Endereço: " + endereco.getRua());
+        }
+    }
+	
 	//Todos clientes
+	@Cacheable("clientes")
 	@Transactional(readOnly = true)
 	public Page<ClientDTO> findAllPages(PageRequest pageRequest){
 		Page<Client> pageList = clientRepository.findAll(pageRequest);
 		
-		return pageList.map(x -> new ClientDTO(x, x.getCategories()));
+		return pageList.map(x -> new ClientDTO(x, x.getCategories(), x.getEnderecos()));
 	}
 	
 	// Client By ID
@@ -53,6 +68,7 @@ public class ClientService {
 	
 	// Insert Client
 	@Transactional
+	@Async("taskExecutor") // execução desta chamada de forma assíncrona
 	public ClientDTO insClient(ClientDTO dto) {
 		verificaCliente(dto.getCpf());
 			Client client = new Client();

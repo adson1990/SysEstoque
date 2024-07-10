@@ -6,6 +6,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +49,7 @@ public class UserService implements UserDetailsService{
 	private Functions function;
 	
 	//BUSCA
+	@Cacheable("usuarios")
 	@Transactional(readOnly =true)
 	public Page<UserDTO> findAllPages(PageRequest pageRequest){
 		Page<User> userList = userRepository.findAll(pageRequest);

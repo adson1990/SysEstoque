@@ -2,13 +2,16 @@ package com.adsonlucas.SysEstoque.entitiesDTO;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.validator.constraints.Length;
 
 import com.adsonlucas.SysEstoque.entities.CategoryClient;
 import com.adsonlucas.SysEstoque.entities.Client;
+import com.adsonlucas.SysEstoque.entities.Enderecos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -25,6 +28,8 @@ public class ClientDTO implements Serializable{
 	private Double income;
 	private Instant birthDate;
 	private Integer children;
+	
+	private List<Enderecos> enderecos = new ArrayList<>();
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Set<CategoryClientDTO> categories = new HashSet();
@@ -54,6 +59,12 @@ public class ClientDTO implements Serializable{
 	public ClientDTO(Client entity, Set<CategoryClient> categories) {
 		this(entity);
 		categories.forEach(cat -> this.categories.add(new CategoryClientDTO(cat)));
+	}
+	
+	public ClientDTO(Client entity, Set<CategoryClient> categories, List<Enderecos> enderecos) {
+		this(entity);
+		categories.forEach(cat -> this.categories.add(new CategoryClientDTO(cat)));
+		enderecos.forEach(end -> this.enderecos.add(new Enderecos(end)));
 	}
 
 	public Long getID() {
@@ -106,6 +117,14 @@ public class ClientDTO implements Serializable{
 
 	public void setCategories(Set<CategoryClientDTO> categories) {
 		this.categories = categories;
+	}
+
+	public List<Enderecos> getEnderecos() {
+		return enderecos;
+	}
+
+	public void setEnderecos(List<Enderecos> enderecos) {
+		this.enderecos = enderecos;
 	}
 
 }

@@ -4,6 +4,7 @@ package com.adsonlucas.SysEstoque.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ public class ProductServices {
 	//private Functions function;
 	
 	//Todos produtos
+	@Cacheable("produtos")
 	@Transactional(readOnly = true)
 	public Page<ProductDTO> findAllPages(PageRequest pageRequest){
 		Page<Product> pageList = productRepository.findAll(pageRequest);

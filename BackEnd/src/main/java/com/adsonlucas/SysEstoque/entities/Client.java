@@ -2,7 +2,9 @@ package com.adsonlucas.SysEstoque.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -18,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -38,6 +41,9 @@ public class Client implements Serializable{
 	private Instant birthDate;
 	private Integer children;
 	
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+	private List<Enderecos> enderecos = new ArrayList<>();
+	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_client_category",
 			   joinColumns = @JoinColumn(name = "client_id"),
@@ -56,6 +62,7 @@ public class Client implements Serializable{
 		this.birthDate = birthDate;
 		this.children = children;
 	}
+	
 	public Client(ClientDTO clientDTO) {
 		this.name = clientDTO.getName();
 		this.cpf = clientDTO.getCpf();
@@ -77,6 +84,12 @@ public class Client implements Serializable{
 	public Client(ClientDTO cliente, Set<CategoryClient> listCategory) {
 		this(cliente);
 		listCategory.forEach(cat -> this.categories.add(new CategoryClient(cat.getDescription())));
+	}
+	
+	public Client(ClientDTO cliente, Set<CategoryClient> listCategory, List<Enderecos> listEnderecos) {
+		this(cliente);
+		listCategory.forEach(cat -> this.categories.add(new CategoryClient(cat.getDescription())));
+		listEnderecos.forEach(end -> this.enderecos.add(new Enderecos(end)));
 	}
 	
 	public Long getID() {
@@ -121,7 +134,15 @@ public class Client implements Serializable{
 
 	public void setChildren(Integer children) {
 		this.children = children;
-	}	
+	}
+
+	public List<Enderecos> getEnderecos() {
+		return enderecos;
+	}
+
+	public void setEnderecos(List<Enderecos> enderecos) {
+		this.enderecos = enderecos;
+	}
 
 	public Set<CategoryClient> getCategories() {
 		return categories;
