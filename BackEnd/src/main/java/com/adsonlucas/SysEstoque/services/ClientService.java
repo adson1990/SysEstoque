@@ -68,7 +68,7 @@ public class ClientService {
 	
 	// Insert Client
 	@Transactional
-	@Async("taskExecutor") // execução desta chamada de forma assíncrona
+	//@Async("taskExecutor") // execução desta chamada de forma assíncrona
 	public ClientDTO insClient(ClientDTO dto) {
 		verificaCliente(dto.getCpf());
 			Client client = new Client();
