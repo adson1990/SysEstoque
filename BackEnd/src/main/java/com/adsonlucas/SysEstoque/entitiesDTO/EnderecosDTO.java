@@ -29,6 +29,7 @@ public class EnderecosDTO implements Serializable{
 	}
 	
 	public EnderecosDTO(Enderecos enderecos) {
+			this.id = enderecos.getId();
 			this.rua = enderecos.getRua();
 			this.bairro = enderecos.getBairro();
 			this.num = enderecos.getNum();

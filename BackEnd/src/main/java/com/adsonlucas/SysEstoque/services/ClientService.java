@@ -8,13 +8,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.adsonlucas.SysEstoque.Functions;
+import com.adsonlucas.SysEstoque.entities.Celphone;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.Enderecos;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
@@ -48,13 +48,24 @@ public class ClientService {
         }
     }
 	
+	//Todos números
+		@Transactional(readOnly = true)
+	    public void printCelphones(Long pessoaId) {
+	        Client pessoa = clientRepository.findPessoaWithCelphone(pessoaId);
+	        System.out.println("Nome da pessoa: " + pessoa.getName());
+
+	        for (Celphone celphone : pessoa.getCel()) {
+	            System.out.println("Telefone: " + celphone.getDdd() + " " + celphone.getNumber());
+	        }
+	    }
+	
 	//Todos clientes
 	@Cacheable("clientes")
 	@Transactional(readOnly = true)
 	public Page<ClientDTO> findAllPages(PageRequest pageRequest){
 		Page<Client> pageList = clientRepository.findAll(pageRequest);
 		
-		return pageList.map(x -> new ClientDTO(x, x.getCategories(), x.getEnderecos()));
+		return pageList.map(x -> new ClientDTO(x, x.getCategories(), x.getEnderecos(), x.getCel()));
 	}
 	
 	// Client By ID

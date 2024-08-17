@@ -36,6 +36,8 @@ public class Client implements Serializable{
 	@Column(nullable = false, unique = true)
 	private String cpf;
 	private Double income;
+	private Character sexo;
+	private String email;
 	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant birthDate;
@@ -43,6 +45,9 @@ public class Client implements Serializable{
 	
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
 	private List<Enderecos> enderecos = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+	private List<Celphone> cel = new ArrayList<>();
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_client_category",
@@ -53,14 +58,17 @@ public class Client implements Serializable{
 	
 	public Client() {
 	}
-
-	public Client(String name, String cpf, Double income, Instant birthDate, Integer children) {
+	
+	public Client(String name, String cpf, Double income, Instant birthDate,
+				  Integer children, Character sexo, String email) {
 		super();
 		this.name = name;
 		this.cpf = cpf;
 		this.income = income;
 		this.birthDate = birthDate;
 		this.children = children;
+		this.sexo = sexo;
+		this.email = email;
 	}
 	
 	public Client(ClientDTO clientDTO) {
@@ -69,6 +77,8 @@ public class Client implements Serializable{
 		this.income = clientDTO.getIncome();
 		this.birthDate = clientDTO.getBirthDate();
 		this.children = clientDTO.getChildren();
+		this.sexo = clientDTO.getSexo();
+		this.email = clientDTO.getEmail();
 	}
 	
 	public Client(ClientDTO clientDTO, Long ID) {
@@ -90,6 +100,13 @@ public class Client implements Serializable{
 		this(cliente);
 		listCategory.forEach(cat -> this.categories.add(new CategoryClient(cat.getDescription())));
 		listEnderecos.forEach(end -> this.enderecos.add(new Enderecos(end)));
+	}
+	
+	public Client(ClientDTO cliente, Set<CategoryClient> listCategory, List<Enderecos> listEnderecos, List<Celphone> listCelphone) {
+		this(cliente);
+		listCategory.forEach(cat -> this.categories.add(new CategoryClient(cat.getDescription())));
+		listEnderecos.forEach(end -> this.enderecos.add(new Enderecos(end)));
+		listCelphone.forEach(cel -> this.cel.add(new Celphone(cel)));
 	}
 	
 	public Long getID() {
@@ -134,6 +151,30 @@ public class Client implements Serializable{
 
 	public void setChildren(Integer children) {
 		this.children = children;
+	}
+
+	public Character getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(Character sexo) {
+		this.sexo = sexo;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public List<Celphone> getCel() {
+		return cel;
+	}
+
+	public void setCel(List<Celphone> cel) {
+		this.cel = cel;
 	}
 
 	public List<Enderecos> getEnderecos() {

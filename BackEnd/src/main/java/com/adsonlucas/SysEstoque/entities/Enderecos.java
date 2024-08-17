@@ -120,6 +120,10 @@ public class Enderecos implements Serializable{
 		this.country = country;
 	}
 
+	public Client getClient() {
+		return client;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
