@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.CelphoneDTO;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +24,7 @@ public class Celphone implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private Integer ddd;
+	@Column(nullable = false, unique = true)
 	private String number;
 	private Character tipo;  
 	
@@ -109,6 +111,5 @@ public class Celphone implements Serializable{
 		Celphone other = (Celphone) obj;
 		return Objects.equals(id, other.id);
 	}
-	
 	
 }

@@ -22,7 +22,7 @@ public class CelphoneDTO implements Serializable{
 	private String number;
 	private Character tipo;
 	
-	private Client client;
+	//private Client client;
 	
 	
 	public CelphoneDTO(Integer ddd, String number, Character tipo) {
@@ -72,13 +72,13 @@ public class CelphoneDTO implements Serializable{
 		this.tipo = tipo;
 	}
 
-	public Client getClient() {
+	/*public Client getClient() {
 		return client;
 	}
 
 	public void setClient(Client client) {
 		this.client = client;
-	}
+	}*/
 
 	public Integer getId() {
 		return id;

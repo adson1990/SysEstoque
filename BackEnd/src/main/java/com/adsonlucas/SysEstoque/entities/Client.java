@@ -87,7 +87,6 @@ public class Client implements Serializable{
 		if (ID != null) {
 			this.ID = ID;
 		}
-
 		//clientDTO.getCategories().forEach(cat -> this.categories.add(new CategoryClient(cat.getDescrption())));		
 	}
 	

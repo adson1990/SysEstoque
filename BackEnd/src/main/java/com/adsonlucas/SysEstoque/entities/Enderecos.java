@@ -27,18 +27,22 @@ public class Enderecos implements Serializable{
 	private Integer num;
 	private String estado;
 	private String country;
+	private String cep;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "client_id")
 	private Client client;
 	
-	public Enderecos(String rua, String bairro, Integer num, String estado, String country) {
+	public Enderecos() {}
+	
+	public Enderecos(String rua, String bairro, Integer num, String estado, String country, String cep) {
 		super();
 		this.rua = rua;
 		this.bairro = bairro;
 		this.num = num;
 		this.estado = estado;
 		this.country = country;
+		this.cep = cep;
 	}
 	
 	public Enderecos(Client client) {
@@ -49,6 +53,7 @@ public class Enderecos implements Serializable{
 			this.num = endereco.getNum();
 			this.estado = endereco.getEstado();
 			this.country = endereco.getCountry();
+			this.cep = endereco.getCep();
 		}
 	}
 	
@@ -60,6 +65,7 @@ public class Enderecos implements Serializable{
 		this.num = end.getNum();
 		this.estado = end.getEstado();
 		this.country = end.getCountry();
+		this.cep = end.getCep();
 	}
 	
 	public Enderecos(Enderecos end) {
@@ -70,10 +76,7 @@ public class Enderecos implements Serializable{
 		this.num = end.getNum();
 		this.estado = end.getEstado();
 		this.country = end.getCountry();
-	}
-
-	public Enderecos() {
-		
+		this.cep = end.getCep();
 	}
 
 	public Integer getId() {
@@ -114,6 +117,14 @@ public class Enderecos implements Serializable{
 
 	public String getCountry() {
 		return country;
+	}
+
+	public String getCep() {
+		return cep;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
 	}
 
 	public void setCountry(String country) {

@@ -43,7 +43,7 @@ public class AdminUserConfig implements CommandLineRunner {
 		var roleAdmin = rolesRepository.findByAuthority(Roles.Values.ADMIN.name()); //Busca se já existe a role admin no DB
 
 		if (roleAdmin == null) {
-			roleAdmin = new Roles(Roles.Values.ADMIN.name()); // caso não exista cria a rola admin
+			roleAdmin = new Roles(Roles.Values.ADMIN.name()); // caso não exista cria a Roler admin
 			rolesRepository.save(roleAdmin);
 		}
 		

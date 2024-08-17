@@ -14,8 +14,9 @@ public class EnderecosDTO implements Serializable{
 	private Integer num;
 	private String estado;
 	private String country;
+	private String cep;
 	
-	private Client client;
+	//private Client client;
 	
 	public EnderecosDTO(Client client) {
 		
@@ -25,6 +26,7 @@ public class EnderecosDTO implements Serializable{
 			this.num = endereco.getNum();
 			this.estado = endereco.getEstado();
 			this.country = endereco.getCountry();
+			this.cep = endereco.getCep();
 		}
 	}
 	
@@ -35,15 +37,17 @@ public class EnderecosDTO implements Serializable{
 			this.num = enderecos.getNum();
 			this.estado = enderecos.getEstado();
 			this.country = enderecos.getCountry();
+			this.cep = enderecos.getCep();
 	}
 	
-	public EnderecosDTO(String rua, String bairro, Integer num, String estado, String country) {
+	public EnderecosDTO(String rua, String bairro, Integer num, String estado, String country, String cep) {
 		super();
 		this.rua = rua;
 		this.bairro = bairro;
 		this.num = num;
 		this.estado = estado;
 		this.country = country;
+		this.cep = cep;
 	}
 	
 	public EnderecosDTO(EnderecosDTO end) {
@@ -54,6 +58,7 @@ public class EnderecosDTO implements Serializable{
 		this.num = end.getNum();
 		this.estado = end.getEstado();
 		this.country = end.getCountry();
+		this.cep = end.getCep();
 	}
 
 	public String getRua() {
@@ -96,13 +101,21 @@ public class EnderecosDTO implements Serializable{
 		this.country = country;
 	}
 
-	public Client getClient() {
+	public String getCep() {
+		return cep;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
+	}
+
+	/*public Client getClient() {
 		return client;
 	}
 
 	public void setClient(Client client) {
 		this.client = client;
-	}
+	}*/
 
 	public Integer getId() {
 		return id;
