@@ -1,19 +1,19 @@
 package com.adsonlucas.SysEstoque;
 
-import java.time.LocalDateTime;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import com.adsonlucas.SysEstoque.entities.CategoryClient;
 import com.adsonlucas.SysEstoque.entities.CategoryProduct;
 import com.adsonlucas.SysEstoque.entities.Client;
+import com.adsonlucas.SysEstoque.entities.Enderecos;
 import com.adsonlucas.SysEstoque.entities.Product;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryProductDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
+import com.adsonlucas.SysEstoque.entitiesDTO.EnderecosDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.ProductDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
@@ -40,9 +40,17 @@ public CategoryProduct copyDTOToEntityCategoryProduct(CategoryProductDTO dto, Ca
 	}
 
 public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {	
-	BeanUtils.copyProperties(dto, entity);
+	//BeanUtils.copyProperties(dto, entity);
 	
-	return entity;
+	entity.setName(dto.getName());
+    entity.setCpf(dto.getCpf());
+    entity.setIncome(dto.getIncome());
+    entity.setBirthDate(dto.getBirthDate());
+    entity.setSexo(dto.getSexo());
+    entity.setEmail(dto.getEmail());
+    entity.setSenha(dto.getSenha());
+    
+    return entity;
 	}
 
 public Product copyDTOToEntityProduct(ProductDTO dto, Product entity) {	

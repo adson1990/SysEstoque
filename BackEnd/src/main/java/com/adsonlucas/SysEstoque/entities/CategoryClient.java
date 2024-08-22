@@ -71,6 +71,7 @@ public class CategoryClient implements Serializable {
 		CategoryClient other = (CategoryClient) obj;
 		return Objects.equals(ID, other.ID);
 	}
+
 	
 	
 }

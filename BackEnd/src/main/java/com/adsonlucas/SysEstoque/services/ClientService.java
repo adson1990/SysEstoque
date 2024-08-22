@@ -1,7 +1,10 @@
 package com.adsonlucas.SysEstoque.services;
 
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -10,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +21,24 @@ import com.adsonlucas.SysEstoque.Functions;
 import com.adsonlucas.SysEstoque.entities.Celphone;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.Enderecos;
+import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
+import com.adsonlucas.SysEstoque.entitiesDTO.EnderecosDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeExistenteException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
 import com.adsonlucas.SysEstoque.repositories.ClientRepository;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 @EnableMethodSecurity
 public class ClientService {
+	
+	@PersistenceContext
+    private EntityManager entityManager;
 	
 	@Autowired
 	private ClientRepository clientRepository;
@@ -74,19 +85,35 @@ public class ClientService {
 		Optional<Client> clientById = clientRepository.findById(ID);
 		Client clientEntity = clientById.orElseThrow(() -> new EntidadeNotFoundException("Cliente não encontrado pelo ID informado."));
 		
-		return new ClientDTO(clientEntity, clientEntity.getCategories());
+		return new ClientDTO(clientEntity, clientEntity.getCategories(), clientEntity.getEnderecos());
 	}
 	
 	// Insert Client
 	@Transactional
 	//@Async("taskExecutor") // execução desta chamada de forma assíncrona
 	public ClientDTO insClient(ClientDTO dto) {
-		verificaCliente(dto.getCpf());
-			Client client = new Client();
-			client = function.copyDTOToEntityClient(dto, client);
-			client = clientRepository.save(client);
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		
-		return new ClientDTO(client);
+		verificaCliente(dto.getCpf());
+		
+		var senhaCripto = encoder.encode(dto.getSenha());
+		dto.setSenha(senhaCripto);
+		
+		Client client = new Client();
+		client = function.copyDTOToEntityClient(dto, client);
+			
+		client = clientRepository.save(client);
+		
+		Set<CategoryClientDTO> categoryDTOs = new HashSet<>();
+        categoryDTOs.add(new CategoryClientDTO(4L));
+        categoryDTOs.add(new CategoryClientDTO(6L));
+        dto.setCategories(categoryDTOs);
+        
+        Long clientId = client.getID();
+        insertClientCategories(clientId, dto.getCategories());
+        insertClientEnderecos(dto.getEnderecos(), clientId);
+		
+		return new ClientDTO(client, client.getCategories(), client.getEnderecos());
 	}
 	
 	//UPDATES
@@ -95,8 +122,12 @@ public class ClientService {
 	public ClientDTO updClient(ClientDTO dto, Long ID) {
 		verificaCliente(dto.getCpf());
 		try {
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			ClientDTO clientDTO = findById(ID);
+			var senhaCripto = encoder.encode(dto.getSenha());
+			dto.setSenha(senhaCripto);
 			Client client = new Client(dto, clientDTO.getID());
+			
 			clientRepository.save(client);
 		
 			return new ClientDTO(client);
@@ -130,6 +161,32 @@ public class ClientService {
 		
 		if (clientRepository.findByCpf(cpf).isPresent()) {
 			throw new EntidadeExistenteException("CPF já cadastrado no Banco de Dados.");
+		}
+	}
+	
+	// Salva o cliente com as 2 categorias padrão iniciais
+	private void insertClientCategories(Long clientId, Set<CategoryClientDTO> categories) {
+        for (CategoryClientDTO category : categories) {
+            String sql = "INSERT INTO TB_CLIENT_CATEGORY (client_id, categoryclient_id) VALUES (:clientId, :categoryId)";
+            entityManager.createNativeQuery(sql)
+                    .setParameter("clientId", clientId)
+                    .setParameter("categoryId", category.getID())
+                    .executeUpdate();
+        }
+    }
+	
+	private void insertClientEnderecos(List<EnderecosDTO> enderecos, Long idClient) {
+		for (EnderecosDTO enderecoDTO : enderecos) {
+			String sql = "INSERT INTO TB_ENDERECOS (RUA, BAIRRO, NUM, ESTADO, COUNTRY, CEP, CLIENT_ID) VALUES (:rua, :bairro, :num, :estado, :country, :cep, :client_id)";
+			entityManager.createNativeQuery(sql)
+						.setParameter("rua", enderecoDTO.getRua())
+						.setParameter("bairro", enderecoDTO.getBairro())
+						.setParameter("estado", enderecoDTO.getEstado())
+						.setParameter("num", enderecoDTO.getNum())
+						.setParameter("country", enderecoDTO.getCountry())
+						.setParameter("cep", enderecoDTO.getCep())
+						.setParameter("client_id", idClient)
+						.executeUpdate();
 		}
 	}
 

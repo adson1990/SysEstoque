@@ -30,7 +30,7 @@ public class ClientDTO implements Serializable{
 	private Character sexo;
 	private String email;
 	private Instant birthDate;
-	private Integer children;
+	private String senha;
 	
 	private List<EnderecosDTO> enderecos = new ArrayList<>();
 	
@@ -42,16 +42,16 @@ public class ClientDTO implements Serializable{
 	public ClientDTO() {
 	}
 
-	public ClientDTO(String name, String cpf, Double income, Instant birthDate, Integer children,
-					String email, Character sexo) {
+	public ClientDTO(String name, String cpf, Double income, Instant birthDate,
+					String email, Character sexo, String senha) {
 		super();
 		this.name = name;
 		this.cpf = cpf;
 		this.income = income;
 		this.birthDate = birthDate;
-		this.children = children;
 		this.email = email;
 		this.sexo = sexo;
+		this.senha = senha;
 	}
 
 	public ClientDTO(Client client) {
@@ -61,9 +61,9 @@ public class ClientDTO implements Serializable{
 		this.cpf = client.getCpf();
 		this.income = client.getIncome();
 		this.birthDate = client.getBirthDate();
-		this.children = client.getChildren();
 		this.email = client.getEmail();
 		this.sexo = client.getSexo();
+		this.senha = client.getSenha();
 	}
 	
 	public ClientDTO(Client entity, Set<CategoryClient> categories) {
@@ -119,14 +119,6 @@ public class ClientDTO implements Serializable{
 	public void setBirthDate(Instant birthDate) {
 		this.birthDate = birthDate;
 	}
-
-	public Integer getChildren() {
-		return children;
-	}
-
-	public void setChildren(Integer children) {
-		this.children = children;
-	}	
 	
 	public Character getSexo() {
 		return sexo;
@@ -142,6 +134,14 @@ public class ClientDTO implements Serializable{
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 
 	public Set<CategoryClientDTO> getCategories() {

@@ -16,7 +16,7 @@ public class EnderecosDTO implements Serializable{
 	private String country;
 	private String cep;
 	
-	//private Client client;
+	private Client client;
 	
 	public EnderecosDTO(Client client) {
 		
@@ -109,13 +109,13 @@ public class EnderecosDTO implements Serializable{
 		this.cep = cep;
 	}
 
-	/*public Client getClient() {
+	public Client getClient() {
 		return client;
 	}
 
 	public void setClient(Client client) {
 		this.client = client;
-	}*/
+	}
 
 	public Integer getId() {
 		return id;

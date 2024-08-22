@@ -9,12 +9,12 @@ import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 public class Factory {
 	
 	public static Client createdClient() {
-		Client cliente = new Client("JOSE SARAMAGO", "674.028.960-30", 1850.0, Instant.parse("1997-10-10T20:50:07.12345Z"), 1,'M',"SARAMAGO@EXEMPLO.COM");
+		Client cliente = new Client("JOSE SARAMAGO", "674.028.960-30", 1850.0, Instant.parse("1997-10-10T20:50:07.12345Z"), 'M',"SARAMAGO@EXEMPLO.COM", "$2a$10$qGMvT3AvtGNJeZEhCEkkSuHQ3iXRkLlIxcdifuP918K0aXK243Bla");
 		return cliente;
 	}
 	
 	public static ClientDTO createdClientDTO2() {
-		ClientDTO cliente = new ClientDTO("ABGAIL ABIGOBAL", "892.359.520-93", 2035.5, Instant.parse("1994-08-17T20:50:07.12345Z"), 3,"ABGAIL@EXEMPLO.COM", 'F');		
+		ClientDTO cliente = new ClientDTO("ABGAIL ABIGOBAL", "892.359.520-93", 2035.5, Instant.parse("1994-08-17T20:50:07.12345Z"), "ABGAIL@EXEMPLO.COM", 'F', "$2a$10$qGMvT3AvtGNJeZEhCEkkSuHQ3iXRkLlIxcdifuP918K0aXK243Bla");		
 				
 		return cliente;
 	}

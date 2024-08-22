@@ -19,6 +19,11 @@ public class CategoryClientDTO implements Serializable{
 		this.description = descrption;
 	}
 	
+	public CategoryClientDTO(Long iD) {
+		super();
+		ID = iD;
+	}
+	
 	public CategoryClientDTO(CategoryClient cat) {
 		super();
 		ID = cat.getID();

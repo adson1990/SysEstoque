@@ -38,12 +38,12 @@ public class Client implements Serializable{
 	private Double income;
 	private Character sexo;
 	private String email;
+	private String senha;// implementar adição da senha do usuário
 	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant birthDate;
-	private Integer children;
 	
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
 	private List<Enderecos> enderecos = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
@@ -60,15 +60,15 @@ public class Client implements Serializable{
 	}
 	
 	public Client(String name, String cpf, Double income, Instant birthDate,
-				  Integer children, Character sexo, String email) {
+				  Character sexo, String email, String senha) {
 		super();
 		this.name = name;
 		this.cpf = cpf;
 		this.income = income;
 		this.birthDate = birthDate;
-		this.children = children;
 		this.sexo = sexo;
 		this.email = email;
+		this.senha = senha;
 	}
 	
 	public Client(ClientDTO clientDTO) {
@@ -76,9 +76,12 @@ public class Client implements Serializable{
 		this.cpf = clientDTO.getCpf();
 		this.income = clientDTO.getIncome();
 		this.birthDate = clientDTO.getBirthDate();
-		this.children = clientDTO.getChildren();
 		this.sexo = clientDTO.getSexo();
 		this.email = clientDTO.getEmail();
+		this.senha = clientDTO.getSenha();
+		/*Set<CategoryClient> cat = new HashSet<>();
+		cat.add();
+		this.categories = clientDTO.getCategories();*/
 	}
 	
 	public Client(ClientDTO clientDTO, Long ID) {
@@ -144,14 +147,6 @@ public class Client implements Serializable{
 		this.birthDate = birthDate;
 	}
 
-	public Integer getChildren() {
-		return children;
-	}
-
-	public void setChildren(Integer children) {
-		this.children = children;
-	}
-
 	public Character getSexo() {
 		return sexo;
 	}
@@ -166,6 +161,14 @@ public class Client implements Serializable{
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 
 	public List<Celphone> getCel() {
@@ -186,6 +189,10 @@ public class Client implements Serializable{
 
 	public Set<CategoryClient> getCategories() {
 		return categories;
+	}
+
+	public void setCategories(Set<CategoryClient> categories) {
+		this.categories = categories;
 	}
 
 	@Override

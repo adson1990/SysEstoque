@@ -26,7 +26,6 @@ public class InsertClientTest {
         LocalDateTime localDateTime = LocalDateTime.of(2023, 6, 13, 12, 0); // ano, mês, dia, hora, minuto
         Instant instant = localDateTime.toInstant(ZoneOffset.UTC);
         client.setBirthDate(instant);
-        client.setChildren(2);
         client.setIncome(5000.00);
         
         ClientDTO savedClient = clientService.insClient(client);

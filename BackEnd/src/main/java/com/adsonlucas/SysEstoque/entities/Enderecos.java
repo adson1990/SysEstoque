@@ -32,7 +32,7 @@ public class Enderecos implements Serializable{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "client_id")
 	private Client client;
-	
+
 	public Enderecos() {}
 	
 	public Enderecos(String rua, String bairro, Integer num, String estado, String country, String cep) {
@@ -133,6 +133,10 @@ public class Enderecos implements Serializable{
 
 	public Client getClient() {
 		return client;
+	}
+	
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
 	@Override
