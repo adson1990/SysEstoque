@@ -11,6 +11,10 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/
+*.iml
+*.iws
+*.ipr
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -156,12 +160,81 @@ buildNumber.properties
 # Eclipse m2e generated files
 # Eclipse Core
 .project
+.springBeans
+.sts4-cache/
+.settings/
+bin/
+target/
+.mvn/
+.m2/
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,maven
 
 /.metadata/
+
+# Maven specific
+log/
+!.mvn/wrapper/maven-wrapper.jar
+**/mvnw
+**/mvnw.cmd
+**/target/
+
+# Linux specific
+*~
+.nfs*
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs
+logs/
+*.log
+
+# Spring Boot specific
+*.jar
+*.war
+*.ear
+
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
+*.rdb
+hs_err_pid*
+.recommenders
+
+# Node specific (caso use alguma biblioteca ou ferramenta Node.js)
+node_modules/
+
+# IDE specific
+/.idea/
+/.vscode/
+/.gradle/
+/out/
+/build/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.properties
+.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# Temp files
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+*.old
+
+# Environmental files
+.env
 
 ### Eclipse ###
 .metadata

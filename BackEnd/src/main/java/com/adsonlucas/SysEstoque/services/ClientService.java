@@ -22,6 +22,7 @@ import com.adsonlucas.SysEstoque.entities.Celphone;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.Enderecos;
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
+import com.adsonlucas.SysEstoque.entitiesDTO.CelphoneDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.EnderecosDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -85,7 +86,7 @@ public class ClientService {
 		Optional<Client> clientById = clientRepository.findById(ID);
 		Client clientEntity = clientById.orElseThrow(() -> new EntidadeNotFoundException("Cliente não encontrado pelo ID informado."));
 		
-		return new ClientDTO(clientEntity, clientEntity.getCategories(), clientEntity.getEnderecos());
+		return new ClientDTO(clientEntity, clientEntity.getCategories(), clientEntity.getEnderecos(), clientEntity.getCel());
 	}
 	
 	// Insert Client
@@ -101,7 +102,7 @@ public class ClientService {
 		
 		Client client = new Client();
 		client = function.copyDTOToEntityClient(dto, client);
-			
+	
 		client = clientRepository.save(client);
 		
 		Set<CategoryClientDTO> categoryDTOs = new HashSet<>();
@@ -112,8 +113,10 @@ public class ClientService {
         Long clientId = client.getID();
         insertClientCategories(clientId, dto.getCategories());
         insertClientEnderecos(dto.getEnderecos(), clientId);
+        insertClientCelphones(dto.getCelphone(), clientId);
+        
 		
-		return new ClientDTO(client, client.getCategories(), client.getEnderecos());
+		return new ClientDTO(client, client.getCategories(), client.getEnderecos(), client.getCel());
 	}
 	
 	//UPDATES
@@ -187,6 +190,18 @@ public class ClientService {
 						.setParameter("cep", enderecoDTO.getCep())
 						.setParameter("client_id", idClient)
 						.executeUpdate();
+		}
+	}
+	
+	private void insertClientCelphones(List<CelphoneDTO> celphoneDTO, Long clientID) {
+		for (CelphoneDTO cel : celphoneDTO) {
+			String sql = "INSERT INTO TB_CELPHONE (DDD, NUMBER, TIPO, CLIENT_ID) VALUES (:ddd, :number, :tipo, :client_id)";
+			entityManager.createNativeQuery(sql)
+			.setParameter("ddd", cel.getDdd())
+			.setParameter("number", cel.getNumber())
+			.setParameter("tipo", cel.getTipo())
+			.setParameter("client_id", clientID)
+			.executeUpdate();
 		}
 	}
 

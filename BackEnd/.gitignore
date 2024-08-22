@@ -150,3 +150,86 @@ buildNumber.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,eclipse
 
+# IntelliJ IDEA (caso algum desenvolvedor use esta IDE)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Eclipse/STS (Spring Tool Suite)
+.project
+.classpath
+.springBeans
+.sts4-cache/
+.settings/
+bin/
+target/
+.mvn/
+.m2/
+
+# Maven specific
+log/
+!.mvn/wrapper/maven-wrapper.jar
+**/mvnw
+**/mvnw.cmd
+**/target/
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux specific
+*~
+.nfs*
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs
+logs/
+*.log
+
+# Spring Boot specific
+*.jar
+*.war
+*.ear
+
+# Java specific
+*.class
+*.jar
+*.war
+*.ear
+*.rdb
+hs_err_pid*
+.recommenders
+
+# Node specific (caso use alguma biblioteca ou ferramenta Node.js)
+node_modules/
+
+# IDE specific
+/.idea/
+/.vscode/
+/.gradle/
+/out/
+/build/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.properties
+.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# Temp files
+*.swp
+*.swo
+*~
+*.tmp
+*.bak
+*.old
+
+# Environmental files
+.env

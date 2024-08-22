@@ -38,7 +38,7 @@ public class Client implements Serializable{
 	private Double income;
 	private Character sexo;
 	private String email;
-	private String senha;// implementar adição da senha do usuário
+	private String senha;
 	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant birthDate;
