@@ -53,7 +53,7 @@ public class WebSecurityConfig {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	private static final String[] PUBLIC = {"/login","/auth/refresh"};
+	private static final String[] PUBLIC = {"/login","/auth/refresh","/clients"};
 /*	private static final String[] TESTE_INSERTS= {"/users","/clients","/products"};
 	private static final String[] TESTE_BUSCA= {"/users**","/clients**","/products**","/roles**","/categorie/**"};
 	private static final String[] TESTE_UPD_DEL= {"/users/**","/clients/**","/products/**"}; */
@@ -79,7 +79,7 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.GET, TESTE_BUSCA).permitAll()
 				.requestMatchers(HttpMethod.PUT, TESTE_UPD_DEL).permitAll()
 				.requestMatchers(HttpMethod.DELETE, TESTE_UPD_DEL).permitAll() */
-				.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/h2-console/**","/clients")).permitAll()
 				.anyRequest().authenticated()) // Todas as requisições devem ser autenticadas.	
 				.csrf(csrf -> csrf.disable()) // vulnerabilidade proposta para facilitar os testes, nunca subir em produção
 				.headers(headers -> headers
