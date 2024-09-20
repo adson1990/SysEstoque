@@ -63,7 +63,7 @@ public class ClientResource {
 	}
 	
 	// Insert
-	@PostMapping
+	@PostMapping(value = "/register")
 	public ResponseEntity<ClientDTO> insertClient(@Valid @RequestBody ClientDTO dto){
 		dto = clientService.insClient(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
