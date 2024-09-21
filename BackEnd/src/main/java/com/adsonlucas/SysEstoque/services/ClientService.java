@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -18,11 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.adsonlucas.SysEstoque.Functions;
-import com.adsonlucas.SysEstoque.entities.Celphone;
+import com.adsonlucas.SysEstoque.entities.Cellphone;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.Enderecos;
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
-import com.adsonlucas.SysEstoque.entitiesDTO.CelphoneDTO;
+import com.adsonlucas.SysEstoque.entitiesDTO.CellphoneDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.EnderecosDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
@@ -66,8 +67,8 @@ public class ClientService {
 	        Client pessoa = clientRepository.findPessoaWithCelphone(pessoaId);
 	        System.out.println("Nome da pessoa: " + pessoa.getName());
 
-	        for (Celphone celphone : pessoa.getCel()) {
-	            System.out.println("Telefone: " + celphone.getDdd() + " " + celphone.getNumber());
+	        for (Cellphone cellphone : pessoa.getCel()) {
+	            System.out.println("Telefone: " + cellphone.getDdd() + " " + cellphone.getNumber());
 	        }
 	    }
 	
@@ -105,6 +106,10 @@ public class ClientService {
 	
 		client = clientRepository.save(client);
 		
+		
+        /*client.getEnderecos().size();  // Isso força a inicialização da lista
+        client.getCel().size(); */
+		
 		Set<CategoryClientDTO> categoryDTOs = new HashSet<>();
         categoryDTOs.add(new CategoryClientDTO(4L));
         categoryDTOs.add(new CategoryClientDTO(6L));
@@ -113,10 +118,17 @@ public class ClientService {
         Long clientId = client.getID();
         insertClientCategories(clientId, dto.getCategories());
         insertClientEnderecos(dto.getEnderecos(), clientId);
-        insertClientCelphones(dto.getCelphone(), clientId);
+        insertClientCelphones(dto.getCellphone(), clientId);
         
+        client = clientRepository.findById(clientId).orElseThrow();
+        
+        client.getEnderecos().clear();  
+        client.getEnderecos().addAll(dto.getEnderecos().stream().map(Enderecos::new).collect(Collectors.toList()));
+
+        client.getCel().clear();
+        client.getCel().addAll(dto.getCellphone().stream().map(Cellphone::new).collect(Collectors.toList()));
 		
-		return new ClientDTO(client, client.getCategories(), client.getEnderecos(), client.getCel());
+		return new ClientDTO(client, client.getEnderecos(), client.getCel());
 	}
 	
 	//UPDATES
@@ -193,9 +205,9 @@ public class ClientService {
 		}
 	}
 	
-	private void insertClientCelphones(List<CelphoneDTO> celphoneDTO, Long clientID) {
-		for (CelphoneDTO cel : celphoneDTO) {
-			String sql = "INSERT INTO TB_CELPHONE (DDD, NUMBER, TIPO, CLIENT_ID) VALUES (:ddd, :number, :tipo, :client_id)";
+	private void insertClientCelphones(List<CellphoneDTO> cellphoneDTO, Long clientID) {
+		for (CellphoneDTO cel : cellphoneDTO) {
+			String sql = "INSERT INTO TB_CELLPHONE (DDD, NUMBER, TIPO, CLIENT_ID) VALUES (:ddd, :number, :tipo, :client_id)";
 			entityManager.createNativeQuery(sql)
 			.setParameter("ddd", cel.getDdd())
 			.setParameter("number", cel.getNumber())

@@ -4,13 +4,15 @@ import java.io.Serializable;
 
 import org.hibernate.validator.constraints.Length;
 
-import com.adsonlucas.SysEstoque.entities.Celphone;
+import com.adsonlucas.SysEstoque.entities.Cellphone;
 import com.adsonlucas.SysEstoque.entities.Client;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class CelphoneDTO implements Serializable{
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CellphoneDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private Integer id;
@@ -22,26 +24,24 @@ public class CelphoneDTO implements Serializable{
 	private String number;
 	private Character tipo;
 	
-	//private Client client;
 	
-	
-	public CelphoneDTO(Integer ddd, String number, Character tipo) {
+	public CellphoneDTO(Integer ddd, String number, Character tipo) {
 		super();
 		this.ddd = ddd;
 		this.number = number;
 		this.tipo = tipo;
 	}
 	
-	public CelphoneDTO(Celphone cel) {
+	public CellphoneDTO(Cellphone cel) {
 		this.id = cel.getId();
 		this.ddd = cel.getDdd();
 		this.number = cel.getNumber();
 		this.tipo = cel.getTipo();
 	}
 	
-	public CelphoneDTO(Client client) {
+	public CellphoneDTO(Client client) {
 		
-		for(Celphone cel : client.getCel()){
+		for(Cellphone cel : client.getCel()){
 			this.ddd = cel.getDdd();
 			this.number = cel.getNumber();
 			this.tipo = cel.getTipo();
@@ -71,14 +71,6 @@ public class CelphoneDTO implements Serializable{
 	public void setTipo(Character tipo) {
 		this.tipo = tipo;
 	}
-
-	/*public Client getClient() {
-		return client;
-	}
-
-	public void setClient(Client client) {
-		this.client = client;
-	}*/
 
 	public Integer getId() {
 		return id;

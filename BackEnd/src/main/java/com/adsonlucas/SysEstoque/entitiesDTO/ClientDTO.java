@@ -12,11 +12,13 @@ import org.hibernate.validator.constraints.Length;
 import com.adsonlucas.SysEstoque.entities.CategoryClient;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.Enderecos;
-import com.adsonlucas.SysEstoque.entities.Celphone;
+import com.adsonlucas.SysEstoque.entities.Cellphone;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
@@ -34,9 +36,10 @@ public class ClientDTO implements Serializable{
 	
 	private List<EnderecosDTO> enderecos = new ArrayList<>();
 	
-	private List<CelphoneDTO> cel = new ArrayList<>();
+	private List<CellphoneDTO> cel = new ArrayList<>();
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private Set<CategoryClientDTO> categories = new HashSet();
 	
 	public ClientDTO() {
@@ -77,11 +80,17 @@ public class ClientDTO implements Serializable{
 		enderecos.forEach(end -> this.enderecos.add(new EnderecosDTO(end)));
 	}
 	
-	public ClientDTO(Client entity, Set<CategoryClient> categories, List<Enderecos> enderecos, List<Celphone> celphone) {
+	public ClientDTO(Client entity, Set<CategoryClient> categories, List<Enderecos> enderecos, List<Cellphone> cellphone) {
 		this(entity);
 		categories.forEach(cat -> this.categories.add(new CategoryClientDTO(cat)));
 		enderecos.forEach(end -> this.enderecos.add(new EnderecosDTO(end)));
-		celphone.forEach(cel -> this.cel.add(new CelphoneDTO(cel)));
+		cellphone.forEach(cel -> this.cel.add(new CellphoneDTO(cel)));
+	}
+	
+	public ClientDTO(Client entity, List<Enderecos> enderecos, List<Cellphone> cellphone) {
+		this(entity);
+		enderecos.forEach(end -> this.enderecos.add(new EnderecosDTO(end)));
+		cellphone.forEach(cel -> this.cel.add(new CellphoneDTO(cel)));
 	}
 
 	public Long getID() {
@@ -160,11 +169,11 @@ public class ClientDTO implements Serializable{
 		this.enderecos = enderecos;
 	}
 	
-	public List<CelphoneDTO> getCelphone() {
+	public List<CellphoneDTO> getCellphone() {
 		return cel;
 	}
 
-	public void setCelphone(List<CelphoneDTO> cel) {
+	public void setCellphone(List<CellphoneDTO> cel) {
 		this.cel = cel;
 	}
 

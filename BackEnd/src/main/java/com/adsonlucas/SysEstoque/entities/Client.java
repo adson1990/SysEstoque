@@ -47,7 +47,7 @@ public class Client implements Serializable{
 	private List<Enderecos> enderecos = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-	private List<Celphone> cel = new ArrayList<>();
+	private List<Cellphone> cel = new ArrayList<>();
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_client_category",
@@ -79,9 +79,6 @@ public class Client implements Serializable{
 		this.sexo = clientDTO.getSexo();
 		this.email = clientDTO.getEmail();
 		this.senha = clientDTO.getSenha();
-		/*Set<CategoryClient> cat = new HashSet<>();
-		cat.add();
-		this.categories = clientDTO.getCategories();*/
 	}
 	
 	public Client(ClientDTO clientDTO, Long ID) {
@@ -89,8 +86,7 @@ public class Client implements Serializable{
 		
 		if (ID != null) {
 			this.ID = ID;
-		}
-		//clientDTO.getCategories().forEach(cat -> this.categories.add(new CategoryClient(cat.getDescrption())));		
+		}	
 	}
 	
 	public Client(ClientDTO cliente, Set<CategoryClient> listCategory) {
@@ -104,11 +100,11 @@ public class Client implements Serializable{
 		listEnderecos.forEach(end -> this.enderecos.add(new Enderecos(end)));
 	}
 	
-	public Client(ClientDTO cliente, Set<CategoryClient> listCategory, List<Enderecos> listEnderecos, List<Celphone> listCelphone) {
+	public Client(ClientDTO cliente, Set<CategoryClient> listCategory, List<Enderecos> listEnderecos, List<Cellphone> listCelphone) {
 		this(cliente);
 		listCategory.forEach(cat -> this.categories.add(new CategoryClient(cat.getDescription())));
 		listEnderecos.forEach(end -> this.enderecos.add(new Enderecos(end)));
-		listCelphone.forEach(cel -> this.cel.add(new Celphone(cel)));
+		listCelphone.forEach(cel -> this.cel.add(new Cellphone(cel)));
 	}
 	
 	public Long getID() {
@@ -171,11 +167,11 @@ public class Client implements Serializable{
 		this.senha = senha;
 	}
 
-	public List<Celphone> getCel() {
+	public List<Cellphone> getCel() {
 		return cel;
 	}
 
-	public void setCel(List<Celphone> cel) {
+	public void setCel(List<Cellphone> cel) {
 		this.cel = cel;
 	}
 

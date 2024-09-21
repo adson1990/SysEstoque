@@ -18,7 +18,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 	@EntityGraph(attributePaths = "enderecos")
 	@Query("SELECT p FROM Client p WHERE p.id = :id")
 	Client findPessoaWithEnderecos(@Param("id") Long id);
-	@EntityGraph(attributePaths = "celphone")
+	@EntityGraph(attributePaths = "cellphone")
 	@Query("SELECT p FROM Client p WHERE p.id = :id")
 	Client findPessoaWithCelphone(@Param("id") Long id);
 
