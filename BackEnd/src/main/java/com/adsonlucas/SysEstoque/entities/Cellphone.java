@@ -3,7 +3,7 @@ package com.adsonlucas.SysEstoque.entities;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.adsonlucas.SysEstoque.entitiesDTO.CelphoneDTO;
+import com.adsonlucas.SysEstoque.entitiesDTO.CellphoneDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,8 +16,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_celphone")
-public class Celphone implements Serializable{
+@Table(name = "tb_cellphone")
+public class Cellphone implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -32,18 +32,18 @@ public class Celphone implements Serializable{
 	@JoinColumn(name = "client_id")
 	private Client client;
 	
-	public Celphone() {
+	public Cellphone() {
 		
 	}
 
-	public Celphone(Integer ddd, String number, Character tipo) {
+	public Cellphone(Integer ddd, String number, Character tipo) {
 		super();
 		this.ddd = ddd;
 		this.number = number;
 		this.tipo = tipo;
 	}
 	
-	public Celphone(CelphoneDTO cel) {
+	public Cellphone(CellphoneDTO cel) {
 		super();
 		id = cel.getId();
 		this.ddd = cel.getDdd();
@@ -51,7 +51,7 @@ public class Celphone implements Serializable{
 		this.tipo = cel.getTipo();
 	}
 	
-	public Celphone(Celphone cel) {
+	public Cellphone(Cellphone cel) {
 		super();
 		id = cel.getId();
 		this.ddd = cel.getDdd();
@@ -108,7 +108,7 @@ public class Celphone implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Celphone other = (Celphone) obj;
+		Cellphone other = (Cellphone) obj;
 		return Objects.equals(id, other.id);
 	}
 	
