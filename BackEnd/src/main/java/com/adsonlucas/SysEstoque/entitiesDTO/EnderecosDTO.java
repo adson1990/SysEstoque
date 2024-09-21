@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.Enderecos;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EnderecosDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
