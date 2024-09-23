@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,6 +59,14 @@ public class ClientResource {
 	@GetMapping(value = "/{ID}")
 	public ResponseEntity<ClientDTO> findClientById(@PathVariable @NotNull @Positive Long ID){
 		ClientDTO clientDTO = clientService.findById(ID);
+	
+		return ResponseEntity.ok().body(clientDTO);
+	}
+	
+	@GetMapping(value = "/email/{email}")
+	public ResponseEntity<ClientDTO> findClientByEmail(@PathVariable @NotNull String email){
+		System.out.println("Received request for email: " + email);
+		ClientDTO clientDTO = clientService.findByEmail(email);
 	
 		return ResponseEntity.ok().body(clientDTO);
 	}

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import com.adsonlucas.SysEstoque.entities.Client;
 
+import jakarta.validation.constraints.NotNull;
+
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
@@ -21,5 +23,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 	@EntityGraph(attributePaths = "cellphone")
 	@Query("SELECT p FROM Client p WHERE p.id = :id")
 	Client findPessoaWithCelphone(@Param("id") Long id);
+
+	Optional<Client> findByEmail(@NotNull String email);
 
 }

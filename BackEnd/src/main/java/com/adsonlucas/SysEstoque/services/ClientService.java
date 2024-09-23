@@ -34,6 +34,7 @@ import com.adsonlucas.SysEstoque.repositories.ClientRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.validation.constraints.NotNull;
 
 @Service
 @EnableMethodSecurity
@@ -88,6 +89,14 @@ public class ClientService {
 		Client clientEntity = clientById.orElseThrow(() -> new EntidadeNotFoundException("Cliente não encontrado pelo ID informado."));
 		
 		return new ClientDTO(clientEntity, clientEntity.getCategories(), clientEntity.getEnderecos(), clientEntity.getCel());
+	}
+	
+	@Transactional(readOnly = true)
+	public ClientDTO findByEmail(@NotNull String email) {
+		Optional<Client> clientByEmail = clientRepository.findByEmail(email);
+		Client clientEntity = clientByEmail.orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado pelo email informado."));
+		
+		return new ClientDTO(clientEntity);
 	}
 	
 	// Insert Client
