@@ -23,6 +23,7 @@ import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshResponse;
+import com.adsonlucas.SysEstoque.entitiesDTO.TokenTemporarioResponse;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
 import com.adsonlucas.SysEstoque.resouces.exceptions.TokenRefreshException;
 import com.adsonlucas.SysEstoque.services.RefreshTokenService;
@@ -118,4 +119,30 @@ public class LoginController {
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
     }
+	
+	@PostMapping("/token/consulta")
+	public ResponseEntity<TokenTemporarioResponse> tokenTemporario(){
+		Optional<User> user = Optional.ofNullable((User) userService.loadUserByUsername("ADMIN"));
+		 
+		 var now = Instant.now();
+		 var accessTokenExpiresIn = 30L; // 30 segundos
+		 
+		 var scopes = user.get().getRoles()
+				 .stream()
+				 .map(Roles::getAuthority)
+				 .collect(Collectors.joining(" ")); // obter o scopo de permissão do usuário que esta logando no sistema
+		 
+		 //configuração de atributos do JSON
+		 var claims = JwtClaimsSet.builder()
+				 	  .issuer("Backend") // quem está gerando o token
+				 	  .subject("ADMIN") //usuário quem é 
+				 	  .issuedAt(now) // data de emissão do token
+				 	  .expiresAt(now.plusSeconds(accessTokenExpiresIn)) // tempo de expiração
+				 	  .claim("scope", scopes) // obtendo scopo da requisição
+				 	  .build();
+		 
+		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); 
+		 
+		 return ResponseEntity.ok(new TokenTemporarioResponse(jwtValue, accessTokenExpiresIn));
+	}
 }
