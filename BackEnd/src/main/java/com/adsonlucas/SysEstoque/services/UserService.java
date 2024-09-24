@@ -3,6 +3,8 @@ package com.adsonlucas.SysEstoque.services;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +127,25 @@ public class UserService implements UserDetailsService{
 		logger.info("User found: " + username);
 		User user = userOptional.get();
 		return user;
+	}
+
+	// solicitação de token temporário para consultar e-mail existente no DB
+	public boolean loadEmailByUsername(String username) throws UsernameNotFoundException, AuthenticationException {
+		Optional<User> userOptional = userRepository.findByNome(username.toString().toUpperCase());
+		
+		if (userOptional.isEmpty()) {
+			logger.error("User not found: " + username);
+			throw new UsernameNotFoundException("Usuário não encontrado.");
+		}else if (userOptional.get().getAccountBlok()) {
+			logger.warn("Conta Bloqueada. " + username); 
+			throw new LockedException("Conta bloqueada, favor entrar em contato com o suporte.");
+		} else if (!userOptional.get().getUsername().equals("ADMIN")) {
+			throw new AuthenticationException("Usuário diferente do administrador para este tipo de requisição.");
+		}
+		
+		logger.info("Solicitação atendida, ");
+		
+		return true;
 	} 
 	
 }

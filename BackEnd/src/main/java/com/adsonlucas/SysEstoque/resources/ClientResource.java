@@ -2,6 +2,8 @@ package com.adsonlucas.SysEstoque.resources;
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
 import com.adsonlucas.SysEstoque.exceptions.DataBaseException;
 import com.adsonlucas.SysEstoque.exceptions.EntidadeNotFoundException;
 import com.adsonlucas.SysEstoque.services.ClientService;
+import com.adsonlucas.SysEstoque.services.UserService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -38,8 +41,8 @@ public class ClientResource {
 	
 	@Autowired
 	private ClientService clientService;
+	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 	
-	//Select all
 	@GetMapping
 	public ResponseEntity<Page<ClientDTO>> findAll(
 	@RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -54,7 +57,6 @@ public class ClientResource {
 		return ResponseEntity.ok().body(list);
 	}
 	
-	// Select By ID
 	@GetMapping(value = "/{ID}")
 	public ResponseEntity<ClientDTO> findClientById(@PathVariable @NotNull @Positive Long ID){
 		ClientDTO clientDTO = clientService.findById(ID);
@@ -63,11 +65,11 @@ public class ClientResource {
 	}
 	
 	@GetMapping(value = "/email/{email}")
-	public ResponseEntity<ClientDTO> findClientByEmail(@PathVariable @NotNull String email){
-		System.out.println("Received request for email: " + email);
+	public boolean findClientByEmail(@PathVariable @NotNull String email){
+		logger.info("Received request for email: " + email);
 		ClientDTO clientDTO = clientService.findByEmail(email);
 	
-		return ResponseEntity.ok().body(clientDTO);
+		return clientDTO != null;
 	}
 	
 	// Insert
@@ -99,8 +101,7 @@ public class ClientResource {
 		}catch (DataIntegrityViolationException d) {
 			throw new DataBaseException("Violação de integridade do DB");
 		}
-		
-		//return ResponseEntity.noContent().build();
+
 	}
 
 }

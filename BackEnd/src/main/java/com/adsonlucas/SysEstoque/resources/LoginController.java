@@ -4,9 +4,12 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -23,6 +26,7 @@ import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshResponse;
+import com.adsonlucas.SysEstoque.entitiesDTO.TokenTemporarioRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenTemporarioResponse;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
 import com.adsonlucas.SysEstoque.resouces.exceptions.TokenRefreshException;
@@ -121,24 +125,19 @@ public class LoginController {
     }
 	
 	@PostMapping("/token/consulta")
-	public ResponseEntity<TokenTemporarioResponse> tokenTemporario(){
-		Optional<User> user = Optional.ofNullable((User) userService.loadUserByUsername("ADMIN"));
+	public ResponseEntity<TokenTemporarioResponse> tokenTemporario(@RequestBody TokenTemporarioRequest request) throws UsernameNotFoundException, 
+																													   AuthenticationException{
+		userService.loadEmailByUsername(request.username());
 		 
 		 var now = Instant.now();
 		 var accessTokenExpiresIn = 30L; // 30 segundos
 		 
-		 var scopes = user.get().getRoles()
-				 .stream()
-				 .map(Roles::getAuthority)
-				 .collect(Collectors.joining(" ")); // obter o scopo de permissão do usuário que esta logando no sistema
-		 
-		 //configuração de atributos do JSON
+		
 		 var claims = JwtClaimsSet.builder()
-				 	  .issuer("Backend") // quem está gerando o token
-				 	  .subject("ADMIN") //usuário quem é 
-				 	  .issuedAt(now) // data de emissão do token
-				 	  .expiresAt(now.plusSeconds(accessTokenExpiresIn)) // tempo de expiração
-				 	  .claim("scope", scopes) // obtendo scopo da requisição
+				 	  .issuer("Backend") 
+				 	  .subject("ADMIN") 
+				 	  .issuedAt(now) 
+				 	  .expiresAt(now.plusSeconds(accessTokenExpiresIn))
 				 	  .build();
 		 
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); 
