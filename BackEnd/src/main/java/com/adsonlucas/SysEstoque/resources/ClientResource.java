@@ -65,11 +65,11 @@ public class ClientResource {
 	}
 	
 	@GetMapping(value = "/email/{email}")
-	public boolean findClientByEmail(@PathVariable @NotNull String email){
+	public Long findClientByEmail(@PathVariable @NotNull String email){
 		logger.info("Received request for email: " + email);
 		ClientDTO clientDTO = clientService.findByEmail(email);
 	
-		return clientDTO != null;
+		return clientDTO.getID();
 	}
 	
 	// Insert
@@ -86,6 +86,14 @@ public class ClientResource {
 	@PutMapping(value = "/{ID}")
 	public ResponseEntity<ClientDTO> updateClient(@Valid @PathVariable Long ID, @RequestBody ClientDTO dto) {
 		dto = clientService.updClient(dto, ID);
+		
+		return ResponseEntity.ok().body(dto);
+	}
+	
+	@PutMapping(value = "/{ID}")
+	public ResponseEntity<ClientDTO> updatePassword(@PathVariable @NotNull @Positive Long ID, @RequestBody String newPassword){
+		ClientDTO dto = clientService.salvarNovaSenha(newPassword, ID);
+		
 		
 		return ResponseEntity.ok().body(dto);
 	}

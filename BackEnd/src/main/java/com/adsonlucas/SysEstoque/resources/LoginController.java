@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.security.sasl.AuthenticationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +30,7 @@ import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshResponse;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenTemporarioRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenTemporarioResponse;
+import com.adsonlucas.SysEstoque.repositories.ClientRepository;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
 import com.adsonlucas.SysEstoque.resouces.exceptions.TokenRefreshException;
 import com.adsonlucas.SysEstoque.services.RefreshTokenService;
@@ -37,6 +40,8 @@ import com.adsonlucas.SysEstoque.services.UserService;
 public class LoginController {
 
 	private JwtEncoder jwtEncoder = null;
+	
+	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 	
 	@SuppressWarnings("unused")
 	@Autowired
@@ -48,6 +53,9 @@ public class LoginController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private ClientRepository clientRepository;
 	
 	@Autowired
     private RefreshTokenService refreshTokenService;
@@ -127,7 +135,8 @@ public class LoginController {
 	@PostMapping("/token/consulta")
 	public ResponseEntity<TokenTemporarioResponse> tokenTemporario(@RequestBody TokenTemporarioRequest request) throws UsernameNotFoundException, 
 																													   AuthenticationException{
-		userService.loadEmailByUsername(request.username());
+		logger.info("Request for token");
+		userService.loadTokenForSearch(request.username());
 		 
 		 var now = Instant.now();
 		 var accessTokenExpiresIn = 30L; // 30 segundos
@@ -141,6 +150,8 @@ public class LoginController {
 				 	  .build();
 		 
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); 
+		 
+		 logger.info("Token generated");
 		 
 		 return ResponseEntity.ok(new TokenTemporarioResponse(jwtValue, accessTokenExpiresIn));
 	}

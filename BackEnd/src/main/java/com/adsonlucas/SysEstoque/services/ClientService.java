@@ -49,6 +49,9 @@ public class ClientService {
 	@Autowired
 	private Functions function;
 	
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
 	//CRUD
 	
 	//Todos Endereços
@@ -158,6 +161,18 @@ public class ClientService {
 		}catch(EntityNotFoundException e) {
 			throw new EntidadeNotFoundException("Cliente não atualizado, ID não encontrado.");
 		}
+	}
+	
+	public ClientDTO salvarNovaSenha(String newPassword, Long ID) {
+		String newPass = bCryptPasswordEncoder.encode(newPassword);
+		Optional<Client> clientById = clientRepository.findById(ID);
+		
+		Client cliente = clientById.get();
+		cliente.setSenha(newPass);
+		
+		clientRepository.save(cliente);
+		
+		return new ClientDTO(cliente);
 	}
 	
 	//Apaga Cliente

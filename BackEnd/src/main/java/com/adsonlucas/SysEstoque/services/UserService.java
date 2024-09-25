@@ -130,7 +130,7 @@ public class UserService implements UserDetailsService{
 	}
 
 	// solicitação de token temporário para consultar e-mail existente no DB
-	public boolean loadEmailByUsername(String username) throws UsernameNotFoundException, AuthenticationException {
+	public boolean loadTokenForSearch(String username) throws UsernameNotFoundException, AuthenticationException {
 		Optional<User> userOptional = userRepository.findByNome(username.toString().toUpperCase());
 		
 		if (userOptional.isEmpty()) {
