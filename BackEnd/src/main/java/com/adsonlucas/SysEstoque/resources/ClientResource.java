@@ -90,7 +90,7 @@ public class ClientResource {
 		return ResponseEntity.ok().body(dto);
 	}
 	
-	@PutMapping(value = "/{ID}")
+	@PutMapping(value = "/password/new/{ID}")
 	public ResponseEntity<ClientDTO> updatePassword(@PathVariable @NotNull @Positive Long ID, @RequestBody String newPassword){
 		ClientDTO dto = clientService.salvarNovaSenha(newPassword, ID);
 		
