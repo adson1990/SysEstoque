@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.RefreshToken;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
@@ -33,6 +34,7 @@ import com.adsonlucas.SysEstoque.entitiesDTO.TokenTemporarioResponse;
 import com.adsonlucas.SysEstoque.repositories.ClientRepository;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
 import com.adsonlucas.SysEstoque.resouces.exceptions.TokenRefreshException;
+import com.adsonlucas.SysEstoque.services.ClientService;
 import com.adsonlucas.SysEstoque.services.RefreshTokenService;
 import com.adsonlucas.SysEstoque.services.UserService;
 
@@ -55,6 +57,9 @@ public class LoginController {
 	private UserService userService;
 	
 	@Autowired
+	private ClientService clientService;
+	
+	@Autowired
 	private ClientRepository clientRepository;
 	
 	@Autowired
@@ -68,8 +73,8 @@ public class LoginController {
 		this.refreshTokenService = refreshTokenService;
 	}
 
-	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){	
+	@PostMapping("/login/adm")
+	public ResponseEntity<LoginResponse> loginAdm(@RequestBody LoginRequest loginRequest){	
 		Optional<User> user = Optional.ofNullable((User) userService.loadUserByUsername(loginRequest.username()));
 		
 		if (!bCryptPasswordEncoder.matches(loginRequest.password(), user.get().getPassword())){
@@ -96,6 +101,32 @@ public class LoginController {
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
 		 
 		 var refreshToken = refreshTokenService.createRefreshToken(user.get().getID());
+		 
+		 return ResponseEntity.ok(new LoginResponse(jwtValue, accessTokenExpiresIn, refreshToken.getToken()));
+	}
+	
+	@PostMapping("/login")
+	public ResponseEntity<LoginResponse> loginClient(@RequestBody LoginRequest loginRequest){	
+		Optional<Client> client = Optional.ofNullable((Client) clientService.loadClientByEmail(loginRequest.username()));
+		
+		if (!bCryptPasswordEncoder.matches(loginRequest.password(), client.get().getSenha())){
+			throw new BadCredentialsException("user or password is invalid!");
+		}
+		 
+		 var now = Instant.now();
+		 var accessTokenExpiresIn = 300L; // 5 min
+		 
+		 //configuração de atributos do JSON
+		 var claims = JwtClaimsSet.builder()
+				 	  .issuer("Backend") // quem está gerando o token
+				 	  .subject(client.get().getID().toString()) //usuário quem é 
+				 	  .issuedAt(now) // data de emissão do token
+				 	  .expiresAt(now.plusSeconds(accessTokenExpiresIn)) // tempo de expiração
+				 	  .build();
+		 
+		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
+		 
+		 var refreshToken = refreshTokenService.createRefreshToken(client.get().getID());
 		 
 		 return ResponseEntity.ok(new LoginResponse(jwtValue, accessTokenExpiresIn, refreshToken.getToken()));
 	}

@@ -53,7 +53,7 @@ public class WebSecurityConfig {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	private static final String[] PUBLIC = {"/clients/register","/login","/auth/refresh","/token/consulta"};
+	private static final String[] PUBLIC = {"/clients/register","/login","/auth/refresh","/token/consulta","/login/adm"};
 /*	private static final String[] TESTE_INSERTS= {"/users","/clients","/products"};
 	private static final String[] TESTE_BUSCA= {"/users**","/clients**","/products**","/roles**","/categorie/**"};
 	private static final String[] TESTE_UPD_DEL= {"/users/**","/clients/**","/products/**"}; */

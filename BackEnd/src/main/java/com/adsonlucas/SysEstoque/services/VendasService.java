@@ -24,14 +24,14 @@ public class VendasService {
 	public Page<VendasDTO> findAllPages(PageRequest pageRequest) {
 		Page<Vendas> pageList = vendasRepository.findAll(pageRequest);
 		
-		return pageList.map(x -> new VendasDTO(x.getCodPrd(), x.getCodCli(), x.getQtd(), 
+		return pageList.map(x -> new VendasDTO(x.getCodPrd(), x.getName(), x.getCodCli(), x.getQtd(), 
 							x.getDataVenda(), x.getTotal(), x.getPrcUnitario()));
 	}
 
 	public Page<VendasDTO> findByClientID(@NotNull @Positive Long ID, Pageable pageable) {
 		Page<Vendas> allSales = vendasRepository.findAllSalesByClientID(ID, pageable);
 		
-		return allSales.map(x -> new VendasDTO(x.getCodPrd(), x.getCodCli(), x.getQtd(), 
+		return allSales.map(x -> new VendasDTO(x.getCodPrd(), x.getName(), x.getCodCli(), x.getQtd(), 
 							x.getDataVenda(), x.getTotal(), x.getPrcUnitario()));
 	}
 

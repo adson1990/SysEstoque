@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,8 @@ import jakarta.validation.constraints.NotNull;
 @Service
 @EnableMethodSecurity
 public class ClientService {
+	
+	private static Logger logger = LoggerFactory.getLogger(ClientService.class);
 	
 	@PersistenceContext
     private EntityManager entityManager;
@@ -239,6 +244,19 @@ public class ClientService {
 			.setParameter("client_id", clientID)
 			.executeUpdate();
 		}
+	}
+
+	public Client loadClientByEmail(String username) {
+		Optional<Client> clientOptional = clientRepository.findByEmail(username);
+		
+		if(clientOptional.isEmpty()) {
+			logger.error("Client not found: " + username);
+			throw new UsernameNotFoundException("Cliente não encontrado.");	
+		}
+		
+		logger.info("Client found: " + username);
+		Client client = clientOptional.get();
+		return client;
 	}
 
 }
