@@ -27,6 +27,7 @@ import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
+import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponseWithSex;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshResponse;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenTemporarioRequest;
@@ -73,7 +74,7 @@ public class LoginController {
 		this.refreshTokenService = refreshTokenService;
 	}
 
-	@PostMapping("/login/adm")
+	@PostMapping("/login/user")
 	public ResponseEntity<LoginResponse> loginAdm(@RequestBody LoginRequest loginRequest){	
 		Optional<User> user = Optional.ofNullable((User) userService.loadUserByUsername(loginRequest.username()));
 		
@@ -105,8 +106,8 @@ public class LoginController {
 		 return ResponseEntity.ok(new LoginResponse(jwtValue, accessTokenExpiresIn, refreshToken.getToken()));
 	}
 	
-	@PostMapping("/login")
-	public ResponseEntity<LoginResponse> loginClient(@RequestBody LoginRequest loginRequest){	
+	@PostMapping("/login/client")
+	public ResponseEntity<LoginResponseWithSex> loginClient(@RequestBody LoginRequest loginRequest){	
 		Optional<Client> client = Optional.ofNullable((Client) clientService.loadClientByEmail(loginRequest.username()));
 		
 		if (!bCryptPasswordEncoder.matches(loginRequest.password(), client.get().getSenha())){
@@ -128,7 +129,7 @@ public class LoginController {
 		 
 		 var refreshToken = refreshTokenService.createRefreshToken(client.get().getID());
 		 
-		 return ResponseEntity.ok(new LoginResponse(jwtValue, accessTokenExpiresIn, refreshToken.getToken()));
+		 return ResponseEntity.ok(new LoginResponseWithSex(jwtValue, accessTokenExpiresIn, client.get().getSexo()));
 	}
 	
 	@PostMapping("/auth/refresh")

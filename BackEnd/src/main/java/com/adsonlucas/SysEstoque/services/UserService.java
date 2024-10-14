@@ -139,7 +139,7 @@ public class UserService implements UserDetailsService{
 		}else if (userOptional.get().getAccountBlok()) {
 			logger.warn("Conta Bloqueada. " + username); 
 			throw new LockedException("Conta bloqueada, favor entrar em contato com o suporte.");
-		} else if (!userOptional.get().getUsername().equals("ADMIN")) {
+		}else if (!userOptional.get().getUsername().equals("ADMIN")) {
 			throw new AuthenticationException("Usuário diferente do administrador para este tipo de requisição.");
 		}
 		
