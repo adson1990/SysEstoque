@@ -247,14 +247,17 @@ public class ClientService {
 	}
 
 	public Client loadClientByEmail(String username) {
+		logger.info("Trying to find client with email: " + username.trim());
 		Optional<Client> clientOptional = clientRepository.findByEmail(username);
 		
 		if(clientOptional.isEmpty()) {
 			logger.error("Client not found: " + username);
 			throw new UsernameNotFoundException("Cliente não encontrado.");	
+		} else {
+		    logger.info("Client found: " + clientOptional.get().getEmail());
 		}
 		
-		logger.info("Client found: " + username);
+		logger.info("Client found: " + clientOptional.get().getEmail());
 		Client client = clientOptional.get();
 		return client;
 	}

@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class RefreshToken {
@@ -24,9 +25,13 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiryDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
     private User user;
+    
+    @OneToOne
+    @JoinColumn(name = "client_id", referencedColumnName = "id", nullable = true)
+    private Client client;
     
     // getters and setters
 
@@ -53,6 +58,14 @@ public class RefreshToken {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
+	public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
 	public Long getId() {
 		return id;

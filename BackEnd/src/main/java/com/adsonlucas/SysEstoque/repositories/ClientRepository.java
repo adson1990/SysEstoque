@@ -24,8 +24,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 	@Query("SELECT p FROM Client p WHERE p.id = :id")
 	Client findPessoaWithCelphone(@Param("id") Long id);
 
-	@EntityGraph(attributePaths = "email")
-	@Query("SELECT p FROM Client p WHERE p.email = :email")
+	@Query("SELECT p FROM Client p WHERE LOWER(p.email) = LOWER(:email)")
 	Optional<Client> findByEmail(@NotNull String email);
 
 }

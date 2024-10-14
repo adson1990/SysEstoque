@@ -108,9 +108,16 @@ public class LoginController {
 	
 	@PostMapping("/login/client")
 	public ResponseEntity<LoginResponseWithSex> loginClient(@RequestBody LoginRequest loginRequest){	
-		Optional<Client> client = Optional.ofNullable((Client) clientService.loadClientByEmail(loginRequest.username()));
+		Optional<Client> clientOpt = Optional.ofNullable((Client) clientService.loadClientByEmail(loginRequest.username()));
+		logger.info("E-mail enviado no request: " + loginRequest.username());
 		
-		if (!bCryptPasswordEncoder.matches(loginRequest.password(), client.get().getSenha())){
+		if (clientOpt.isEmpty()) {
+	        throw new BadCredentialsException("User not found!");
+	    }
+
+	    Client client = clientOpt.get();
+		
+		if (!bCryptPasswordEncoder.matches(loginRequest.password(), client.getSenha())){
 			throw new BadCredentialsException("user or password is invalid!");
 		}
 		 
@@ -120,16 +127,16 @@ public class LoginController {
 		 //configuração de atributos do JSON
 		 var claims = JwtClaimsSet.builder()
 				 	  .issuer("Backend") // quem está gerando o token
-				 	  .subject(client.get().getID().toString()) //usuário quem é 
+				 	  .subject(client.getID().toString()) //usuário quem é 
 				 	  .issuedAt(now) // data de emissão do token
 				 	  .expiresAt(now.plusSeconds(accessTokenExpiresIn)) // tempo de expiração
 				 	  .build();
 		 
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
 		 
-		 var refreshToken = refreshTokenService.createRefreshToken(client.get().getID());
+		 var refreshToken = refreshTokenService.createClientRefreshToken(client.getID());
 		 
-		 return ResponseEntity.ok(new LoginResponseWithSex(jwtValue, accessTokenExpiresIn, client.get().getSexo()));
+		 return ResponseEntity.ok(new LoginResponseWithSex(jwtValue, accessTokenExpiresIn, client.getSexo()));
 	}
 	
 	@PostMapping("/auth/refresh")
