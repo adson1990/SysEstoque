@@ -134,9 +134,9 @@ public class LoginController {
 		 
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
 		 
-		// var refreshToken = refreshTokenService.createClientRefreshToken(client.getID());
 		 
-		 return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, client.getSexo(), client.getID()));
+		 return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, 
+				 					client.getSexo(), client.getID(), client.getFoto()));
 	}
 	
 	@PostMapping("/auth/refresh")

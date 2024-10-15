@@ -54,7 +54,6 @@ public class RefreshTokenService {
     }
     
     public RefreshToken createClientRefreshToken(Long clientId) {
-    	// Verifica se o cliente existe
         Client client = clientRepository.findById(clientId)
             .orElseThrow(() -> new IllegalArgumentException("Client not found: " + clientId));
 
