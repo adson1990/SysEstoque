@@ -39,6 +39,7 @@ public class Client implements Serializable{
 	private Character sexo;
 	private String email;
 	private String senha;
+	private String foto;
 	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant birthDate;
@@ -71,6 +72,19 @@ public class Client implements Serializable{
 		this.senha = senha;
 	}
 	
+	public Client(String name, String cpf, Double income, Instant birthDate,
+			  Character sexo, String email, String senha, String foto) {
+		super();
+		this.name = name;
+		this.cpf = cpf;
+		this.income = income;
+		this.birthDate = birthDate;
+		this.sexo = sexo;
+		this.email = email;
+		this.senha = senha;
+		this.foto = foto;
+	}
+	
 	public Client(ClientDTO clientDTO) {
 		this.name = clientDTO.getName();
 		this.cpf = clientDTO.getCpf();
@@ -79,6 +93,7 @@ public class Client implements Serializable{
 		this.sexo = clientDTO.getSexo();
 		this.email = clientDTO.getEmail();
 		this.senha = clientDTO.getSenha();
+		this.foto = clientDTO.getFoto();
 	}
 	
 	public Client(ClientDTO clientDTO, Long ID) {
@@ -165,6 +180,14 @@ public class Client implements Serializable{
 
 	public void setSenha(String senha) {
 		this.senha = senha;
+	}
+
+	public String getFoto() {
+		return foto;
+	}
+
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 
 	public List<Cellphone> getCel() {

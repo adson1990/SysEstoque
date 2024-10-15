@@ -27,7 +27,7 @@ import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponse;
-import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponseWithSex;
+import com.adsonlucas.SysEstoque.entitiesDTO.LoginResponseWithSexId;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenRefreshResponse;
 import com.adsonlucas.SysEstoque.entitiesDTO.TokenTemporarioRequest;
@@ -46,7 +46,6 @@ public class LoginController {
 	
 	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 	
-	@SuppressWarnings("unused")
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
@@ -60,6 +59,7 @@ public class LoginController {
 	@Autowired
 	private ClientService clientService;
 	
+	@SuppressWarnings("unused")
 	@Autowired
 	private ClientRepository clientRepository;
 	
@@ -107,7 +107,7 @@ public class LoginController {
 	}
 	
 	@PostMapping("/login/client")
-	public ResponseEntity<LoginResponseWithSex> loginClient(@RequestBody LoginRequest loginRequest){	
+	public ResponseEntity<LoginResponseWithSexId> loginClient(@RequestBody LoginRequest loginRequest){	
 		Optional<Client> clientOpt = Optional.ofNullable((Client) clientService.loadClientByEmail(loginRequest.username()));
 		logger.info("E-mail enviado no request: " + loginRequest.username());
 		
@@ -134,9 +134,9 @@ public class LoginController {
 		 
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
 		 
-		 var refreshToken = refreshTokenService.createClientRefreshToken(client.getID());
+		// var refreshToken = refreshTokenService.createClientRefreshToken(client.getID());
 		 
-		 return ResponseEntity.ok(new LoginResponseWithSex(jwtValue, accessTokenExpiresIn, client.getSexo()));
+		 return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, client.getSexo(), client.getID()));
 	}
 	
 	@PostMapping("/auth/refresh")

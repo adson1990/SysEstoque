@@ -33,6 +33,7 @@ public class ClientDTO implements Serializable{
 	private String email;
 	private Instant birthDate;
 	private String senha;
+	private String foto;
 	
 	private List<EnderecosDTO> enderecos = new ArrayList<>();
 	
@@ -56,6 +57,19 @@ public class ClientDTO implements Serializable{
 		this.sexo = sexo;
 		this.senha = senha;
 	}
+	
+	public ClientDTO(String name, String cpf, Double income, Instant birthDate,
+			String email, Character sexo, String senha, String foto) {
+		super();
+		this.name = name;
+		this.cpf = cpf;
+		this.income = income;
+		this.birthDate = birthDate;
+		this.email = email;
+		this.sexo = sexo;
+		this.senha = senha;
+		this.foto = foto;
+	}
 
 	public ClientDTO(Client client) {
 		super();
@@ -67,6 +81,7 @@ public class ClientDTO implements Serializable{
 		this.email = client.getEmail();
 		this.sexo = client.getSexo();
 		this.senha = client.getSenha();
+		this.foto = client.getFoto();
 	}
 	
 	public ClientDTO(Client entity, Set<CategoryClient> categories) {
@@ -151,6 +166,14 @@ public class ClientDTO implements Serializable{
 
 	public void setSenha(String senha) {
 		this.senha = senha;
+	}
+
+	public String getFoto() {
+		return foto;
+	}
+
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 
 	public Set<CategoryClientDTO> getCategories() {
