@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.http.HttpMethod;
+//import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -53,7 +53,19 @@ public class WebSecurityConfig {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	private static final String[] PUBLIC = {"/clients/register","/login/**","/auth/refresh","/token/consulta"};
+	private static final String[] PUBLIC = {
+	        "/clients/register",
+	        "/login/**",
+	        "/auth/refresh",
+	        "/token/consulta",
+	        "/swagger-ui/**",
+	        "/v3/api-docs/**",
+	        "/swagger-ui.html",
+	        "/swagger-resources/**",
+	        "/webjars/**",
+	        "/v2/api-docs/**",
+	        "/configuration/**"
+	    };
 /*	private static final String[] TESTE_INSERTS= {"/users","/clients","/products"};
 	private static final String[] TESTE_BUSCA= {"/users**","/clients**","/products**","/roles**","/categorie/**"};
 	private static final String[] TESTE_UPD_DEL= {"/users/**","/clients/**","/products/**"}; */
@@ -73,28 +85,47 @@ public class WebSecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		http.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(HttpMethod.POST, PUBLIC).permitAll() // permitir todos os tipos de requisição de rotas públicas
-			/*	.requestMatchers(HttpMethod.POST, TESTE_INSERTS).permitAll()
+		/*http
+		.authorizeHttpRequests(authorize -> authorize
+				.requestMatchers(PUBLIC).permitAll() 
+				.requestMatchers(HttpMethod.POST, TESTE_INSERTS).permitAll()
 				.requestMatchers(HttpMethod.GET, TESTE_BUSCA).permitAll()
 				.requestMatchers(HttpMethod.PUT, TESTE_UPD_DEL).permitAll()
-				.requestMatchers(HttpMethod.DELETE, TESTE_UPD_DEL).permitAll() */
+				.requestMatchers(HttpMethod.DELETE, TESTE_UPD_DEL).permitAll() 
 				.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
-				.anyRequest().authenticated()) // Todas as requisições devem ser autenticadas.	
-				.csrf(csrf -> csrf.disable()) // vulnerabilidade proposta para facilitar os testes, nunca subir em produção
+				.anyRequest().authenticated()) 
+				.csrf(csrf -> csrf.disable()) 
 				.headers(headers -> headers
 						.frameOptions(frameOptions -> frameOptions
-								.sameOrigin())) //permitir frames de mesma origem para que o console H2 possa abrir
-				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) // configuração padrão de autenticação com JWT
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // não precisa guardar nada em sessão																												
-		;
+								.sameOrigin())) 
+				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) 
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); */
+		
+		
+		http
+        .csrf(csrf -> csrf.disable()) // Desativa CSRF para simplificar os testes
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(PUBLIC).permitAll() // Permite todos os métodos HTTP para endpoints públicos
+            .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+            .anyRequest().authenticated() // Todas as outras requisições requerem autenticação
+        )
+        .headers(headers -> headers
+            .frameOptions(frameOptions -> frameOptions.sameOrigin()) // Permite frames da mesma origem (necessário para H2 Console)
+        )
+        .oauth2ResourceServer(oauth2 -> oauth2
+            .jwt(Customizer.withDefaults()) // Configuração padrão para JWT
+        )
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Política de sessão sem estado
+        );
+		
 		return http.build();
 	}
 	
 	@Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        // Customize the JWT converter if needed
+
         return converter;
 	}
 
