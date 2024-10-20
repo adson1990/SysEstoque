@@ -257,7 +257,6 @@ public class ClientService {
 		    logger.info("Client found: " + clientOptional.get().getEmail());
 		}
 		
-		logger.info("Client found: " + clientOptional.get().getEmail());
 		Client client = clientOptional.get();
 		return client;
 	}

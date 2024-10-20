@@ -14,6 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adsonlucas.SysEstoque.config.WebSecurityConfig;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.RefreshToken;
 import com.adsonlucas.SysEstoque.entities.Roles;
@@ -174,16 +176,40 @@ public class LoginController {
 	@PostMapping("/token/consulta")
 	public ResponseEntity<TokenTemporarioResponse> tokenTemporario(@RequestBody TokenTemporarioRequest request) throws UsernameNotFoundException, 
 																													   AuthenticationException{
-		logger.info("Request for token");
+		logger.info("User request for token");
 		userService.loadTokenForSearch(request.username());
 		 
 		 var now = Instant.now();
-		 var accessTokenExpiresIn = 30L; // 30 segundos
+		 var accessTokenExpiresIn = 300L; // 5 minutos
 		 
 		
 		 var claims = JwtClaimsSet.builder()
 				 	  .issuer("Backend") 
 				 	  .subject("ADMIN") 
+				 	  .issuedAt(now) 
+				 	  .expiresAt(now.plusSeconds(accessTokenExpiresIn))
+				 	  .build();
+		 
+		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); 
+		 
+		 logger.info("Token generated");
+		 
+		 return ResponseEntity.ok(new TokenTemporarioResponse(jwtValue, accessTokenExpiresIn));
+	}
+	
+	@PostMapping("/token/cliente")
+	public ResponseEntity<TokenTemporarioResponse> tokenClienteTemporario(@RequestBody TokenTemporarioRequest request) throws UsernameNotFoundException, 
+																													   AuthenticationException{
+		logger.info("Client request for token");
+		clientService.loadClientByEmail(request.username());
+		 
+		 var now = Instant.now();
+		 var accessTokenExpiresIn = 60L; // 60 segundos
+		 
+		
+		 var claims = JwtClaimsSet.builder()
+				 	  .issuer("Backend") 
+				 	  .subject("CLIENT") 
 				 	  .issuedAt(now) 
 				 	  .expiresAt(now.plusSeconds(accessTokenExpiresIn))
 				 	  .build();

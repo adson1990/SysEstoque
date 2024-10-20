@@ -58,6 +58,7 @@ public class WebSecurityConfig {
 	        "/login/**",
 	        "/auth/refresh",
 	        "/token/consulta",
+	        "/token/cliente",
 	        "/swagger-ui/**",
 	        "/v3/api-docs/**",
 	        "/swagger-ui.html",
@@ -104,6 +105,7 @@ public class WebSecurityConfig {
 		
 		http
         .csrf(csrf -> csrf.disable()) // Desativa CSRF para simplificar os testes
+        .httpBasic(Customizer.withDefaults())
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(PUBLIC).permitAll() // Permite todos os métodos HTTP para endpoints públicos
             .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()

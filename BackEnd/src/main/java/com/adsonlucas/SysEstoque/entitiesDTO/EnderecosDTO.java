@@ -14,6 +14,7 @@ public class EnderecosDTO implements Serializable{
 	private String rua;
 	private String bairro;
 	private Integer num;
+	private String cidade;
 	private String estado;
 	private String country;
 	private String cep;
@@ -26,6 +27,7 @@ public class EnderecosDTO implements Serializable{
 			this.rua = endereco.getRua();
 			this.bairro = endereco.getBairro();
 			this.num = endereco.getNum();
+			this.cidade = endereco.getCidade();
 			this.estado = endereco.getEstado();
 			this.country = endereco.getCountry();
 			this.cep = endereco.getCep();
@@ -37,16 +39,18 @@ public class EnderecosDTO implements Serializable{
 			this.rua = enderecos.getRua();
 			this.bairro = enderecos.getBairro();
 			this.num = enderecos.getNum();
+			this.cidade = enderecos.getCidade();
 			this.estado = enderecos.getEstado();
 			this.country = enderecos.getCountry();
 			this.cep = enderecos.getCep();
 	}
 	
-	public EnderecosDTO(String rua, String bairro, Integer num, String estado, String country, String cep) {
+	public EnderecosDTO(String rua, String bairro, Integer num, String cidade, String estado, String country, String cep) {
 		super();
 		this.rua = rua;
 		this.bairro = bairro;
 		this.num = num;
+		this.cidade = cidade;
 		this.estado = estado;
 		this.country = country;
 		this.cep = cep;
@@ -58,6 +62,7 @@ public class EnderecosDTO implements Serializable{
 		this.rua = end.getRua();
 		this.bairro = end.getBairro();
 		this.num = end.getNum();
+		this.cidade = end.getCidade();
 		this.estado = end.getEstado();
 		this.country = end.getCountry();
 		this.cep = end.getCep();
@@ -85,6 +90,14 @@ public class EnderecosDTO implements Serializable{
 
 	public void setNum(Integer num) {
 		this.num = num;
+	}
+
+	public String getCidade() {
+		return cidade;
+	}
+
+	public void setCidade(String cidade) {
+		this.cidade = cidade;
 	}
 
 	public String getEstado() {
