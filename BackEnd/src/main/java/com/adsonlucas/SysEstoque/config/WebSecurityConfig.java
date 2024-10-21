@@ -67,10 +67,7 @@ public class WebSecurityConfig {
 	        "/v2/api-docs/**",
 	        "/configuration/**"
 	    };
-/*	private static final String[] TESTE_INSERTS= {"/users","/clients","/products"};
-	private static final String[] TESTE_BUSCA= {"/users**","/clients**","/products**","/roles**","/categorie/**"};
-	private static final String[] TESTE_UPD_DEL= {"/users/**","/clients/**","/products/**"}; */
-
+	
 	@Autowired
 	public WebSecurityConfig(UserDetailsService userDetailsService) {
 		this.userDetailsService = userDetailsService;
@@ -85,23 +82,6 @@ public class WebSecurityConfig {
 //	@Order(1)
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-		/*http
-		.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(PUBLIC).permitAll() 
-				.requestMatchers(HttpMethod.POST, TESTE_INSERTS).permitAll()
-				.requestMatchers(HttpMethod.GET, TESTE_BUSCA).permitAll()
-				.requestMatchers(HttpMethod.PUT, TESTE_UPD_DEL).permitAll()
-				.requestMatchers(HttpMethod.DELETE, TESTE_UPD_DEL).permitAll() 
-				.requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
-				.anyRequest().authenticated()) 
-				.csrf(csrf -> csrf.disable()) 
-				.headers(headers -> headers
-						.frameOptions(frameOptions -> frameOptions
-								.sameOrigin())) 
-				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) 
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); */
-		
 		
 		http
         .csrf(csrf -> csrf.disable()) // Desativa CSRF para simplificar os testes
@@ -130,17 +110,6 @@ public class WebSecurityConfig {
 
         return converter;
 	}
-
-	//userdetail para fins de teste de login
-    @Bean
-    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails user = User.builder()
-            .username("admin")
-            .password(passwordEncoder.encode("123456"))
-            .roles("USER")
-            .build();
-        return new InMemoryUserDetailsManager(user);
-    }
 	
 	@Bean
 	BCryptPasswordEncoder passEncoder() {
@@ -160,8 +129,19 @@ public class WebSecurityConfig {
 		return new NimbusJwtEncoder(jwks);
 	}
 	
+	//userdetail para fins de teste de login
+   /* @Bean
+    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+        UserDetails user = User.builder()
+            .username("admin")
+            .password(passwordEncoder.encode("123456"))
+            .roles("USER")
+            .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+	
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-	}
+	}*/
 
 }

@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.adsonlucas.SysEstoque.Functions;
-import com.adsonlucas.SysEstoque.entities.Role;
+import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
@@ -70,7 +70,7 @@ public class UserService implements UserDetailsService{
 	public UserDTO instUser(UserDTO dto) {
 		var passwordEnconder = new BCryptPasswordEncoder();
 		User user = new User();
-		var basicRole = roleRepository.findByAuthority(Role.Values.BASIC.name());
+		var basicRole = roleRepository.findByAuthority(Roles.Values.BASIC.name());
 		user = function.copyDTOToEntityUser(dto, user);
 		user.setSenha(passwordEnconder.encode(dto.getSenha())); //encriptar a senha
 		user.setRoles(Set.of(basicRole)); //adicionar regra basica, padrão na criação de usuários
