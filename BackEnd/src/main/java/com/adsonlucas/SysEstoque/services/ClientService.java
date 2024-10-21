@@ -110,22 +110,16 @@ public class ClientService {
 	// Insert Client
 	@Transactional
 	//@Async("taskExecutor") // execução desta chamada de forma assíncrona
-	public ClientDTO insClient(ClientDTO dto) {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		
+	public ClientDTO insClient(ClientDTO dto) {		
 		verificaCliente(dto.getCpf());
 		
-		var senhaCripto = encoder.encode(dto.getSenha());
+		var senhaCripto = bCryptPasswordEncoder.encode(dto.getSenha());
 		dto.setSenha(senhaCripto);
 		
 		Client client = new Client();
 		client = function.copyDTOToEntityClient(dto, client);
 	
 		client = clientRepository.save(client);
-		
-		
-        /*client.getEnderecos().size();  // Isso força a inicialização da lista
-        client.getCel().size(); */
 		
 		Set<CategoryClientDTO> categoryDTOs = new HashSet<>();
         categoryDTOs.add(new CategoryClientDTO(4L));
@@ -175,7 +169,9 @@ public class ClientService {
 		Client cliente = clientById.get();
 		cliente.setSenha(newPass);
 		
-		clientRepository.save(cliente);
+		clientRepository.saveAndFlush(cliente);
+		
+		logger.info("Nova senha salva (hash): " + newPass);
 		
 		return new ClientDTO(cliente);
 	}
@@ -221,12 +217,13 @@ public class ClientService {
 	
 	private void insertClientEnderecos(List<EnderecosDTO> enderecos, Long idClient) {
 		for (EnderecosDTO enderecoDTO : enderecos) {
-			String sql = "INSERT INTO TB_ENDERECOS (RUA, BAIRRO, NUM, ESTADO, COUNTRY, CEP, CLIENT_ID) VALUES (:rua, :bairro, :num, :estado, :country, :cep, :client_id)";
+			String sql = "INSERT INTO TB_ENDERECOS (RUA, BAIRRO, NUM, CIDADE, ESTADO, COUNTRY, CEP, CLIENT_ID) VALUES (:rua, :bairro, :num, :cidade, :estado, :country, :cep, :client_id)";
 			entityManager.createNativeQuery(sql)
 						.setParameter("rua", enderecoDTO.getRua())
 						.setParameter("bairro", enderecoDTO.getBairro())
 						.setParameter("estado", enderecoDTO.getEstado())
 						.setParameter("num", enderecoDTO.getNum())
+						.setParameter("cidade", enderecoDTO.getCidade())
 						.setParameter("country", enderecoDTO.getCountry())
 						.setParameter("cep", enderecoDTO.getCep())
 						.setParameter("client_id", idClient)
