@@ -91,8 +91,8 @@ public class ClientResource {
 	}
 	
 	@PutMapping(value = "/password/new/{ID}")
-	public ResponseEntity<ClientDTO> updatePassword(@PathVariable @NotNull @Positive Long ID, @RequestBody String newPassword){
-		ClientDTO dto = clientService.salvarNovaSenha(newPassword, ID);
+	public ResponseEntity<ClientDTO> updatePassword(@PathVariable @NotNull @Positive Long ID, @RequestBody PasswordUpdateRequest request){
+		ClientDTO dto = clientService.salvarNovaSenha(request.getNewPassword(), ID);
 		
 		
 		return ResponseEntity.ok().body(dto);
@@ -109,7 +109,19 @@ public class ClientResource {
 		}catch (DataIntegrityViolationException d) {
 			throw new DataBaseException("Violação de integridade do DB");
 		}
-
 	}
+
+	// INNER CLASS PARA REQUISIÇÃO DE ATUALIZAÇÃO DE SENHA
+	public static class PasswordUpdateRequest {
+        private String newPassword;
+
+        public String getNewPassword() {
+            return newPassword;
+        }
+
+        public void setNewPassword(String newPassword) {
+            this.newPassword = newPassword;
+        }
+    }
 
 }

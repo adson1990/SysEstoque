@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.adsonlucas.SysEstoque.Functions;
-import com.adsonlucas.SysEstoque.entities.Roles;
+import com.adsonlucas.SysEstoque.entities.Role;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
@@ -44,7 +44,6 @@ public class UserService implements UserDetailsService{
 	private UserRepository userRepository;
 	@Autowired
 	private RolesRepository roleRepository;
-	private BCryptPasswordEncoder passwordEnconder;
 	LoginRequest loginRequest;
 	
 	@Autowired
@@ -69,9 +68,9 @@ public class UserService implements UserDetailsService{
 	
 	@Transactional
 	public UserDTO instUser(UserDTO dto) {
-		passwordEnconder = new BCryptPasswordEncoder();
+		var passwordEnconder = new BCryptPasswordEncoder();
 		User user = new User();
-		var basicRole = roleRepository.findByAuthority(Roles.Values.BASIC.name());
+		var basicRole = roleRepository.findByAuthority(Role.Values.BASIC.name());
 		user = function.copyDTOToEntityUser(dto, user);
 		user.setSenha(passwordEnconder.encode(dto.getSenha())); //encriptar a senha
 		user.setRoles(Set.of(basicRole)); //adicionar regra basica, padrão na criação de usuários
@@ -114,7 +113,6 @@ public class UserService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {		
 		Optional<User> userOptional = userRepository.findByNome(username);
-		passwordEnconder = new BCryptPasswordEncoder();
 		
 		if (userOptional.isEmpty()) {
 			logger.error("User not found: " + username);

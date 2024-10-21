@@ -166,14 +166,19 @@ public class ClientService {
 		String newPass = bCryptPasswordEncoder.encode(newPassword);
 		Optional<Client> clientById = clientRepository.findById(ID);
 		
-		Client cliente = clientById.get();
-		cliente.setSenha(newPass);
-		
-		clientRepository.saveAndFlush(cliente);
-		
-		logger.info("Nova senha salva (hash): " + newPass);
-		
-		return new ClientDTO(cliente);
+
+	    if (clientById.isPresent()) {
+	        Client cliente = clientById.get();
+	        cliente.setSenha(newPass);
+	        
+	        clientRepository.saveAndFlush(cliente);
+	        
+	        logger.info("Nova senha salva (hash): " + newPass);
+	        
+	        return new ClientDTO(cliente);
+	    } else {
+	        throw new EntityNotFoundException("Client not found with ID: " + ID);
+	    }
 	}
 	
 	//Apaga Cliente
