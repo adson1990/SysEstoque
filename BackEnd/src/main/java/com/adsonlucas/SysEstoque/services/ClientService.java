@@ -1,6 +1,5 @@
 package com.adsonlucas.SysEstoque.services;
 
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -42,146 +41,147 @@ import jakarta.validation.constraints.NotNull;
 @Service
 @EnableMethodSecurity
 public class ClientService {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(ClientService.class);
-	
+
 	@PersistenceContext
-    private EntityManager entityManager;
-	
+	private EntityManager entityManager;
+
 	@Autowired
 	private ClientRepository clientRepository;
-	
+
 	@Autowired
 	private Functions function;
-	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
-	//CRUD
-	
-	//Todos Endereços
+
+	// CRUD
+
+	// Todos Endereços
 	@Transactional(readOnly = true)
-    public void printEnderecos(Long pessoaId) {
-        Client pessoa = clientRepository.findPessoaWithEnderecos(pessoaId);
-        System.out.println("Nome da pessoa: " + pessoa.getName());
+	public void printEnderecos(Long pessoaId) {
+		Client pessoa = clientRepository.findPessoaWithEnderecos(pessoaId);
+		System.out.println("Nome da pessoa: " + pessoa.getName());
 
-        for (Enderecos endereco : pessoa.getEnderecos()) {
-            System.out.println("Endereço: " + endereco.getRua());
-        }
-    }
-	
-	//Todos números
-		@Transactional(readOnly = true)
-	    public void printCelphones(Long pessoaId) {
-	        Client pessoa = clientRepository.findPessoaWithCelphone(pessoaId);
-	        System.out.println("Nome da pessoa: " + pessoa.getName());
+		for (Enderecos endereco : pessoa.getEnderecos()) {
+			System.out.println("Endereço: " + endereco.getRua());
+		}
+	}
 
-	        for (Cellphone cellphone : pessoa.getCel()) {
-	            System.out.println("Telefone: " + cellphone.getDdd() + " " + cellphone.getNumber());
-	        }
-	    }
-	
-	//Todos clientes
+	// Todos números
+	@Transactional(readOnly = true)
+	public void printCelphones(Long pessoaId) {
+		Client pessoa = clientRepository.findPessoaWithCelphone(pessoaId);
+		System.out.println("Nome da pessoa: " + pessoa.getName());
+
+		for (Cellphone cellphone : pessoa.getCel()) {
+			System.out.println("Telefone: " + cellphone.getDdd() + " " + cellphone.getNumber());
+		}
+	}
+
+	// Todos clientes
 	@Cacheable("clientes")
 	@Transactional(readOnly = true)
-	public Page<ClientDTO> findAllPages(PageRequest pageRequest){
+	public Page<ClientDTO> findAllPages(PageRequest pageRequest) {
 		Page<Client> pageList = clientRepository.findAll(pageRequest);
-		
+
 		return pageList.map(x -> new ClientDTO(x, x.getCategories(), x.getEnderecos(), x.getCel()));
 	}
-	
+
 	// Client By ID
 	@Transactional(readOnly = true)
 	public ClientDTO findById(Long ID) {
 		Optional<Client> clientById = clientRepository.findById(ID);
-		Client clientEntity = clientById.orElseThrow(() -> new EntidadeNotFoundException("Cliente não encontrado pelo ID informado."));
-		
-		return new ClientDTO(clientEntity, clientEntity.getCategories(), clientEntity.getEnderecos(), clientEntity.getCel());
+		Client clientEntity = clientById
+				.orElseThrow(() -> new EntidadeNotFoundException("Cliente não encontrado pelo ID informado."));
+
+		return new ClientDTO(clientEntity, clientEntity.getCategories());
 	}
-	
+
 	@Transactional(readOnly = true)
 	public ClientDTO findByEmail(@NotNull String email) {
 		Optional<Client> clientByEmail = clientRepository.findByEmail(email);
-		Client clientEntity = clientByEmail.orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado pelo email informado."));
-		
+		Client clientEntity = clientByEmail
+				.orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado pelo email informado."));
+
 		return new ClientDTO(clientEntity);
 	}
-	
+
 	// Insert Client
 	@Transactional
-	//@Async("taskExecutor") // execução desta chamada de forma assíncrona
-	public ClientDTO insClient(ClientDTO dto) {		
+	// @Async("taskExecutor") // execução desta chamada de forma assíncrona
+	public ClientDTO insClient(ClientDTO dto) {
 		verificaCliente(dto.getCpf());
-		
-		var senhaCripto = bCryptPasswordEncoder.encode(dto.getSenha());
-		dto.setSenha(senhaCripto);
-		
-		Client client = new Client();
-		client = function.copyDTOToEntityClient(dto, client);
-	
-		client = clientRepository.save(client);
-		
-		Set<CategoryClientDTO> categoryDTOs = new HashSet<>();
-        categoryDTOs.add(new CategoryClientDTO(4L));
-        categoryDTOs.add(new CategoryClientDTO(6L));
-        dto.setCategories(categoryDTOs);
-        
-        Long clientId = client.getID();
-        insertClientCategories(clientId, dto.getCategories());
-        insertClientEnderecos(dto.getEnderecos(), clientId);
-        insertClientCelphones(dto.getCellphone(), clientId);
-        
-        client = clientRepository.findById(clientId).orElseThrow();
-        
-        client.getEnderecos().clear();  
-        client.getEnderecos().addAll(dto.getEnderecos().stream().map(Enderecos::new).collect(Collectors.toList()));
 
-        client.getCel().clear();
-        client.getCel().addAll(dto.getCellphone().stream().map(Cellphone::new).collect(Collectors.toList()));
-		
+		var passwordEncoder = new BCryptPasswordEncoder();
+		var senhaCripto = passwordEncoder.encode(dto.getSenha());
+		dto.setSenha(senhaCripto);
+
+		Client client = new Client();
+		client = function.copyAllDataDTOToEntity(dto, client);
+
+		client = clientRepository.save(client);
+
+		Set<CategoryClientDTO> categoryDTOs = new HashSet<>();
+		categoryDTOs.add(new CategoryClientDTO(4L));
+		categoryDTOs.add(new CategoryClientDTO(6L));
+		dto.setCategories(categoryDTOs);
+
+		Long clientId = client.getID();
+		insertClientCategories(clientId, dto.getCategories());
+		insertClientEnderecos(dto.getEnderecos(), clientId);
+		insertClientCelphones(dto.getCellphones(), clientId);
+
+		client = clientRepository.findById(clientId).orElseThrow();
+
+		client.getEnderecos().clear();
+		client.getEnderecos().addAll(dto.getEnderecos().stream().map(Enderecos::new).collect(Collectors.toList()));
+
+		client.getCel().clear();
+		client.getCel().addAll(dto.getCellphones().stream().map(Cellphone::new).collect(Collectors.toList()));
+
 		return new ClientDTO(client, client.getEnderecos(), client.getCel());
 	}
-	
-	//UPDATES
-	//Atualiza cliente
+
+	// UPDATES
+	// Atualiza cliente
 	@Transactional
 	public ClientDTO updClient(ClientDTO dto, Long ID) {
-		verificaCliente(dto.getCpf());
-		try {
-			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			ClientDTO clientDTO = findById(ID);
-			var senhaCripto = encoder.encode(dto.getSenha());
-			dto.setSenha(senhaCripto);
-			Client client = new Client(dto, clientDTO.getID());
+
+			Client client = clientRepository.findById(ID)
+		            .orElseThrow(() -> new EntityNotFoundException("Cliente não atualizado, ID não encontrado."));
+		    function.copyDTOToEntityClient(dto, client);
+		    
+		    clientRepository.save(client);
+		    clientRepository.flush();
+		    
+		    //Inicializar as listas para garantir que sejam carregadas
+			/*
+			 * if (client.getEnderecos() != null ) { client.getEnderecos().size(); } if
+			 * (client.getCel() != null ) { client.getCel().size();}
+			 */
 			
-			clientRepository.save(client);
-		
-			return new ClientDTO(client);
-		}catch(EntityNotFoundException e) {
-			throw new EntidadeNotFoundException("Cliente não atualizado, ID não encontrado.");
+		return new ClientDTO(client);
+	}
+
+	public ClientDTO salvarNovaSenha(String newPassword, Long ID) {
+		var passwordEncoder = new BCryptPasswordEncoder();
+		String newPass = passwordEncoder.encode(newPassword);
+		Optional<Client> clientById = clientRepository.findById(ID);
+
+		if (clientById.isPresent()) {
+			Client cliente = clientById.get();
+			cliente.setSenha(newPass);
+
+			clientRepository.saveAndFlush(cliente);
+
+			logger.info("Nova senha salva (hash): " + newPass);
+
+			return new ClientDTO(cliente);
+		} else {
+			throw new EntityNotFoundException("Client not found with ID: " + ID);
 		}
 	}
-	
-	public ClientDTO salvarNovaSenha(String newPassword, Long ID) {
-		String newPass = bCryptPasswordEncoder.encode(newPassword);
-		Optional<Client> clientById = clientRepository.findById(ID);
-		
 
-	    if (clientById.isPresent()) {
-	        Client cliente = clientById.get();
-	        cliente.setSenha(newPass);
-	        
-	        clientRepository.saveAndFlush(cliente);
-	        
-	        logger.info("Nova senha salva (hash): " + newPass);
-	        
-	        return new ClientDTO(cliente);
-	    } else {
-	        throw new EntityNotFoundException("Client not found with ID: " + ID);
-	    }
-	}
-	
-	//Apaga Cliente
+	// Apaga Cliente
 	@Transactional
 	@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
 	public void delClient(Long ID) {
@@ -190,75 +190,65 @@ public class ClientService {
 		if (clientOPT.isPresent()) {
 			try {
 				clientRepository.deleteById(ID);
-			} catch(DataIntegrityViolationException d) {
+			} catch (DataIntegrityViolationException d) {
 				throw new DataBaseException("Violação de integridade do DB.");
 			}
-		}else { 
+		} else {
 			throw new EntidadeNotFoundException("Cliente não encontrado com o ID: " + ID);
-		
-		} 
+
+		}
 	}
-	
-	//Métodos customizados
-	
-	//Verificar se já existe cliente antes de inserir ou atualizar.
+
+	// Métodos customizados
+
+	// Verificar se já existe cliente antes de inserir ou atualizar.
 	public void verificaCliente(String cpf) {
-		
+
 		if (clientRepository.findByCpf(cpf).isPresent()) {
 			throw new EntidadeExistenteException("CPF já cadastrado no Banco de Dados.");
 		}
 	}
-	
+
 	// Salva o cliente com as 2 categorias padrão iniciais
 	private void insertClientCategories(Long clientId, Set<CategoryClientDTO> categories) {
-        for (CategoryClientDTO category : categories) {
-            String sql = "INSERT INTO TB_CLIENT_CATEGORY (client_id, categoryclient_id) VALUES (:clientId, :categoryId)";
-            entityManager.createNativeQuery(sql)
-                    .setParameter("clientId", clientId)
-                    .setParameter("categoryId", category.getID())
-                    .executeUpdate();
-        }
-    }
-	
+		for (CategoryClientDTO category : categories) {
+			String sql = "INSERT INTO TB_CLIENT_CATEGORY (client_id, categoryclient_id) VALUES (:clientId, :categoryId)";
+			entityManager.createNativeQuery(sql).setParameter("clientId", clientId)
+					.setParameter("categoryId", category.getID()).executeUpdate();
+		}
+	}
+
 	private void insertClientEnderecos(List<EnderecosDTO> enderecos, Long idClient) {
 		for (EnderecosDTO enderecoDTO : enderecos) {
 			String sql = "INSERT INTO TB_ENDERECOS (RUA, BAIRRO, NUM, CIDADE, ESTADO, COUNTRY, CEP, CLIENT_ID) VALUES (:rua, :bairro, :num, :cidade, :estado, :country, :cep, :client_id)";
-			entityManager.createNativeQuery(sql)
-						.setParameter("rua", enderecoDTO.getRua())
-						.setParameter("bairro", enderecoDTO.getBairro())
-						.setParameter("estado", enderecoDTO.getEstado())
-						.setParameter("num", enderecoDTO.getNum())
-						.setParameter("cidade", enderecoDTO.getCidade())
-						.setParameter("country", enderecoDTO.getCountry())
-						.setParameter("cep", enderecoDTO.getCep())
-						.setParameter("client_id", idClient)
-						.executeUpdate();
+			entityManager.createNativeQuery(sql).setParameter("rua", enderecoDTO.getRua())
+					.setParameter("bairro", enderecoDTO.getBairro()).setParameter("estado", enderecoDTO.getEstado())
+					.setParameter("num", enderecoDTO.getNum()).setParameter("cidade", enderecoDTO.getCidade())
+					.setParameter("country", enderecoDTO.getCountry()).setParameter("cep", enderecoDTO.getCep())
+					.setParameter("client_id", idClient).executeUpdate();
 		}
 	}
-	
+
 	private void insertClientCelphones(List<CellphoneDTO> cellphoneDTO, Long clientID) {
 		for (CellphoneDTO cel : cellphoneDTO) {
 			String sql = "INSERT INTO TB_CELLPHONE (DDD, NUMBER, TIPO, CLIENT_ID) VALUES (:ddd, :number, :tipo, :client_id)";
-			entityManager.createNativeQuery(sql)
-			.setParameter("ddd", cel.getDdd())
-			.setParameter("number", cel.getNumber())
-			.setParameter("tipo", cel.getTipo())
-			.setParameter("client_id", clientID)
-			.executeUpdate();
+			entityManager.createNativeQuery(sql).setParameter("ddd", cel.getDdd())
+					.setParameter("number", cel.getNumber()).setParameter("tipo", cel.getTipo())
+					.setParameter("client_id", clientID).executeUpdate();
 		}
 	}
 
 	public Client loadClientByEmail(String username) {
 		logger.info("Trying to find client with email: " + username.trim());
 		Optional<Client> clientOptional = clientRepository.findByEmail(username);
-		
-		if(clientOptional.isEmpty()) {
+
+		if (clientOptional.isEmpty()) {
 			logger.error("Client not found: " + username);
-			throw new UsernameNotFoundException("Cliente não encontrado.");	
+			throw new UsernameNotFoundException("Cliente não encontrado.");
 		} else {
-		    logger.info("Client found: " + clientOptional.get().getEmail());
+			logger.info("Client found: " + clientOptional.get().getEmail());
 		}
-		
+
 		Client client = clientOptional.get();
 		return client;
 	}

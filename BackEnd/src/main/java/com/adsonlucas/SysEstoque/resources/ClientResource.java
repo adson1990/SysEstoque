@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -83,8 +84,12 @@ public class ClientResource {
 	}
 	
 	// Update
-	@PutMapping(value = "/upd/{ID}")
+	@PatchMapping(value = "/upd/{ID}")
 	public ResponseEntity<ClientDTO> updateClient(@Valid @PathVariable Long ID, @RequestBody ClientDTO dto) {
+		
+		System.out.println("Recebendo ClientDTO: " + dto);
+		
+		
 		dto = clientService.updClient(dto, ID);
 		
 		return ResponseEntity.ok().body(dto);

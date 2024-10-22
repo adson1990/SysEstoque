@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.ClientDTO;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,11 +45,13 @@ public class Client implements Serializable{
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant birthDate;
 	
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+	@JsonManagedReference
 	private List<Enderecos> enderecos = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
-	private List<Cellphone> cel = new ArrayList<>();
+	@OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@JsonManagedReference
+	private List<Cellphone> cellphones = new ArrayList<>();
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "tb_client_category",
@@ -119,7 +122,13 @@ public class Client implements Serializable{
 		this(cliente);
 		listCategory.forEach(cat -> this.categories.add(new CategoryClient(cat.getDescription())));
 		listEnderecos.forEach(end -> this.enderecos.add(new Enderecos(end)));
-		listCelphone.forEach(cel -> this.cel.add(new Cellphone(cel)));
+		listCelphone.forEach(cel -> this.cellphones.add(new Cellphone(cel)));
+	}
+	
+	public Client(ClientDTO cliente, List<Enderecos> listEnderecos, List<Cellphone> listCellphones) {
+		this(cliente);
+		listEnderecos.forEach(end -> this.enderecos.add(new Enderecos(end)));
+		listCellphones.forEach(cel -> this.cellphones.add(new Cellphone(cel)));
 	}
 	
 	public Long getID() {
@@ -191,11 +200,11 @@ public class Client implements Serializable{
 	}
 
 	public List<Cellphone> getCel() {
-		return cel;
+		return cellphones;
 	}
 
 	public void setCel(List<Cellphone> cel) {
-		this.cel = cel;
+		this.cellphones = cel;
 	}
 
 	public List<Enderecos> getEnderecos() {

@@ -82,6 +82,13 @@ public class ClientDTO implements Serializable{
 		this.sexo = client.getSexo();
 		this.senha = client.getSenha();
 		this.foto = client.getFoto();
+		
+		if (client.getEnderecos() != null) {
+			client.getEnderecos().forEach(e -> this.enderecos.add(new EnderecosDTO(e)));
+		}
+		if(client.getCel() != null) {
+			client.getCel().forEach(c -> this.cel.add(new CellphoneDTO(c)));
+		}
 	}
 	
 	public ClientDTO(Client entity, Set<CategoryClient> categories) {
@@ -192,11 +199,11 @@ public class ClientDTO implements Serializable{
 		this.enderecos = enderecos;
 	}
 	
-	public List<CellphoneDTO> getCellphone() {
+	public List<CellphoneDTO> getCellphones() {
 		return cel;
 	}
 
-	public void setCellphone(List<CellphoneDTO> cel) {
+	public void setCellphones(List<CellphoneDTO> cel) {
 		this.cel = cel;
 	}
 

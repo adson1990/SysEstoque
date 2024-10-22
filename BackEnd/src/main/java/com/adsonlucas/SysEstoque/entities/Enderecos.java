@@ -14,6 +14,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+//import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+
 @Entity
 @Table(name = "tb_enderecos")
 public class Enderecos implements Serializable{
@@ -32,6 +36,7 @@ public class Enderecos implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "client_id")
+	@JsonBackReference
 	private Client client;
 
 	public Enderecos() {}
