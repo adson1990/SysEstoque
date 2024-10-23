@@ -16,8 +16,8 @@ import com.adsonlucas.SysEstoque.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 
 @Configuration
-public class AdminUserConfig implements CommandLineRunner {
-	
+public class AdminUserConfig {
+	/*
 	@Autowired
 	private RolesRepository rolesRepository;
 	
@@ -69,5 +69,5 @@ public class AdminUserConfig implements CommandLineRunner {
 								 }
 								 );
 	}
-
+*/
 }
