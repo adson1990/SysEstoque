@@ -20,6 +20,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -40,6 +41,7 @@ public class Client implements Serializable{
 	private Character sexo;
 	private String email;
 	private String senha;
+	@Lob
 	private String foto;
 	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")

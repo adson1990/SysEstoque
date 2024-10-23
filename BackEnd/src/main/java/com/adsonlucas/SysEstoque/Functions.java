@@ -61,6 +61,7 @@ public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {
     entity.setIncome(dto.getIncome());
     entity.setBirthDate(dto.getBirthDate());
     entity.setEmail(dto.getEmail());
+    entity.setFoto(dto.getFoto());
 		
 	// usando o .clear() gera uma nova linha mudando o ID no DATABASE
 	if (dto.getEnderecos() != null && !dto.getEnderecos().isEmpty()) {
