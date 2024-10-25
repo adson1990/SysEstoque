@@ -9,7 +9,5 @@ public class PasswordGenerator {
         System.out.println("ROSE: " + encoder.encode("Kenga123456."));
         System.out.println("VALERIA: " + encoder.encode("321456"));
         System.out.println("JOSE: " + encoder.encode("Jose123456."));
-        System.out.println("VANY: " + encoder.encode("Vany654321."));
-        System.out.println("DEFUNTO: " + encoder.encode("Def987654."));
     }
 }
