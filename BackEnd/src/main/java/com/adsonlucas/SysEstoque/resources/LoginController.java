@@ -146,16 +146,17 @@ public class LoginController {
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
+                .map(refreshToken -> {
+                    var user = refreshToken.getUser();
                     var now = Instant.now();
                     var accessTokenExpiresIn = 300L; // 5 min
 
+                    // Gera um novo access token
                     var scopes = user.getRoles()
                             .stream()
                             .map(Roles::getAuthority)
                             .collect(Collectors.joining(" "));
-
+                    
                     var claims = JwtClaimsSet.builder()
                             .issuer("Backend")
                             .subject(user.getID().toString())
@@ -163,13 +164,17 @@ public class LoginController {
                             .expiresAt(now.plusSeconds(accessTokenExpiresIn))
                             .claim("scope", scopes)
                             .build();
-
+                    
                     var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+
+                    // Opcional: renova o refresh token
+                    //var newRefreshToken = refreshTokenService.createRefreshToken(user);
 
                     return ResponseEntity.ok(new TokenRefreshResponse(jwtValue, requestRefreshToken));
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
     }
+
 	
 	@PostMapping("/token/consulta")
 	public ResponseEntity<TokenTemporarioResponse> tokenTemporario(@RequestBody TokenTemporarioRequest request) throws UsernameNotFoundException, 
@@ -178,7 +183,7 @@ public class LoginController {
 		userService.loadTokenForSearch(request.username());
 		 
 		 var now = Instant.now();
-		 var accessTokenExpiresIn = 300L; // 5 minutos
+		 var accessTokenExpiresIn = 30L; // 30 segundos
 		 
 		
 		 var claims = JwtClaimsSet.builder()
