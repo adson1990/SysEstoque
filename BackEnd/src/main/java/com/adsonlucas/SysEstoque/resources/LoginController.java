@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.adsonlucas.SysEstoque.entities.Client;
-import com.adsonlucas.SysEstoque.entities.RefreshToken;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.LoginRequest;
@@ -83,7 +82,7 @@ public class LoginController {
 		}
 		 
 		 var now = Instant.now();
-		 var accessTokenExpiresIn = 300L; // 5 min
+		 var accessTokenExpiresIn = 600L; // 5 min
 		 
 		 var scopes = user.get().getRoles()
 				 .stream()
@@ -134,8 +133,10 @@ public class LoginController {
 		 
 		 var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
 		 
+		 var refreshToken = refreshTokenService.createClientRefreshToken(client.getID()); // criando o refresh Token
 		 
-		 return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, 
+		 
+		 return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, refreshToken.getToken(),
 				 					client.getSexo(), client.getID(), client.getFoto()));
 	}
 	

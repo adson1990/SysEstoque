@@ -1,6 +1,4 @@
 package com.adsonlucas.SysEstoque.entitiesDTO;
 
-public record LoginResponseWithSexId(String accessToken, Long expiresIn, Character sexo, Long id, String foto) {
-
-
+public record LoginResponseWithSexId(String accessToken, Long expiresIn, String refreshToken, Character sexo, Long id, String foto) {
 }

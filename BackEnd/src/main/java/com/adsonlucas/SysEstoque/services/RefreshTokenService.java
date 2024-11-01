@@ -95,7 +95,7 @@ public class RefreshTokenService {
     }
     
     @Transactional(readOnly = true)
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
+    public Optional<RefreshToken> findByToken(String refreshToken) {
+        return refreshTokenRepository.findByToken(refreshToken);
     }
 }
