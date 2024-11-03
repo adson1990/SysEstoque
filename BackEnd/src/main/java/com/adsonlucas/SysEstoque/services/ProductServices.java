@@ -8,6 +8,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,7 @@ public class ProductServices {
 	private ProductRepository productRepository;
 	//private Functions function;
 	
-	//Todos produtos
+	// Consultas
 	@Cacheable("produtos")
 	@Transactional(readOnly = true)
 	public Page<ProductDTO> findAllPages(PageRequest pageRequest){
@@ -39,7 +41,6 @@ public class ProductServices {
 		return pageList.map(x -> new ProductDTO(x, x.getCategories()));
 	}
 	
-	// Product By ID
 	@Transactional(readOnly = true)
 	public ProductDTO findById(Long ID) {
 		Optional<Product> produtoById = productRepository.findById(ID);
@@ -47,6 +48,24 @@ public class ProductServices {
 		
 		return new ProductDTO(productEntity, productEntity.getCategories());
 	}
+	
+	@Transactional(readOnly = true)
+	public Page<ProductDTO> searchProducts(String name, String orderBy, int page, int size) {
+        // Configurar a ordenação baseada no parâmetro orderBy
+        Sort sort = Sort.unsorted();
+        if ("name".equalsIgnoreCase(orderBy)) {
+            sort = Sort.by(Sort.Direction.ASC, "name");
+        } else if ("price".equalsIgnoreCase(orderBy)) {
+            sort = Sort.by(Sort.Direction.ASC, "price");
+        } else if ("category".equalsIgnoreCase(orderBy)) {
+            sort = Sort.by(Sort.Direction.ASC, "categories.name"); // Ordena pela categoria alfabeticamente
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Product> products = productRepository.findByName(name, pageable);
+
+        return products.map(this::convertToDTO);
+    }
 	
 	// Inserir produto
 	@Transactional
@@ -90,5 +109,14 @@ public class ProductServices {
 		
 		} 
 	}
+	
+	//Funções de apoio
+	
+	private ProductDTO convertToDTO(Product product) {
+        return new ProductDTO(
+            product,
+            product.getCategories()
+        );
+    }
 
 }

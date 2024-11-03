@@ -1,6 +1,7 @@
 package com.adsonlucas.SysEstoque.resources;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -61,6 +62,16 @@ public class ProductResource {
 	
 		return ResponseEntity.ok().body(produtoDTO);
 	}
+	
+	 @GetMapping("/search")
+	    public Page<ProductDTO> searchProducts(
+	            @RequestParam(required = false) String name,
+	            @RequestParam(required = false) String orderBy,
+	            @RequestParam(defaultValue = "0") int page,
+	            @RequestParam(defaultValue = "5") int size) {
+	        
+	        return productService.searchProducts(name, orderBy, page, size);
+	    }
 	
 	// Insert
 	@PostMapping
