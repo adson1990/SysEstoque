@@ -139,7 +139,7 @@ public class LoginController {
 	@PostMapping("/auth/refresh")
 	@Transactional
 	public ResponseEntity<TokenRefreshResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
-		String requestRefreshToken = request.refreshToken();
+		String requestRefreshToken = request.accessToken();
 
 		return refreshTokenService.findByToken(requestRefreshToken).map(refreshTokenService::verifyExpiration)
 				.map(refreshToken -> {
