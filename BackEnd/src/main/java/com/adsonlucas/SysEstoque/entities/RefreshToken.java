@@ -18,7 +18,7 @@ public class RefreshToken {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String token;
+    private String refreshToken;
 
     @Column(nullable = false)
     private Instant expiryDate;
@@ -33,12 +33,12 @@ public class RefreshToken {
     
     // getters and setters
 
-	public String getToken() {
-		return token;
+	public String getRefreshToken() {
+		return refreshToken;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
 	}
 
 	public Instant getExpiryDate() {

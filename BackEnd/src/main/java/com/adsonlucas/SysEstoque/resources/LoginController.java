@@ -82,7 +82,7 @@ public class LoginController {
 		}
 
 		var now = Instant.now();
-		var accessTokenExpiresIn = 600L; // 5 min
+		var accessTokenExpiresIn = 600L; // 10 min
 
 		var scopes = user.get().getRoles().stream().map(Roles::getAuthority).collect(Collectors.joining(" ")); // obter o escopo de permissão do usuário que estpa logando no sistema
 
@@ -99,7 +99,7 @@ public class LoginController {
 
 		var refreshToken = refreshTokenService.createRefreshToken(user.get().getID());
 
-		return ResponseEntity.ok(new LoginResponse(jwtValue, accessTokenExpiresIn, refreshToken.getToken()));
+		return ResponseEntity.ok(new LoginResponse(jwtValue, accessTokenExpiresIn, refreshToken.getRefreshToken()));
 	}
 
 	@PostMapping("/login/client")
@@ -132,33 +132,33 @@ public class LoginController {
 
 		var refreshToken = refreshTokenService.createClientRefreshToken(client.getID()); // criando o refresh Token
 
-		return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, refreshToken.getToken(),
+		return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, refreshToken.getRefreshToken(),
 				client.getSexo(), client.getID(), client.getFoto()));
 	}
 
-	@PostMapping("/auth/refresh")
+	@PostMapping("/auth/client/refresh")
 	@Transactional
 	public ResponseEntity<TokenRefreshResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
-		String requestRefreshToken = request.accessToken();
+		String requestRefreshToken = request.refreshToken();
 
-		return refreshTokenService.findByToken(requestRefreshToken).map(refreshTokenService::verifyExpiration)
+		return refreshTokenService.findByRefreshToken(requestRefreshToken).map(refreshTokenService::verifyExpiration)
 				.map(refreshToken -> {
-					var user = refreshToken.getUser();
+					var client = refreshToken.getClient();
 					var now = Instant.now();
 					var accessTokenExpiresIn = 300L; // 5 min
 
 					// Gera um novo access token
-					var scopes = user.getRoles().stream().map(Roles::getAuthority).collect(Collectors.joining(" "));
+					//var scopes = client.getRoles().stream().map(Roles::getAuthority).collect(Collectors.joining(" "));
 
-					var claims = JwtClaimsSet.builder().issuer("Backend").subject(user.getID().toString()).issuedAt(now)
-							.expiresAt(now.plusSeconds(accessTokenExpiresIn)).claim("scope", scopes).build();
+					var claims = JwtClaimsSet.builder().issuer("Backend").subject(client.getID().toString()).issuedAt(now)
+							.expiresAt(now.plusSeconds(accessTokenExpiresIn)).build();
 
 					var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
 					// Opcional: renova o refresh token
 					// var newRefreshToken = refreshTokenService.createRefreshToken(user);
 
-					return ResponseEntity.ok(new TokenRefreshResponse(jwtValue, requestRefreshToken));
+					return ResponseEntity.ok(new TokenRefreshResponse(jwtValue, accessTokenExpiresIn, requestRefreshToken));
 				})
 				.orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
 	}
@@ -202,6 +202,6 @@ public class LoginController {
 
 		logger.info("Token generated");
 
-		return ResponseEntity.ok(new TokenResponse(jwtValue, accessTokenExpiresIn, refreshToken.getToken()));
+		return ResponseEntity.ok(new TokenResponse(jwtValue, accessTokenExpiresIn, refreshToken.getRefreshToken()));
 	}
 }

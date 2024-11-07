@@ -66,7 +66,7 @@ public class WebSecurityConfig implements CommandLineRunner {
 	private static final String[] PUBLIC = {
 	        "/clients/register",
 	        "/login/**",
-	        "/auth/refresh",
+	        "/auth/client/refresh",
 	        "/token/consulta",
 	        "/token/cliente",
 	        "/swagger-ui/**",

@@ -41,12 +41,12 @@ public class RefreshTokenService {
         	verifyExpiration(refreshToken);
         	
         	refreshToken.setExpiryDate(Instant.now().plusMillis(36000000)); 
-            refreshToken.setToken(UUID.randomUUID().toString()); 
+            refreshToken.setRefreshToken(UUID.randomUUID().toString()); 
         } else {
         	refreshToken = new RefreshToken();	
         	refreshToken.setUser(userRepository.findById(userId).get());
         	refreshToken.setExpiryDate(Instant.now().plusMillis(36000000)); // 10 horas
-        	refreshToken.setToken(UUID.randomUUID().toString());
+        	refreshToken.setRefreshToken(UUID.randomUUID().toString());
         }
 
         refreshToken = refreshTokenRepository.save(refreshToken);
@@ -67,12 +67,12 @@ public class RefreshTokenService {
             refreshToken = existingTokenOpt.get();
             verifyExpiration(refreshToken);
             refreshToken.setExpiryDate(Instant.now().plusMillis(36000000)); // Renova a expiração
-            refreshToken.setToken(UUID.randomUUID().toString()); // Gera um novo token se necessário
+            refreshToken.setRefreshToken(UUID.randomUUID().toString()); // Gera um novo token se necessário
         } else {
             // Cria um novo token
             refreshToken = new RefreshToken();
             refreshToken.setClient(client);
-            refreshToken.setToken(UUID.randomUUID().toString());
+            refreshToken.setRefreshToken(UUID.randomUUID().toString());
             refreshToken.setExpiryDate(Instant.now().plusMillis(36000000)); // Define a expiração
         }
 
@@ -83,7 +83,7 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(token);
-            throw new TokenRefreshException(token.getToken(), "Refresh token was expired. Please make a new signin request");
+            throw new TokenRefreshException(token.getRefreshToken(), "Refresh token was expired. Please make a new signin request");
         }
 
         return token;
@@ -95,7 +95,7 @@ public class RefreshTokenService {
     }
     
     @Transactional(readOnly = true)
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
+    public Optional<RefreshToken> findByRefreshToken(String refreshToken) {
+        return refreshTokenRepository.findByRefreshToken(refreshToken);
     }
 }
