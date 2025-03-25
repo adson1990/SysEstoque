@@ -166,13 +166,13 @@ public class LoginController {
 	@PostMapping("/token/consulta")
 	public ResponseEntity<TokenResponse> tokenTemporario(@RequestBody TokenRequest request)
 			throws UsernameNotFoundException, AuthenticationException {
-		logger.info("User request for token");
-		userService.loadTokenForSearch(request.username());
+		logger.info("User request for temporary token");
+		clientService.loadClientByEmail(request.username());
 
 		var now = Instant.now();
-		var accessTokenExpiresIn = 30L; // 30 segundos
+		var accessTokenExpiresIn = 60L; // 30 segundos
 
-		var claims = JwtClaimsSet.builder().issuer("Backend").subject("ADMIN").issuedAt(now)
+		var claims = JwtClaimsSet.builder().issuer("Backend").subject(request.username()).issuedAt(now)
 				.expiresAt(now.plusSeconds(accessTokenExpiresIn)).build();
 
 		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
