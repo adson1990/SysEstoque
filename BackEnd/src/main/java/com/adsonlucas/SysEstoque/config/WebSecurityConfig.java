@@ -51,6 +51,7 @@ public class WebSecurityConfig implements CommandLineRunner {
 	@Value("${jwt.private.key}")
 	private RSAPrivateKey privateKey;
 
+	@SuppressWarnings("unused")
 	private UserDetailsService userDetailsService;
 
 	@Lazy

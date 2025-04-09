@@ -22,29 +22,23 @@ public class Vendas implements Serializable{
 	@Column(nullable = false)
 	private Long codPrd;
 	@Column(nullable = false)
-	private String name;
-	@Column(nullable = false)
 	private Long codCli;
 	@Column(nullable = false)
 	private int qtd;
 	@Column(nullable = false)
 	private Date dataVenda;
 	@Column(nullable = false)
-	private Double total;
-	@Column(nullable = false)
 	private Double prcUnitario;
 	
 	public Vendas() {}
 	
 	
-	public Vendas(Long codPrd, String name, Long codCli, int qtd, Date dataVenda, double valor, double prcUnitario) {
+	public Vendas(Long codPrd, Long codCli, int qtd, Date dataVenda, double prcUnitario) {
 		super();
 		this.codPrd = codPrd;
-		this.name = name;
 		this.codCli = codCli;
 		this.qtd = qtd;
 		this.dataVenda = dataVenda;
-		this.total = valor;
 		this.prcUnitario = prcUnitario;
 	}
 	
@@ -54,12 +48,6 @@ public class Vendas implements Serializable{
 	}
 	public void setCodPrd(Long codPrd) {
 		this.codPrd = codPrd;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String nome) {
-		this.name = nome;
 	}
 	public Long getCodCli() {
 		return codCli;
@@ -78,12 +66,6 @@ public class Vendas implements Serializable{
 	}
 	public void setDataVenda(Date dataVenda) {
 		this.dataVenda = dataVenda;
-	}
-	public double getTotal() {
-		return total;
-	}
-	public void setTotal(double valor) {
-		this.total = valor;
 	}
 	public double getPrcUnitario() {
 		return prcUnitario;

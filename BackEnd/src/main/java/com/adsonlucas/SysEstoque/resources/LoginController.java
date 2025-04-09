@@ -43,8 +43,9 @@ public class LoginController {
 
 	private JwtEncoder jwtEncoder = null;
 
-	private static Logger logger = LoggerFactory.getLogger(UserService.class);
-
+	//private static Logger loggerUser = LoggerFactory.getLogger(UserService.class);
+	private static Logger loggerClient = LoggerFactory.getLogger(ClientService.class);
+	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -74,6 +75,7 @@ public class LoginController {
 	}
 
 	@PostMapping("/login/user")
+	/*Gerar token válido para login dos usuários no sistema **/
 	public ResponseEntity<LoginResponse> loginAdm(@RequestBody LoginRequest loginRequest) {
 		Optional<User> user = Optional.ofNullable((User) userService.loadUserByUsername(loginRequest.username()));
 
@@ -94,8 +96,7 @@ public class LoginController {
 				.claim("scope", scopes) // obtendo scopo da requisição
 				.build();
 
-		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT
-																								// passando os claims
+		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue(); // recuperando o token JWT passando os claims
 
 		var refreshToken = refreshTokenService.createRefreshToken(user.get().getID());
 
@@ -103,10 +104,11 @@ public class LoginController {
 	}
 
 	@PostMapping("/login/client")
+	/*Gerar token válido para login dos clientes no sistema **/
 	public ResponseEntity<LoginResponseWithSexId> loginClient(@RequestBody LoginRequest loginRequest) {
 		Optional<Client> clientOpt = Optional
 				.ofNullable((Client) clientService.loadClientByEmail(loginRequest.username()));
-		logger.info("E-mail enviado no request: " + loginRequest.username());
+		loggerClient.info("E-mail enviado no request: " + loginRequest.username());
 
 		if (clientOpt.isEmpty()) {
 			throw new BadCredentialsException("User not found!");
@@ -115,7 +117,7 @@ public class LoginController {
 		Client client = clientOpt.get();
 
 		if (!bCryptPasswordEncoder.matches(loginRequest.password(), client.getSenha())) {
-			throw new BadCredentialsException("user or password is invalid!");
+			throw new BadCredentialsException("Ivalid Password!");
 		}
 
 		var now = Instant.now();
@@ -129,7 +131,6 @@ public class LoginController {
 
 		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 																								
-
 		var refreshToken = refreshTokenService.createClientRefreshToken(client.getID()); // criando o refresh Token
 
 		return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, refreshToken.getRefreshToken(),
@@ -138,6 +139,7 @@ public class LoginController {
 
 	@PostMapping("/auth/client/refresh")
 	@Transactional
+	/*Gerar um novo token de acesso para o cliente caso o refresh token seja válido **/
 	public ResponseEntity<TokenRefreshResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
 		String requestRefreshToken = request.refreshToken();
 
@@ -150,23 +152,24 @@ public class LoginController {
 					// Gera um novo access token
 					//var scopes = client.getRoles().stream().map(Roles::getAuthority).collect(Collectors.joining(" "));
 
-					var claims = JwtClaimsSet.builder().issuer("Backend").subject(client.getID().toString()).issuedAt(now)
+					var claims = JwtClaimsSet.builder().issuer(client.getName()).subject(client.getID().toString()).issuedAt(now)
 							.expiresAt(now.plusSeconds(accessTokenExpiresIn)).build();
 
 					var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-
-					// Opcional: renova o refresh token
-					// var newRefreshToken = refreshTokenService.createRefreshToken(user);
+					
+					// Renova o refresh token
+					var clientRefreshToken = refreshTokenService.createClientRefreshToken(client.getID());
 
 					return ResponseEntity.ok(new TokenRefreshResponse(jwtValue, accessTokenExpiresIn, requestRefreshToken));
 				})
-				.orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database!"));
+				.orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token expired please login again!"));
 	}
 
 	@PostMapping("/token/consulta")
+	/*Gerar um token breve para pequenas consultas **/
 	public ResponseEntity<TokenResponse> tokenTemporario(@RequestBody TokenRequest request)
 			throws UsernameNotFoundException, AuthenticationException {
-		logger.info("User request for temporary token");
+		loggerClient.info("User request for temporary token");
 		clientService.loadClientByEmail(request.username());
 
 		var now = Instant.now();
@@ -177,17 +180,19 @@ public class LoginController {
 
 		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
-		logger.info("Token generated");
+		loggerClient.info("Token generated");
 
 		return ResponseEntity.ok(new TokenResponse(jwtValue, accessTokenExpiresIn, ""));
 	}
 
 	@PostMapping("/token/cliente")
+	// TODO(A): método que será reaproveitado para refazer o token do usuário, esse método é desnecessário para o cliente
+	// pois já temos o end point auth/client/refresh para refazer o token.
 	public ResponseEntity<TokenResponse> requestClientToken(@RequestBody TokenRequest request)
 			throws UsernameNotFoundException, AuthenticationException {
 		var email = request.username();
 		
-		logger.info("Client request for token: " + email);
+		loggerClient.info("Client request for token: " + email);
 		Client client = clientService.loadClientByEmail(email);
 
 		var now = Instant.now();
@@ -200,7 +205,7 @@ public class LoginController {
 		
 		var refreshToken = refreshTokenService.createClientRefreshToken(client.getID());
 
-		logger.info("Token generated");
+		loggerClient.info("Token generated");
 
 		return ResponseEntity.ok(new TokenResponse(jwtValue, accessTokenExpiresIn, refreshToken.getRefreshToken()));
 	}

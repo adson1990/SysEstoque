@@ -1,5 +1,6 @@
 package com.adsonlucas.SysEstoque;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +19,7 @@ import com.adsonlucas.SysEstoque.entities.Cellphone;
 import com.adsonlucas.SysEstoque.entities.Client;
 import com.adsonlucas.SysEstoque.entities.Enderecos;
 import com.adsonlucas.SysEstoque.entities.Product;
+import com.adsonlucas.SysEstoque.entities.RefreshTokenClient;
 import com.adsonlucas.SysEstoque.entities.Roles;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.entitiesDTO.CategoryClientDTO;
@@ -26,11 +30,14 @@ import com.adsonlucas.SysEstoque.entitiesDTO.EnderecosDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.ProductDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.RolesDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.UserDTO;
+import com.adsonlucas.SysEstoque.repositories.RefreshTokenRepository;
+import com.adsonlucas.SysEstoque.services.ClientService;
 
 @SuppressWarnings("unused")
 @Component
 public class Functions {
-		
+	
+	private RefreshTokenRepository refreshRepository;
 	private CategoryClient entityCategoryClient;
 	private CategoryProduct entityCategoryProduct;
 	private Client client;
@@ -81,6 +88,7 @@ public Client copyDTOToEntityClient(ClientDTO dto, Client entity) {
 	
     return entity;
 	}
+
 private Enderecos convertEnderecoDTOToEntity(EnderecosDTO dto) {
     Enderecos endereco = new Enderecos();
     endereco.setRua(dto.getRua());
@@ -92,6 +100,7 @@ private Enderecos convertEnderecoDTOToEntity(EnderecosDTO dto) {
     endereco.setCep(dto.getCep());
     return endereco;
 }
+
 private Cellphone convertCellphoneDTOToEntity(CellphoneDTO dto) {
     Cellphone cellphone = new Cellphone();
     cellphone.setDdd(dto.getDdd());
@@ -99,6 +108,7 @@ private Cellphone convertCellphoneDTOToEntity(CellphoneDTO dto) {
     cellphone.setTipo(dto.getTipo());
     return cellphone;
 }
+
 private void updateCellphones(Client entity, List<CellphoneDTO> newPhonesDTO) {
     // Mapeia os telefones existentes por número
     Map<String, Cellphone> existingPhones = entity.getCel().stream()

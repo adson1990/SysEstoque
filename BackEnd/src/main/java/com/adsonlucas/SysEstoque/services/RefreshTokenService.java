@@ -4,12 +4,14 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.adsonlucas.SysEstoque.entities.Client;
-import com.adsonlucas.SysEstoque.entities.RefreshToken;
+import com.adsonlucas.SysEstoque.entities.RefreshTokenClient;
 import com.adsonlucas.SysEstoque.entities.User;
 import com.adsonlucas.SysEstoque.repositories.ClientRepository;
 import com.adsonlucas.SysEstoque.repositories.RefreshTokenRepository;
@@ -18,6 +20,8 @@ import com.adsonlucas.SysEstoque.resouces.exceptions.TokenRefreshException;
 
 @Service
 public class RefreshTokenService {
+	
+	private static Logger loggerClient = LoggerFactory.getLogger(ClientService.class);
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
@@ -28,59 +32,61 @@ public class RefreshTokenService {
     @Autowired
     private ClientRepository clientRepository;
 
-    public RefreshToken createRefreshToken(Long userId) {
+    public RefreshTokenClient createRefreshToken(Long userId) {
     	User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
     	
-    	Optional<RefreshToken> existingTokenOpt = refreshTokenRepository.findByUser(user);
+    	Optional<RefreshTokenClient> existingTokenOpt = refreshTokenRepository.findByUser(user);
     	
-        RefreshToken refreshToken;
+        RefreshTokenClient refreshTokenClient;
         
         if(existingTokenOpt.isPresent()) {
-        	refreshToken = existingTokenOpt.get();
-        	verifyExpiration(refreshToken);
+        	refreshTokenClient = existingTokenOpt.get();
+        	verifyExpiration(refreshTokenClient);
         	
-        	refreshToken.setExpiryDate(Instant.now().plusMillis(36000000)); 
-            refreshToken.setRefreshToken(UUID.randomUUID().toString()); 
+        	refreshTokenClient.setExpiryDate(Instant.now().plusMillis(600)); 
+            refreshTokenClient.setRefreshToken(UUID.randomUUID().toString()); 
         } else {
-        	refreshToken = new RefreshToken();	
-        	refreshToken.setUser(userRepository.findById(userId).get());
-        	refreshToken.setExpiryDate(Instant.now().plusMillis(36000000)); // 10 horas
-        	refreshToken.setRefreshToken(UUID.randomUUID().toString());
+        	refreshTokenClient = new RefreshTokenClient();	
+        	refreshTokenClient.setUser(userRepository.findById(userId).get());
+        	refreshTokenClient.setExpiryDate(Instant.now().plusMillis(600)); // 10 min
+        	refreshTokenClient.setRefreshToken(UUID.randomUUID().toString());
         }
 
-        refreshToken = refreshTokenRepository.save(refreshToken);
-        return refreshToken;
+        refreshTokenClient = refreshTokenRepository.save(refreshTokenClient);
+        return refreshTokenClient;
     }
     
-    public RefreshToken createClientRefreshToken(Long clientId) {
+    public RefreshTokenClient createClientRefreshToken(Long clientId) {
         Client client = clientRepository.findById(clientId)
             .orElseThrow(() -> new IllegalArgumentException("Client not found: " + clientId));
 
         // Já existe token para o cliente?
-        Optional<RefreshToken> existingTokenOpt = refreshTokenRepository.findByClient(client);
+        Optional<RefreshTokenClient> existingTokenOpt = refreshTokenRepository.findByClient(client);
 
-        RefreshToken refreshToken;
+        RefreshTokenClient refreshTokenClient;
 
         if (existingTokenOpt.isPresent()) {
             // Atualiza o token existente
-            refreshToken = existingTokenOpt.get();
-            verifyExpiration(refreshToken);
-            refreshToken.setExpiryDate(Instant.now().plusMillis(36000000)); // Renova a expiração
-            refreshToken.setRefreshToken(UUID.randomUUID().toString()); // Gera um novo token se necessário
+        	loggerClient.info("RefreshToken já existente.");
+            refreshTokenClient = existingTokenOpt.get();
+            verifyExpiration(refreshTokenClient);
+            refreshTokenClient.setExpiryDate(Instant.now().plusMillis(600)); // Renova a expiração
+            refreshTokenClient.setRefreshToken(UUID.randomUUID().toString()); // Gera um novo token se necessário
         } else {
             // Cria um novo token
-            refreshToken = new RefreshToken();
-            refreshToken.setClient(client);
-            refreshToken.setRefreshToken(UUID.randomUUID().toString());
-            refreshToken.setExpiryDate(Instant.now().plusMillis(36000000)); // Define a expiração
+        	loggerClient.info("Novo RefreshToken");
+            refreshTokenClient = new RefreshTokenClient();
+            refreshTokenClient.setClient(client);
+            refreshTokenClient.setRefreshToken(UUID.randomUUID().toString());
+            refreshTokenClient.setExpiryDate(Instant.now().plusMillis(600)); // Define a expiração
         }
 
-        return refreshTokenRepository.save(refreshToken);
+        return refreshTokenRepository.save(refreshTokenClient);
     }
 
 
-    public RefreshToken verifyExpiration(RefreshToken token) {
+    public RefreshTokenClient verifyExpiration(RefreshTokenClient token) {
         if (token.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(token);
             throw new TokenRefreshException(token.getRefreshToken(), "Refresh token was expired. Please make a new signin request");
@@ -95,7 +101,7 @@ public class RefreshTokenService {
     }
     
     @Transactional(readOnly = true)
-    public Optional<RefreshToken> findByRefreshToken(String refreshToken) {
+    public Optional<RefreshTokenClient> findByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken);
     }
 }

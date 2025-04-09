@@ -11,7 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 
 @Entity
-public class RefreshToken {
+public class RefreshTokenClient {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,28 @@ public class RefreshToken {
     @JoinColumn(name = "client_id", referencedColumnName = "id", nullable = true)
     private Client client;
     
-    // getters and setters
+    // constructors
+    public RefreshTokenClient() {
+    	
+    }
+    
+	public RefreshTokenClient(String refreshToken, Instant expiryDate, Client client) {
+		super();
+		this.refreshToken = refreshToken;
+		this.expiryDate = expiryDate;
+		this.client = client;
+	}	
+	
+    
+    public RefreshTokenClient(String refreshToken, Instant expiryDate, User user) {
+		super();
+		this.refreshToken = refreshToken;
+		this.expiryDate = expiryDate;
+		this.user = user;
+	}
 
+
+	// getters and setters
 	public String getRefreshToken() {
 		return refreshToken;
 	}
