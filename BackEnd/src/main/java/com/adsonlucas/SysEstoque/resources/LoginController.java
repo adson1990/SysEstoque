@@ -1,5 +1,6 @@
 package com.adsonlucas.SysEstoque.resources;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,7 +85,7 @@ public class LoginController {
 		}
 
 		var now = Instant.now();
-		var accessTokenExpiresIn = 600L; // 10 min
+		var accessTokenExpiresIn = Duration.ofMinutes(10).toMillis(); // 10 min
 
 		var scopes = user.get().getRoles().stream().map(Roles::getAuthority).collect(Collectors.joining(" ")); // obter o escopo de permissão do usuário que estpa logando no sistema
 
@@ -121,7 +122,7 @@ public class LoginController {
 		}
 
 		var now = Instant.now();
-		var accessTokenExpiresIn = 300L; // 5 min
+		var accessTokenExpiresIn = Duration.ofMinutes(5).toMillis(); // 5 min
 
 		var claims = JwtClaimsSet.builder().issuer("Backend") 
 				.subject(client.getID().toString()) 
@@ -131,7 +132,7 @@ public class LoginController {
 
 		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 																								
-		var refreshToken = refreshTokenService.createClientRefreshToken(client.getID()); // criando o refresh Token
+		var refreshToken = refreshTokenService.createClientRefreshTokenLogin(client.getID()); // criando o refresh Token
 
 		return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, refreshToken.getRefreshToken(),
 				client.getSexo(), client.getID(), client.getFoto()));
@@ -147,7 +148,10 @@ public class LoginController {
 				.map(refreshToken -> {
 					var client = refreshToken.getClient();
 					var now = Instant.now();
-					var accessTokenExpiresIn = 300L; // 5 min
+					var accessTokenExpiresIn = Duration.ofMinutes(5).toMillis(); // 5 min
+					
+					// Renova o refresh token
+					var clientRefreshToken = refreshTokenService.createClientRefreshToken(client.getID());
 
 					// Gera um novo access token
 					//var scopes = client.getRoles().stream().map(Roles::getAuthority).collect(Collectors.joining(" "));
@@ -156,11 +160,8 @@ public class LoginController {
 							.expiresAt(now.plusSeconds(accessTokenExpiresIn)).build();
 
 					var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-					
-					// Renova o refresh token
-					var clientRefreshToken = refreshTokenService.createClientRefreshToken(client.getID());
 
-					return ResponseEntity.ok(new TokenRefreshResponse(jwtValue, accessTokenExpiresIn, requestRefreshToken));
+					return ResponseEntity.ok(new TokenRefreshResponse(jwtValue, accessTokenExpiresIn, clientRefreshToken.getRefreshToken()));
 				})
 				.orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token expired please login again!"));
 	}
@@ -173,7 +174,7 @@ public class LoginController {
 		clientService.loadClientByEmail(request.username());
 
 		var now = Instant.now();
-		var accessTokenExpiresIn = 60L; // 30 segundos
+		var accessTokenExpiresIn = Duration.ofSeconds(30).toMillis(); // 30 segundos
 
 		var claims = JwtClaimsSet.builder().issuer("Backend").subject(request.username()).issuedAt(now)
 				.expiresAt(now.plusSeconds(accessTokenExpiresIn)).build();
@@ -185,18 +186,18 @@ public class LoginController {
 		return ResponseEntity.ok(new TokenResponse(jwtValue, accessTokenExpiresIn, ""));
 	}
 
-	@PostMapping("/token/cliente")
+	@PostMapping("/token/user/refresh")
 	// TODO(A): método que será reaproveitado para refazer o token do usuário, esse método é desnecessário para o cliente
 	// pois já temos o end point auth/client/refresh para refazer o token.
 	public ResponseEntity<TokenResponse> requestClientToken(@RequestBody TokenRequest request)
 			throws UsernameNotFoundException, AuthenticationException {
 		var email = request.username();
 		
-		loggerClient.info("Client request for token: " + email);
+		loggerClient.info("User request for token: " + email);
 		Client client = clientService.loadClientByEmail(email);
 
 		var now = Instant.now();
-		var accessTokenExpiresIn = 300L; // 5 minutos 
+		var accessTokenExpiresIn = Duration.ofMinutes(5).toMillis(); // 5 minutos 
 
 		var claims = JwtClaimsSet.builder().issuer("Backend").subject(email).issuedAt(now)
 				.expiresAt(now.plusSeconds(accessTokenExpiresIn)).build();
