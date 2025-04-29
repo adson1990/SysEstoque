@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.CompraAgrupadaDTO;
+import com.adsonlucas.SysEstoque.entitiesDTO.UltimaCompraDTO;
 import com.adsonlucas.SysEstoque.services.ComprasService;
 
 @RestController
@@ -25,4 +26,13 @@ public class ComprasController {
 	    return ResponseEntity.ok(compras);
 	}
 
+	@GetMapping("/ultimas-compras/{id}")
+	public ResponseEntity<List<UltimaCompraDTO>> getUltimasCompras(@PathVariable Long id) {
+	    return ResponseEntity.ok(comprasService.listarUltimasCompras(id));
+	}
+
+	@GetMapping("/ultimas-compras-order-valor/{id}")
+	public ResponseEntity<List<UltimaCompraDTO>> getUltimasComprasPorValor(@PathVariable Long id) {
+	    return ResponseEntity.ok(comprasService.listarUltimasComprasPorValor(id));
+	}
 }

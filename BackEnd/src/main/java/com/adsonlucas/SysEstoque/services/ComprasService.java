@@ -4,15 +4,18 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.adsonlucas.SysEstoque.entitiesDTO.CompraAgrupadaDTO;
 import com.adsonlucas.SysEstoque.entitiesDTO.CompraItemResumoDTO;
+import com.adsonlucas.SysEstoque.entitiesDTO.UltimaCompraDTO;
 import com.adsonlucas.SysEstoque.repositories.ComprasRepository;
 
 @Service
@@ -64,5 +67,21 @@ public class ComprasService {
         }
 
         return new ArrayList<>(agrupado.values());
+    }
+    
+    public List<UltimaCompraDTO> listarUltimasCompras(Long codCli) {
+        List<Object[]> resultados = comprasRepository.buscarUltimasComprasPorCliente(codCli);
+
+        return resultados.stream()
+            .map(obj -> new UltimaCompraDTO((Date) obj[0], (BigDecimal) obj[1]))
+            .collect(Collectors.toList());
+    }
+
+    public List<UltimaCompraDTO> listarUltimasComprasPorValor(Long codCli) {
+        List<Object[]> resultados = comprasRepository.buscarUltimasComprasOrdenadaPorValor(codCli);
+
+        return resultados.stream()
+            .map(obj -> new UltimaCompraDTO((Date) obj[0], (BigDecimal) obj[1]))
+            .collect(Collectors.toList());
     }
 }

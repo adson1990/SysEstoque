@@ -32,6 +32,32 @@ public interface ComprasRepository extends JpaRepository<Compras, Long>{
 		    ORDER BY c.data_compra DESC
 		    """, nativeQuery = true)
 		List<Object[]> buscarComprasPorIdCliente(@Param("codCli") Long codCli);
-
-
+//------------------------------------------------------------------------------------------------------------
+		@Query(value = """
+			    SELECT 
+			        c.data_compra AS dataCompra,
+			        SUM(i.quantidade * i.preco) AS valorTotal
+			    FROM tb_compras c
+			    JOIN tb_client cli ON cli.id = c.cod_cli
+			    JOIN tb_compras_itens i ON i.compra_id = c.id
+			    WHERE cli.id = :codCli
+			    GROUP BY c.id, c.data_compra
+			    ORDER BY c.data_compra DESC
+			    LIMIT 2
+			""", nativeQuery = true)
+			List<Object[]> buscarUltimasComprasPorCliente(@Param("codCli") Long codCli);
+//-------------------------------------------------------------------------------------------------------------
+			@Query(value = """
+				    SELECT 
+				        c.data_compra AS dataCompra,
+				        SUM(i.quantidade * i.preco) AS valorTotal
+				    FROM tb_compras c
+				    JOIN tb_client cli ON cli.id = c.cod_cli
+				    JOIN tb_compras_itens i ON i.compra_id = c.id
+				    WHERE cli.id = :codCli
+				    GROUP BY c.id, c.data_compra
+				    ORDER BY SUM(i.quantidade * i.preco) DESC
+				    LIMIT 2
+				""", nativeQuery = true)
+				List<Object[]> buscarUltimasComprasOrdenadaPorValor(@Param("codCli") Long codCli);	
 }

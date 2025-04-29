@@ -171,12 +171,12 @@ public class LoginController {
 	public ResponseEntity<TokenResponse> tokenTemporario(@RequestBody TokenRequest request)
 			throws UsernameNotFoundException, AuthenticationException {
 		loggerClient.info("User request for temporary token");
-		clientService.loadClientByEmail(request.username());
+		clientService.loadClientByEmail(request.emailClient());
 
 		var now = Instant.now();
 		var accessTokenExpiresIn = Duration.ofSeconds(30).toMillis(); // 30 segundos
 
-		var claims = JwtClaimsSet.builder().issuer("Backend").subject(request.username()).issuedAt(now)
+		var claims = JwtClaimsSet.builder().issuer("Backend").subject(request.emailClient()).issuedAt(now)
 				.expiresAt(now.plusSeconds(accessTokenExpiresIn)).build();
 
 		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -186,12 +186,11 @@ public class LoginController {
 		return ResponseEntity.ok(new TokenResponse(jwtValue, accessTokenExpiresIn, ""));
 	}
 
-	@PostMapping("/token/user/refresh")
-	// TODO(A): método que será reaproveitado para refazer o token do usuário, esse método é desnecessário para o cliente
-	// pois já temos o end point auth/client/refresh para refazer o token.
+	@PostMapping("/token/cliente")
+	// Cria token e refresh só com o e-mail após já ter sido validado o cliente conectado
 	public ResponseEntity<TokenResponse> requestClientToken(@RequestBody TokenRequest request)
 			throws UsernameNotFoundException, AuthenticationException {
-		var email = request.username();
+		var email = request.emailClient();
 		
 		loggerClient.info("User request for token: " + email);
 		Client client = clientService.loadClientByEmail(email);
@@ -204,9 +203,9 @@ public class LoginController {
 
 		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 		
-		var refreshToken = refreshTokenService.createClientRefreshToken(client.getID());
+		var refreshToken = refreshTokenService.createClientRefreshTokenLogin(client.getID());
 
-		loggerClient.info("Token generated");
+		loggerClient.info("Token generated only with email" + request);
 
 		return ResponseEntity.ok(new TokenResponse(jwtValue, accessTokenExpiresIn, refreshToken.getRefreshToken()));
 	}
