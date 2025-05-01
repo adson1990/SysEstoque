@@ -123,6 +123,7 @@ public class LoginController {
 
 		var now = Instant.now();
 		var accessTokenExpiresIn = Duration.ofMinutes(5).toMillis(); // 5 min
+		//var accessTokenExpiresIn = Duration.ofSeconds(30).toMillis(); // 30 seg para teste
 
 		var claims = JwtClaimsSet.builder().issuer("Backend") 
 				.subject(client.getID().toString()) 
@@ -132,7 +133,7 @@ public class LoginController {
 
 		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 																								
-		var refreshToken = refreshTokenService.createClientRefreshTokenLogin(client.getID()); // criando o refresh Token
+		var refreshToken = refreshTokenService.createClientRefreshToken(client.getID()); // criando o refresh Token
 
 		return ResponseEntity.ok(new LoginResponseWithSexId(jwtValue, accessTokenExpiresIn, refreshToken.getRefreshToken(),
 				client.getSexo(), client.getID(), client.getFoto()));
@@ -149,6 +150,7 @@ public class LoginController {
 					var client = refreshToken.getClient();
 					var now = Instant.now();
 					var accessTokenExpiresIn = Duration.ofMinutes(5).toMillis(); // 5 min
+					//var accessTokenExpiresIn = Duration.ofSeconds(30).toMillis(); // 30 seg para teste
 					
 					// Renova o refresh token
 					var clientRefreshToken = refreshTokenService.createClientRefreshToken(client.getID());
@@ -202,8 +204,16 @@ public class LoginController {
 				.expiresAt(now.plusSeconds(accessTokenExpiresIn)).build();
 
 		var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+
 		
-		var refreshToken = refreshTokenService.createClientRefreshTokenLogin(client.getID());
+		boolean tokenDeleted = refreshTokenService.deleteClientRefreshToken(client.getID());
+		
+		if (!tokenDeleted) {
+			loggerClient.warn("Não foi possível deletar o refresh token anterior para o cliente com ID: " + client.getID());
+	        throw new IllegalStateException("Falha ao deletar token antigo. Novo refresh token não foi criado.");
+		}
+		
+		var refreshToken = refreshTokenService.createClientRefreshToken(client.getID());
 
 		loggerClient.info("Token generated only with email" + request);
 

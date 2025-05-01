@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,10 @@ import com.adsonlucas.SysEstoque.repositories.RefreshTokenRepository;
 import com.adsonlucas.SysEstoque.repositories.UserRepository;
 import com.adsonlucas.SysEstoque.resouces.exceptions.TokenRefreshException;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+
 @Service
 public class RefreshTokenService {
 	
@@ -32,6 +37,10 @@ public class RefreshTokenService {
     
     @Autowired
     private ClientRepository clientRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
     public RefreshTokenClient createRefreshToken(Long userId) {
     	User user = userRepository.findById(userId)
@@ -60,26 +69,29 @@ public class RefreshTokenService {
     
     /* Adson Farias -> 16/04/2025 a cada novo login o refreshtoken será renovado 
      * Deletando o antigo e criando um novo*/
-    public RefreshTokenClient createClientRefreshTokenLogin(Long clientId) {
+    @Transactional
+    public Boolean deleteClientRefreshToken(Long clientId) {
+    	AtomicBoolean resposta = new AtomicBoolean(false);
+    	
         Client client = clientRepository.findById(clientId)
             .orElseThrow(() -> new IllegalArgumentException("Client not found: " + clientId));
+        
+     // trecho provisório para investigação.
+     	/*	java.util.List<RefreshTokenClient> allTokens = refreshTokenRepository.findAll();
+     		loggerClient.info("Total de tokens encontrados: " + allTokens.size());
+     		allTokens.forEach(token ->
+     		    loggerClient.info("Token para client ID: " + token.getClient().getID())
+     		); */
         
         // Verifica e deleta o token existente, se houver
         refreshTokenRepository.findByClient(client)
             .ifPresent(existingToken -> {
                 loggerClient.info("Deletando RefreshToken existente");
-                deleteByUserId(client.getID());
-            });
-       
-            // Cria um novo token
-    	loggerClient.info("Novo RefreshToken para o cliente" + client.getName());
-    	RefreshTokenClient refreshTokenClientLogin;
-       refreshTokenClientLogin = new RefreshTokenClient();
-       refreshTokenClientLogin.setClient(client);
-       refreshTokenClientLogin.setRefreshToken(UUID.randomUUID().toString());
-       refreshTokenClientLogin.setExpiryDate(Instant.now().plusMillis(600_000)); // Define a expiração 10 min
-
-        return refreshTokenRepository.save(refreshTokenClientLogin);
+                refreshTokenRepository.deleteByUserId(client.getID());
+                entityManager.flush();
+                resposta.set(true);
+            }); 
+        return resposta.get();	
     }
     
     /*Adson Farias  16/04/2025 -> Endpoint para renovar o time do refresh token
@@ -99,6 +111,7 @@ public class RefreshTokenService {
             refreshTokenClient = existingTokenOpt.get();
             verifyExpiration(refreshTokenClient);
             refreshTokenClient.setExpiryDate(Instant.now().plus(Duration.ofMinutes(10))); // Renova a expiração
+            //refreshTokenClient.setExpiryDate(Instant.now().plus(Duration.ofMinutes(1))); // 1 min para teste 
             refreshTokenClient.setRefreshToken(UUID.randomUUID().toString()); // Gera um novo token se necessário
         } else {
             // Cria um novo token
@@ -107,6 +120,7 @@ public class RefreshTokenService {
             refreshTokenClient.setClient(client);
             refreshTokenClient.setRefreshToken(UUID.randomUUID().toString());
             refreshTokenClient.setExpiryDate(Instant.now().plus(Duration.ofMinutes(10))); // Define a expiração
+            //refreshTokenClient.setExpiryDate(Instant.now().plus(Duration.ofMinutes(1)));
         }
 
         return refreshTokenRepository.save(refreshTokenClient);
@@ -120,11 +134,6 @@ public class RefreshTokenService {
         }
 
         return token;
-    }
-    
-    @Transactional
-    public void deleteByUserId(Long userId) {
-        refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
     }
     
     @Transactional(readOnly = true)
